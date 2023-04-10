@@ -25,12 +25,15 @@
 <!-- Audio Player JS -->
 <script  src="./js/script.js"></script>
 <script> 
+  function getRandomArbitrary(min, max) {
+      return Math.random() * (max - min) + min;
+  }
   async function getMusics() {
-      const res = await fetch(`.musicList.json?` + getRandomArbitrary(0, 1000000));
+      const res = await fetch(`./musicList.json?` + getRandomArbitrary(0, 1000000));
       const arr = await res.json();
       let isFirst = true;
       for (const item of arr) {
-          const name = String(item).substr(2).split('.ogg')[0];
+          const name = unescape(String(item).substr(8).split('.ogg')[0]);
           const li = (isFirst) ?
           `<li class="simp-active"><span class="simp-source" data-src="${item}">${name}</span><span class="simp-desc">Nexon Games</span></li>`:
           `<li><span class="simp-source" data-src="${item}">${name}</span><span class="simp-desc">Nexon Games</span></li>`;
