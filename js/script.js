@@ -1,3 +1,6 @@
+function BAPlayer() {
+  
+
 /*
 Example: https://www.codehim.com/demo/javascript-audio-player-with-playlist/
 */
@@ -328,3 +331,9 @@ if (document.querySelector('#simp')) {
   ap_simp.insertBefore(simp_player, simp_playlist);
   simp_startScript();
 }
+
+
+
+}
+
+window.BAPlayer = BAPlayer;
