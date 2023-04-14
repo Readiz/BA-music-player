@@ -271,7 +271,11 @@ function simp_startScript() {
   // Others
   simp_others.addEventListener('click', function(e) {
     var eles = e.target.classList;
-    if (eles.contains('simp-plext')) {
+    if (eles.contains('simp-repeat')) {
+      simp_isRepeat = !simp_isRepeat;
+      simp_audio.loop = simp_isRepeat;
+      eles.contains('simp-active') && !simp_isRepeat ? eles.remove('simp-active') : eles.add('simp-active');
+    } else if (eles.contains('simp-plext')) {
       simp_isNext = simp_isNext && !simp_isRandom ? false : true;
       if (!simp_isRandom) simp_isRanext = simp_isRanext ? false : true;
       eles.contains('simp-active') && !simp_isRandom ? eles.remove('simp-active') : eles.add('simp-active');
@@ -303,6 +307,7 @@ if (document.querySelector('#simp')) {
   var simp_a_url = simp_playlist.querySelectorAll('[data-src]');
   var simp_a_index = 0;
   var simp_isPlaying = false;
+  var simp_isRepeat = false;
   var simp_isNext = false; //auto play
   var simp_isRandom = false; //play random
   var simp_isRanext = false; //check if before random starts, simp_isNext value is true
@@ -320,9 +325,9 @@ if (document.querySelector('#simp')) {
   simp_elem += '<div class="simp-controls flex-wrap flex-align">';
   simp_elem += '<div class="simp-plauseward flex flex-align"><button type="button" class="simp-prev fa fa-backward" disabled></button><button type="button" class="simp-plause fa fa-play" disabled></button><button type="button" class="simp-next fa fa-forward" disabled></button></div>';
   simp_elem += '<div class="simp-tracker simp-load"><input class="simp-progress" type="range" min="0" max="100" value="0" disabled/><div class="simp-buffer"></div></div>';
-  simp_elem += '<div class="simp-time flex flex-align"><span class="start-time">00:00</span><span class="simp-slash">&#160;/&#160;</span><span class="end-time">00:00</span></div>';
+  simp_elem += '<div class="simp-time flex flex-align"><span class="start-time">0:00</span><span class="simp-slash">&#160;/&#160;</span><span class="end-time">0:00</span></div>';
   simp_elem += '<div class="simp-volume flex flex-align"><button type="button" class="simp-mute fa fa-volume-up"></button><input class="simp-v-slider" type="range" min="0" max="100" value="100"/></div>';
-  simp_elem += '<div class="simp-others flex flex-align"><button type="button" class="simp-plext fa fa-play-circle" title="Auto Play"></button><button type="button" class="simp-random fa fa-random" title="Random"></button><div class="simp-shide"><button type="button" class="simp-shide-top fa fa-caret-up" title="Show/Hide Album"></button><button type="button" class="simp-shide-bottom fa fa-caret-down" title="Show/Hide Playlist"></button></div></div>';
+  simp_elem += '<div class="simp-others flex flex-align"><button type="button" class="simp-repeat fa fa-repeat" title="Repeat"></button><button type="button" class="simp-plext fa fa-play-circle" title="Auto Play"></button><button type="button" class="simp-random fa fa-random" title="Random"></button><div class="simp-shide"><button type="button" class="simp-shide-top fa fa-caret-up" title="Show/Hide Album"></button><button type="button" class="simp-shide-bottom fa fa-caret-down" title="Show/Hide Playlist"></button></div></div>';
   simp_elem += '</div>'; //simp-controls
   
   var simp_player = document.createElement('div');
