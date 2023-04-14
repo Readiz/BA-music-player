@@ -1,0 +1,25 @@
+{
+  "name": "BA-music-player",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Readiz/BA-music-player.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Readiz/BA-music-player/issues"
+  },
+  "homepage": "https://github.com/Readiz/BA-music-player#readme",
+  "dependencies": {
+    "fs-extra": "^11.1.1",
+    "glob": "^8.1.0",
+    "glob-promise": "^6.0.2"
+  }
+}

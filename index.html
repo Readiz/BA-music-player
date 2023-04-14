@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="CodeHim">
+    <title>Audio Player with Playlist Example </title>
+    
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="css/style.css">
+	<!-- Demo CSS (No need to include it into your project) -->
+	<link rel="stylesheet" href="css/demo.css">
+  
+  </head>
+  <body>
+
+ <div class="simple-audio-player" id="simp" data-config='{"shide_top":false,"shide_btm":false,"auto_load":false}'>
+  <div class="simp-playlist">
+    <ul id="ulist">
+
+    </ul>
+  </div>
+  <div class="simp-footer">Music is from Blue Archive</div>
+</div>
+<!-- Audio Player JS -->
+<script  src="./js/script.js"></script>
+<script> 
+  function getRandomArbitrary(min, max) {
+      return Math.random() * (max - min) + min;
+  }
+  async function getMusics() {
+      const res = await fetch(`./musicList.json?` + getRandomArbitrary(0, 1000000));
+      const arr = await res.json();
+      let isFirst = true;
+      for (const item of arr) {
+          const name = unescape(String(item).substr(8).split('.ogg')[0]);
+          const li = (isFirst) ?
+          `<li class="simp-active"><span class="simp-source" data-src="${item}">${name}</span><span class="simp-desc">Nexon Games</span></li>`:
+          `<li><span class="simp-source" data-src="${item}">${name}</span><span class="simp-desc">Nexon Games</span></li>`;
+          document.getElementById('ulist').innerHTML += li;
+          isFirst = false;
+      }
+  }
+  (async() => {
+      await getMusics();
+      await fetch('music');
+      setTimeout(()=>BAPlayer(), 1000);
+  })();
+</script>
+  </body>
+</html>
