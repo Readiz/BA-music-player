@@ -130,6 +130,10 @@ function simp_loadAudio(elem) {
   simp_audio.addEventListener('error', function() {
     alert('Please reload the page.');
   });
+
+  
+  navigator.mediaSession.setActionHandler("previoustrack", prevHandler);
+  navigator.mediaSession.setActionHandler("nexttrack", nextHandler);
 }
 
 function simp_setAlbum(index) {
@@ -169,6 +173,8 @@ function simp_changeAudio(elem) {
     simp_controls.querySelector('.simp-plause').classList.remove('fa-play');
     simp_controls.querySelector('.simp-plause').classList.add('fa-pause');
   }
+
+  
 }
 
 function simp_startScript() {
@@ -335,8 +341,19 @@ if (document.querySelector('#simp')) {
   simp_player.innerHTML = simp_elem;
   ap_simp.insertBefore(simp_player, simp_playlist);
   simp_startScript();
+
+  // Below is impossible due to the browser policy
+  // document.querySelector('.simp-plause').click();
 }
 
+function prevHandler() {
+    var simp_prev = document.querySelector('.simp-prev');
+    simp_prev.click();
+}
+function nextHandler() {
+    var simp_next = document.querySelector('.simp-next');
+    simp_next.click();
+}
 
 
 }
