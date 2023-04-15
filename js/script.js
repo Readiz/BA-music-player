@@ -134,6 +134,8 @@ function simp_loadAudio(elem) {
   
   navigator.mediaSession.setActionHandler("previoustrack", prevHandler);
   navigator.mediaSession.setActionHandler("nexttrack", nextHandler);
+  navigator.mediaSession.setActionHandler("seekbackward", prevHandler);
+  navigator.mediaSession.setActionHandler("seekforward", nextHandler);
 }
 
 function simp_setAlbum(index) {
