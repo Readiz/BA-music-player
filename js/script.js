@@ -146,8 +146,8 @@ function simp_changeAudio(elem) {
   simp_progress.parentNode.classList.add('simp-load');
   simp_progress.disabled = true;
   simp_progress.value = 0;
-  simp_controls.querySelector('.start-time').innerHTML = '00:00';
-  simp_controls.querySelector('.end-time').innerHTML = '00:00';
+  simp_controls.querySelector('.start-time').innerHTML = '0:00';
+  simp_controls.querySelector('.end-time').innerHTML = '0:00';
   elem = simp_isRandom && simp_isNext ? simp_a_url[getRandom(0, simp_a_url.length-1)] : elem;
   
   // playlist, audio is running
