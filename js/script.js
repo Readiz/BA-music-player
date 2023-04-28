@@ -318,7 +318,7 @@ if (document.querySelector('#simp')) {
   var simp_isRepeat = false;
   var simp_isNext = true; //auto play
   var simp_isRandom = false; //play random
-  var simp_isRanext = false; //check if before random starts, simp_isNext value is true
+  var simp_isRanext = true; //check if before random starts, simp_isNext value is true
   var simp_isStream = false; //radio streaming
   var simp_isLoaded = false; //audio file has loaded
   var simp_config = ap_simp.dataset.config ? JSON.parse(ap_simp.dataset.config) : {
