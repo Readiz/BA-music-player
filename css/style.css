@@ -59,8 +59,8 @@ a,a:hover,a:visited{color:#ddd;text-decoration:none;}
 @keyframes audio-progress{to{background-position:25px 0;}}
 /* mobile */
 @media screen and (max-width:480px) {
-#simp .simp-controls .simp-volume,#simp .simp-controls .simp-others{display:none;}
-#simp .simp-controls .simp-time{margin-right:10px;}
+#simp .simp-controls .simp-volume/*,#simp .simp-controls .simp-others*/{display:none;}
+#simp .simp-controls .simp-time{display:none; /*margin-right:10px;*/}
 }
 @media screen and (max-width:370px) {
 #simp .simp-time .simp-slash,#simp .simp-time .end-time{display:none;}
