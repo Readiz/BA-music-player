@@ -90,7 +90,12 @@ function simp_initAudio() {
     simp_controls.querySelector('.end-time').innerHTML = formatTime(simp_audio.duration);
   }
   simp_audio.addEventListener('timeupdate', simp_initTime); //tracking load progress
-  if (simp_isLoaded && simp_isPlaying) simp_audio.play();
+  if (simp_isLoaded) {
+    if (simp_isPlaying) simp_audio.play();
+    else {
+      togglePlayPause();
+    }
+  }
   
   // progress bar click event
   addEventListener_multi(simp_progress, 'touchstart mousedown', function(e) {
@@ -168,7 +173,7 @@ function simp_changeAudio(elem) {
   // scrolling to element inside element
   var simp_active = getRelativePos(simp_source[simp_a_index]);
   simp_source[simp_a_index].parentNode.scrollTop = simp_active.top;
-  
+
   if (simp_auto_load || simp_isPlaying) simp_loadAudio(elem);
   
   if (simp_isPlaying) {
@@ -177,6 +182,24 @@ function simp_changeAudio(elem) {
   }
 
   
+}
+
+function togglePlayPause(eles) {
+  if (!eles) {
+    eles = document.querySelector('.simp-plause').classList;
+  }
+  if (simp_audio.paused) {
+    if (!simp_isLoaded) simp_loadAudio(simp_a_url[simp_a_index]);
+    simp_audio.play();
+    simp_isPlaying = true;
+    eles.remove('fa-play');
+    eles.add('fa-pause');
+  } else {
+    simp_audio.pause();
+    simp_isPlaying = false;
+    eles.remove('fa-pause');
+    eles.add('fa-play');
+  }
 }
 
 function simp_startScript() {
@@ -227,18 +250,7 @@ function simp_startScript() {
   simp_controls.querySelector('.simp-plauseward').addEventListener('click', function(e) {
     var eles = e.target.classList;
     if (eles.contains('simp-plause')) {
-      if (simp_audio.paused) {
-        if (!simp_isLoaded) simp_loadAudio(simp_a_url[simp_a_index]);
-        simp_audio.play();
-        simp_isPlaying = true;
-        eles.remove('fa-play');
-        eles.add('fa-pause');
-      } else {
-        simp_audio.pause();
-        simp_isPlaying = false;
-        eles.remove('fa-pause');
-        eles.add('fa-play');
-      }
+      togglePlayPause(eles);
     } else {
       if (eles.contains('simp-prev') && simp_a_index != 0) {
         simp_a_index = simp_a_index-1;
@@ -324,7 +336,7 @@ if (document.querySelector('#simp')) {
   var simp_config = ap_simp.dataset.config ? JSON.parse(ap_simp.dataset.config) : {
     shide_top: false, //show/hide album
     shide_btm: false, //show/hide playlist
-    auto_load: false //auto load audio file
+    auto_load: true //auto load audio file
   };
   
   var simp_elem = '';
