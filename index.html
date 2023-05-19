@@ -20,7 +20,7 @@
 
     </ul>
   </div>
-  <div class="simp-footer">Music is from Blue Archive</div>
+  <div class="simp-footer">Music is mostly from Blue Archive</div>
 </div>
 </div>
 <!-- Audio Player JS -->
@@ -34,7 +34,7 @@
       const arr = await res.json();
       let isFirst = true;
       for (const item of arr) {
-          const name = unescape(String(item).substr(8).split('.ogg')[0]);
+          const name = unescape(String(item).substr(8).split('.ogg')[0].split('.mp3')[0]);
           const li = (isFirst) ?
           `<li class="simp-active"><span class="simp-source" data-src="${item}">${name}</span><span class="simp-desc">Nexon Games</span></li>`:
           `<li><span class="simp-source" data-src="${item}">${name}</span><span class="simp-desc">Nexon Games</span></li>`;
