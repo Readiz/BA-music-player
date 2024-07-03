@@ -11,7 +11,9 @@ const writeFileSync = (filepath, str) => {
 
 console.log('Starting...');
 (async () => {
-    let paths = await glob.promise('./music/*', {});
+    let paths = await glob.promise('./music/**', {
+        nodir: true
+    });
     paths = paths.map(item => encodeURI(item));
     console.log(paths);
     writeFileSync('./musicList.json', JSON.stringify(paths, null, 2));

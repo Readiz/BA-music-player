@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="CodeHim">
-    <title>Audio Player with Playlist Example </title>
+    <title>Readiz's Player</title>
     
     <!-- Style CSS -->
     <link rel="stylesheet" href="css/style.css">
@@ -13,19 +13,47 @@
   
   </head>
   <body>
-<div style="display: flex; flex-direction: column; justify-content: center; height: 100vh">
- <div style="max-width: 570px" class="simple-audio-player" id="simp" data-config='{"shide_top":false,"shide_btm":false,"auto_load":true}'>
+<div>
+  <div id="loading-overlay" style="color: #f3f3f3;
+    position: absolute;
+    top: 0;
+    bottom: 0px;
+    width: 100%;
+    text-align: center;
+    background-color: black;
+    z-index: 9999;
+">
+    <div style="display: grid; height: 100%; text-align: center; vertical-align: middle;">
+        <h1 style="display: flex; flex-direction: column; place-content: flex-end;">Readiz's Player</h1>
+        <p>Click here to use</p>
+    </div>
+</div>
+ <div class="simple-audio-player" id="simp" data-config='{"shide_top":false,"shide_btm":false,"auto_load":true}'>
   <div class="simp-playlist">
     <ul id="ulist">
 
     </ul>
   </div>
-  <div class="simp-footer">Music is mostly from Blue Archive</div>
+  <div class="simp-footer">Song copyrights belong to its owner.</div>
 </div>
 </div>
+
 <!-- Audio Player JS -->
 <script  src="./js/script.js"></script>
-<script> 
+<script type="module">
+  import WaveSurfer from './node_modules/wavesurfer.js/dist/wavesurfer.esm.js'
+// const wavesurfer = WaveSurfer.create({
+//   container: '#waveform',
+//   waveColor: '#4F4A85',
+//   progressColor: '#383351',
+//   url: './music/theme_001-Constant Moderato.ogg',
+// })
+
+// wavesurfer.on('interaction', () => {
+//   wavesurfer.play()
+// })
+  window.WaveSurfer = WaveSurfer;
+
   function getRandomArbitrary(min, max) {
       return Math.random() * (max - min) + min;
   }
@@ -35,9 +63,11 @@
       let isFirst = true;
       for (const item of arr) {
           const name = unescape(String(item).substr(8).split('.ogg')[0].split('.mp3')[0].split('.m4a')[0]);
+          const artist = name.split('/')[0];
+          const songname = name.split('/')[1];
           const li = (isFirst) ?
-          `<li class="simp-active"><span class="simp-source" data-src="${item}">${name}</span><span class="simp-desc">Various Artists</span></li>`:
-          `<li><span class="simp-source" data-src="${item}">${name}</span><span class="simp-desc">Various Artists</span></li>`;
+          `<li class="simp-active"><span class="simp-source" data-src="${item}">${songname}</span><span class="simp-desc">${artist}</span></li>`:
+          `<li><span class="simp-source" data-src="${item}">${songname}</span><span class="simp-desc">${artist}</span></li>`;
           document.getElementById('ulist').innerHTML += li;
           isFirst = false;
       }
@@ -45,6 +75,12 @@
   (async() => {
       await getMusics();
       BAPlayer();
+      // setTimeout(() => {
+      //     document.getElementById('loading-overlay').classList.add("hide-loading");
+      // }, 100)
+      document.getElementById('loading-overlay').addEventListener('click', function(event) {
+        document.getElementById('loading-overlay').classList.add("hide-loading");
+      });
   })();
 </script>
   </body>
