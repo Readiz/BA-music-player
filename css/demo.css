@@ -10,6 +10,13 @@ body{
 -moz-osx-font-smoothing: grayscale;
   font-size: 15px;
   background: #eee;
+   overflow: hidden; /* Hide scrollbars */
+}
+/* This will make your loading-overlay UI transition out all fancy like */
+.hide-loading {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 1s, opacity 1s linear;
 }
 .intro{
    background: #fff;
@@ -88,8 +95,7 @@ a.btn:hover{
 }
 main{
   background: #fff;
-  padding:: 20px;
-  
+  padding: 20px;
 }
 
 article li{
@@ -111,7 +117,7 @@ article p{
    font-size: 15px;
     line-height: 1.5;
 }
- 
+/*  
 @media only screen and (min-width: 720px){
     main{
       max-width: 720px;
@@ -121,7 +127,7 @@ article p{
     }
 
 
-}
+} */
 
 .set-overlayer,
 .set-glass,
