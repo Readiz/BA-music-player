@@ -2,6 +2,23 @@
  * One native audio element owns playback for the lifetime of the page.
  * WaveSurfer is optional presentation; no playback action awaits it.
  */
+function BAAlbumPanel() {
+  const root = document.querySelector('#simp');
+  const panel = root.querySelector('.simp-albums');
+  const toggle = root.querySelector('.album-toggle');
+  function setOpen(open) {
+    if (!open && panel.contains(document.activeElement)) toggle.focus();
+    panel.hidden = !open;
+    root.classList.toggle('albums-collapsed', !open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.querySelector('.album-toggle-label').textContent = open ? '앨범 접기' : '앨범 펼치기';
+  }
+  toggle.addEventListener('click', () => setOpen(panel.hidden));
+  panel.addEventListener('keydown', event => {
+    if (event.key === 'Escape') { event.preventDefault(); setOpen(false); }
+  });
+}
+
 function BAPlayer() {
   const root = document.querySelector('#simp');
   const rows = [...root.querySelectorAll('.simp-playlist li')];
@@ -13,7 +30,6 @@ function BAPlayer() {
     folder: row.dataset.folder,
   }));
   const main = root.querySelector('.simp-main');
-  const albumPanel = root.querySelector('.simp-albums');
   const albumGrid = root.querySelector('.album-grid');
   const selectAll = root.querySelector('.albums-select-all');
   const clearAll = root.querySelector('.albums-clear');
@@ -130,14 +146,14 @@ function BAPlayer() {
     if (audio.error) audio.load();
     // Call synchronously in the user gesture / media-session / ended handler.
     // Neither a network fetch nor waveform decoding may gate this call.
-    const result = audio.play();
-    result?.catch(error => {
+    function handlePlayError(error) {
       if (attempt !== playAttempt || error.name === 'AbortError') return;
       syncPlayback();
       showStatus(error.name === 'NotAllowedError'
-        ? '재생 버튼을 눌러 음악을 계속 들어 주세요.'
+        ? '재생 버튼을 다시 누르거나 Space 키를 눌러 음악을 시작해 주세요.'
         : '음악을 재생하지 못했습니다. 다시 재생하거나 다음 곡을 선택해 주세요.');
-    });
+    }
+    try { audio.play()?.catch(handlePlayError); } catch (error) { handlePlayError(error); }
   }
 
   function pause() {
@@ -216,7 +232,7 @@ function BAPlayer() {
     }
     const summary = `${selectedAlbums.size}개 앨범 · ${queue.length}곡`;
     root.querySelector('.album-selection-summary').textContent = summary;
-    root.querySelector('.album-mobile-summary').textContent = summary;
+    root.querySelector('.album-toolbar-summary').textContent = summary;
     root.querySelector('.queue-count').textContent = `${queue.length}곡`;
     root.querySelector('.simp-empty').hidden = queue.length > 0;
     root.querySelector('#ulist').hidden = !queue.length;
@@ -309,32 +325,13 @@ function BAPlayer() {
     [...albumInputs].filter(([, input]) => input.checked).map(([folder]) => folder),
   ));
 
-  const compact = matchMedia('(max-width: 640px)');
-  const albumOpen = root.querySelector('.album-open');
-  function setAlbumsOpen(open, moveFocus = true) {
-    open = open && compact.matches;
-    root.classList.toggle('albums-open', open);
-    albumOpen.setAttribute('aria-expanded', String(open));
-    main.inert = open;
-    if (moveFocus) {
-      if (open) albumPanel.querySelector('input').focus();
-      else albumOpen.focus();
-    }
-  }
-  albumOpen.addEventListener('click', () => setAlbumsOpen(true));
-  for (const selector of ['.album-close', '.album-done', '.album-backdrop']) {
-    root.querySelector(selector).addEventListener('click', () => setAlbumsOpen(false));
-  }
-  compact.addEventListener('change', () => setAlbumsOpen(false, false));
-  albumPanel.addEventListener('keydown', event => {
-    if (!root.classList.contains('albums-open')) return;
-    if (event.key === 'Escape') { event.preventDefault(); setAlbumsOpen(false); }
-    if (event.key === 'Tab') {
-      const controls = [...albumPanel.querySelectorAll('button:not(:disabled), input')].filter(control => control.offsetParent !== null);
-      const first = controls[0], last = controls[controls.length - 1];
-      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-    }
+  // A deliberate playback gesture starts audio; album clicks and unrelated keys do not.
+  // Keep this synchronous so the browser can use the key's user activation.
+  document.addEventListener('keydown', event => {
+    if (event.code !== 'Space' || event.repeat || event.isComposing || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    if (event.target instanceof Element && event.target.closest('button, input, select, textarea, a, [role="button"], [contenteditable]')) return;
+    event.preventDefault();
+    audio.paused ? play() : pause();
   });
   progress.addEventListener('input', () => seek(Number(progress.value) / 100 * audio.duration));
   player.querySelector('.simp-repeat').addEventListener('click', () => {
@@ -396,7 +393,10 @@ function BAPlayer() {
     if (!document.hidden) { syncPlayback(); renderWaveform(); }
   });
   filterAlbums(readSavedAlbums());
-  if (queue.length) selectTrack(queue[0], false);
+  if (queue.length) {
+    selectTrack(queue[0], false);
+    showStatus('재생 버튼이나 곡을 눌러 시작하세요. Space 키로도 재생할 수 있습니다.');
+  }
   else clearTrack();
   Promise.all([
     import('./wavesurfer.esm.js'),
@@ -412,3 +412,4 @@ function BAPlayer() {
 }
 
 window.BAPlayer = BAPlayer;
+window.BAAlbumPanel = BAAlbumPanel;

@@ -7,47 +7,34 @@
     <title>Readiz's Player</title>
     
     <!-- Style CSS -->
-    <link rel="stylesheet" href="css/style.css?v=20261004-albums">
+    <link rel="stylesheet" href="css/style.css?v=20261004-panel">
 	<!-- Demo CSS (No need to include it into your project) -->
 	<link rel="stylesheet" href="css/demo.css">
   
   </head>
   <body>
 <div>
-  <div id="loading-overlay" style="color: #f3f3f3;
-    position: absolute;
-    top: 0;
-    bottom: 0px;
-    width: 100%;
-    text-align: center;
-    background-color: black;
-    z-index: 9999;
-">
-    <div style="display: grid; height: 100%; text-align: center; vertical-align: middle;">
-        <h1 style="display: flex; flex-direction: column; place-content: flex-end;">Readiz's Player</h1>
-        <p>Click here to use</p>
-    </div>
-</div>
  <div class="simple-audio-player" id="simp" data-config='{"shide_top":false,"shide_btm":false,"auto_load":true}'>
+  <div class="album-toolbar">
+    <button type="button" class="album-toggle" aria-controls="album-panel" aria-expanded="true"><span aria-hidden="true">☷</span> <span class="album-toggle-label">앨범 접기</span></button>
+    <span class="album-toolbar-summary"></span>
+  </div>
   <aside class="simp-albums" id="album-panel" aria-labelledby="album-heading">
     <div class="album-heading-row">
       <div><p class="library-eyebrow">MY LIBRARY</p><h2 id="album-heading">앨범</h2></div>
-      <button type="button" class="album-close" aria-label="앨범 패널 닫기">닫기</button>
     </div>
     <p class="album-selection-summary" role="status"></p>
     <div class="album-actions">
-      <button type="button" class="albums-select-all">전체 선택</button>
-      <button type="button" class="albums-clear">전체 해제</button>
+      <button type="button" class="albums-select-all" disabled>전체 선택</button>
+      <button type="button" class="albums-clear" disabled>전체 해제</button>
     </div>
     <div class="album-grid" role="group" aria-label="재생할 앨범"></div>
     <p class="album-hint">앨범을 여러 개 골라 함께 들어보세요.</p>
-    <button type="button" class="album-done">선택 완료</button>
   </aside>
-  <button type="button" class="album-backdrop" aria-label="앨범 패널 닫기" tabindex="-1"></button>
   <section class="simp-main" aria-label="음악 플레이어">
-    <div class="album-mobile-bar">
-      <button type="button" class="album-open" aria-controls="album-panel" aria-expanded="false">앨범 선택</button>
-      <span class="album-mobile-summary"></span>
+    <div class="library-load-state">
+      <p role="status">음악 목록을 불러오는 중…</p>
+      <button type="button" class="library-retry" hidden>다시 불러오기</button>
     </div>
     <div class="simp-queue-heading"><h2>재생 목록</h2><span class="queue-count"></span></div>
     <div class="simp-playlist">
@@ -60,8 +47,9 @@
 </div>
 
 <!-- Audio Player JS -->
-<script src="./js/script.js?v=20261004-albums"></script>
+<script src="./js/script.js?v=20261004-panel"></script>
 <script type="module">
+  BAAlbumPanel();
   async function getMusics() {
       const [arr, catalog] = await Promise.all([
           fetch('./musicList.json', { cache: 'no-cache' }).then(res => {
@@ -98,16 +86,28 @@
       }
       document.getElementById('ulist').replaceChildren(list);
   }
-  (async() => {
-      await getMusics();
-      BAPlayer();
-      document.getElementById('loading-overlay').addEventListener('click', function(event) {
-        document.getElementById('loading-overlay').classList.add("hide-loading");
-      });
-  })().catch(error => {
-      console.error(error);
-      document.querySelector('#loading-overlay p').textContent = '음악 목록을 불러오지 못했습니다. 새로고침해 주세요.';
-  });
+  const loadState = document.querySelector('.library-load-state');
+  const retry = document.querySelector('.library-retry');
+  let loading = false;
+  async function loadLibrary() {
+      if (loading) return;
+      loading = true;
+      retry.hidden = true;
+      loadState.querySelector('p').textContent = '음악 목록을 불러오는 중…';
+      try {
+          await getMusics();
+          BAPlayer();
+          loadState.hidden = true;
+      } catch (error) {
+          console.error(error);
+          loadState.querySelector('p').textContent = '음악 목록을 불러오지 못했습니다. 다시 시도해 주세요.';
+          retry.hidden = false;
+      } finally {
+          loading = false;
+      }
+  }
+  retry.addEventListener('click', loadLibrary);
+  loadLibrary();
 </script>
   </body>
 </html>

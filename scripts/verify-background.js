@@ -27,7 +27,6 @@ async (page) => {
   await page.reload();
   await page.waitForFunction(count => document.querySelectorAll('#ulist li').length === count, expectedTracks);
   if (!(await page.locator('#audio').evaluate(audio => audio.paused))) throw new Error('Unexpected autoplay');
-  await page.getByText('Click here to use').click();
   await page.getByText("theme_103-Poppin' Memories", {exact:true}).click();
   await page.waitForFunction(() => document.querySelector('#audio').currentTime > 0.5);
   await page.evaluate(() => { window.__originalAudio = document.querySelector('#audio'); });
@@ -111,7 +110,6 @@ async (page) => {
     await fallback.addInitScript(() => Object.defineProperty(navigator, 'mediaSession', {value:undefined, configurable:true}));
     await fallback.goto(url);
     await fallback.waitForFunction(count => document.querySelectorAll('#ulist li').length === count, expectedTracks);
-    await fallback.getByText('Click here to use').click();
     await fallback.getByRole('button', {name:'재생', exact:true}).click();
     await fallback.waitForFunction(() => document.querySelector('#audio').currentTime > 0.3);
     await fallback.getByRole('button', {name:'일시정지', exact:true}).click();
@@ -121,7 +119,6 @@ async (page) => {
   await page.unroute('**/wavesurfer.esm.js');
   await page.reload();
   await page.waitForFunction(() => document.querySelector('#waveform div')?.shadowRoot?.querySelector('canvas'));
-  await page.getByText('Click here to use').click();
   await page.getByText('theme_179-夢路の花', {exact:true}).click();
   await page.waitForFunction(() => document.querySelector('#audio').currentTime > 0.5);
   await page.getByRole('button', {name:'일시정지', exact:true}).click();
