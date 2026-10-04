@@ -35,6 +35,19 @@ SHA-256, 길이와 코덱을 기록했습니다. 외부 저장소의 임의 제�
 목록과 파형을 생성합니다. `musicList.json`과 `lastUpdated.txt`는 배포 작업이
 다시 생성하며, `waveforms.json`은 아래 명령으로 갱신해 커밋합니다.
 
+## 폴더 선택
+
+재생 목록 위의 **폴더**에서 전체 또는 음원 폴더를 선택합니다. 폴더 목록과 곡 수는
+`musicList.json`의 실제 경로에서 자동으로 구성하며 하위 폴더는 전체 경로로 구분합니다.
+현재 Blue Archive, ETC, Girls Band Cry, Kessoku Band 네 폴더를 제공합니다.
+
+이전·다음 곡, 자동 다음 곡, 무작위 재생과 Media Session의 곡 이동은 선택한 폴더
+안에서만 동작합니다. 마지막 곡 다음에는 같은 폴더의 첫 곡으로 돌아갑니다.
+폴더를 바꿔도 현재 곡이 목록에 있으면 재생 위치를 유지합니다. 다른 폴더로 바꾸면
+첫 곡을 선택하되 재생·일시정지 상태를 유지합니다. 선택한 폴더는 브라우저에 저장하고
+다음 방문에 복원하며 자동으로 재생을 시작하지 않습니다. 저장 기능이 제한된 환경에서도
+폴더 선택과 재생은 동작합니다.
+
 ## 백그라운드 재생
 
 오디오 요소 하나를 유지하며 직접 재생합니다. 곡 전환과 자동 다음 곡은 파형
@@ -57,8 +70,12 @@ ffprobe가 설치된 환경에서 `python3 scripts/build-waveforms.py`로 다시
 Playwright CLI로 접속하고 다음을 실행합니다.
 
 ```sh
+playwright-cli run-code "$(cat scripts/verify-folders.js)"
 playwright-cli run-code "$(cat scripts/verify-background.js)"
 ```
+
+폴더 검사는 실제 폴더별 곡 수, 재생 범위·끝 경계·무작위·Media Session 이동,
+폴더 변경 중 재생 상태, 선택 복원과 저장 차단 환경을 확인합니다.
 
 현재 목록의 곡 수, 파형 로딩 실패, 실제 오디오 시간 진행, 포커스가 빠진 탭에서 다음 곡과 반복,
 자동 다음 곡 해제, Media Session 핸들러, 재생 거부와 미지원 브라우저 대응을

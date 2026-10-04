@@ -20,6 +20,7 @@ async (page) => {
     }
   });
   await page.route('**/wavesurfer.esm.js', route => route.abort());
+  await page.evaluate(() => localStorage.removeItem('ba-player-folder'));
   await page.reload();
   await page.waitForFunction(count => document.querySelectorAll('#ulist li').length === count, expectedTracks);
   if (!(await page.locator('#audio').evaluate(audio => audio.paused))) throw new Error('Unexpected autoplay');
