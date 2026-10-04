@@ -21,11 +21,9 @@ async (page) => {
   await tab.waitForFunction(() => window.BAMusicPlayback && document.querySelector('audio').duration > 0);
   const depth=await tab.evaluate(()=>({depth:sessionStorage.getItem('music:launcher-depth'),length:history.length,tv:window.BAMusicTV,apis:!!window.tizen}));
   if (!depth.tv || depth.apis || !(Number(depth.depth)>0) || Number(depth.depth)>=depth.length) throw new Error('Hosted launcher history incorrect: '+JSON.stringify(depth));
-  await tab.keyboard.press('ArrowDown');
-  await tab.keyboard.press('ArrowRight');
+  await tab.waitForFunction(() => document.activeElement.matches('.simp-plause'));
   await tab.keyboard.press('Enter');
   await tab.waitForFunction(() => document.querySelector('audio').currentTime > .2 && !document.querySelector('audio').paused);
-  await tab.keyboard.press('Escape');
   await tab.keyboard.press('Escape');
   await tab.keyboard.press('ArrowRight');
   await tab.keyboard.press('Enter');

@@ -1,4 +1,3 @@
-.app-exit{display:none;background:#29445a;color:#e2edf6;border:1px solid #6484a0;border-radius:6px;font:inherit;padding:10px 20px;cursor:pointer;}
 .remote-hint{display:none;}
 .remote-mode .remote-focus{outline:4px solid #a4e4ff !important;outline-offset:-4px !important;box-shadow:inset 0 0 0 6px #112b43;}
 .remote-mode #simp .album-card.remote-focus{outline-offset:3px !important;border-radius:6px;}
@@ -13,12 +12,11 @@
 .tv-layout body>div{flex:1;min-height:0;}
 .tv-layout .app-header{padding:12px 28px;font-size:22px;flex-shrink:0;}
 .tv-layout .app-brand img{margin-right:12px;}
-.tv-layout .app-exit{display:block;}
 .tv-layout .app-home,.tv-layout .app-install{display:none;}
-.tv-layout #simp{height:100%;font-size:20px;border-radius:0;grid-template-columns:320px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);}
+.tv-layout #simp{height:100%;font-size:20px;border-radius:0;grid-template-columns:320px minmax(0,1fr);grid-template-rows:minmax(0,1fr);}
 .tv-layout #simp.albums-collapsed{grid-template-columns:minmax(0,1fr);}
 .tv-layout #simp .simp-footer,.tv-layout #simp .album-hint,.tv-layout #simp .library-eyebrow{display:none;}
-.tv-layout #simp .album-toolbar{padding:10px 24px;min-height:64px;}
+.tv-layout #simp .album-toolbar{display:none;}
 .tv-layout #simp .album-toolbar-summary{font-size:16px;}
 .tv-layout #simp .album-toggle,.tv-layout #simp .album-actions button,.tv-layout #simp .library-retry{font-size:18px;min-height:44px;}
 .tv-layout #simp .simp-albums{padding:16px 20px;}
@@ -31,6 +29,8 @@
 .tv-layout #simp .album-cover{grid-row:1/3;width:64px;height:64px;aspect-ratio:auto;}
 .tv-layout #simp .album-cover:before{left:15%;right:15%;top:15%;bottom:15%;}
 .tv-layout #simp .album-cover img{left:0;top:0;}
+.tv-layout #simp .album-card:focus-within .album-cover{outline:none;}
+.tv-layout.remote-mode #simp .album-card input:focus{outline:none !important;}
 .tv-layout #simp .album-card input{left:52px;top:8px;width:22px;height:22px;}
 .tv-layout #simp .album-name{font-size:18px;margin:0;align-self:end;}
 .tv-layout #simp .album-count{font-size:16px;margin:4px 0 0;}

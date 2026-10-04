@@ -234,7 +234,8 @@ function BAPlayer() {
   }
 
   function scrollToCurrent() {
-    if (index < 0) return;
+    if (index < 0 || window.BAMusicTV) return;
+    // TV focus owns queue scrolling; track changes must not move it elsewhere.
     const focused = document.activeElement;
     if (document.documentElement.classList.contains('remote-mode') && focused && focused.closest('#ulist') && focused !== rows[index]) return;
     const list = rows[index].parentElement;
