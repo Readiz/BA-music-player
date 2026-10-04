@@ -1,4 +1,4 @@
-const install = document.querySelector('.app-install');
+const install = document.querySelector('[data-install]');
 let installPrompt;
 window.addEventListener('beforeinstallprompt', event => {
   event.preventDefault();

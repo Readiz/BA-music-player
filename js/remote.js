@@ -220,6 +220,7 @@
   document.addEventListener('pointerdown', pointer, true);
   document.addEventListener('touchstart', pointer, { passive: true });
   document.addEventListener('keydown', event => {
+    if (event.target.closest?.('.music-add-dialog')) return;
     if (event.altKey || event.ctrlKey || event.metaKey || event.isComposing || event.defaultPrevented) return;
     const key = core.key(event);
     if (key === 'Enter' && !window.BAMusicTV && document.activeElement.closest('a')) return;

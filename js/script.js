@@ -445,7 +445,7 @@ function BAPlayer() {
     toggleOption('.simp-random', random);
     if (native) { native.options({ random }); syncNativeQueue(); }
   });
-  rows.forEach((row, i) => {
+  function bindRow(row, i) {
     row.tabIndex = 0;
     row.setAttribute('role', 'button');
     row.addEventListener('click', () => selectTrack(i));
@@ -455,7 +455,8 @@ function BAPlayer() {
         selectTrack(i);
       }
     });
-  });
+  }
+  rows.forEach(bindRow);
 
   for (const event of ['play', 'pause', 'playing', 'ended']) audio.addEventListener(event, syncPlayback);
   for (const event of ['timeupdate', 'loadedmetadata', 'durationchange', 'seeked', 'ratechange']) audio.addEventListener(event, syncPosition);
@@ -522,6 +523,31 @@ function BAPlayer() {
     play, pause, toggle: () => audio.paused ? play() : pause(),
     stop: () => { pause(); seek(0); }, next: nextTrack, previous: previousTrack,
     seekBy: seconds => seek(audio.currentTime + seconds),
+  };
+  window.BAMusicLibrary = {
+    add(track) {
+      if (!track || !/^\.\/music\/ETC\/yt-[\w-]{11}\.mp3$/.test(track.src)) return;
+      const existing = tracks.findIndex(item => item.src === track.src);
+      if (existing >= 0) return existing;
+      const row = document.createElement('li');
+      row.dataset.folder = 'ETC';
+      const source = document.createElement('span'); source.className = 'simp-source'; source.dataset.src = track.src; source.textContent = track.title;
+      const description = document.createElement('span'); description.className = 'simp-desc'; description.textContent = 'ETC';
+      row.append(source, description); root.querySelector('#ulist').append(row);
+      const i = tracks.length; tracks.push({ ...track, folder: 'ETC', artist: 'ETC' }); rows.push(row); bindRow(row, i);
+      folderCounts.set('ETC', (folderCounts.get('ETC') || 0) + 1);
+      const count = albumInputs.get('ETC')?.closest('.album-card').querySelector('.album-count');
+      if (count) count.textContent = `${folderCounts.get('ETC')}곡`;
+      filterAlbums([...selectedAlbums]);
+      if (queue.includes(index)) syncNativeQueue();
+      return i;
+    },
+    listen(track) {
+      const i = this.add(track);
+      if (i === undefined) return;
+      changeAlbums([...new Set([...selectedAlbums, 'ETC'])]);
+      selectTrack(i);
+    },
   };
   // The waveform is optional; engines without ResizeObserver retain native audio and seeking.
   if (typeof ResizeObserver !== 'function') return;

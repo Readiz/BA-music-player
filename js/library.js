@@ -1,6 +1,6 @@
 BAAlbumPanel();
   async function getMusics() {
-      const [arr, catalog] = await Promise.all([
+      const [arr, catalog, added] = await Promise.all([
           fetch('./musicList.json', { cache: 'no-cache' }).then(res => {
               if (!res.ok) throw new Error('음악 목록을 불러오지 못했습니다.');
               return res.json();
@@ -9,12 +9,15 @@ BAAlbumPanel();
           fetch('./blue-archive-ost.json', { cache: 'no-cache' })
               .then(res => res.ok ? res.json() : { titles: {} })
               .catch(() => ({ titles: {} })),
+          fetch('./api/library', { cache: 'no-cache' }).then(res => res.ok ? res.json() : { tracks: [] }).catch(() => ({ tracks: [] })),
       ]);
+      const addedTitles = new Map((added.tracks || []).map(track => [track.src, track.title]));
       const list = document.createDocumentFragment();
       for (const [index, item] of arr.entries()) {
           const parts = String(item).split('/');
           const artist = decodeURIComponent(parts[parts.length - 2]);
           let songname = decodeURIComponent(parts[parts.length - 1]).replace(/\.(ogg|mp3|m4a)$/i, '');
+          songname = addedTitles.get(item) || songname;
           const unnamed = artist === 'Blue Archive' && songname.match(/^theme_(\d+)$/);
           const title = unnamed && catalog.titles?.[Number(unnamed[1])];
           // Fill missing names by OST number without changing audio URLs or known names.
@@ -49,6 +52,7 @@ BAAlbumPanel();
           await getMusics();
           if (window.BAMusicNativeAudio) await window.BAMusicNativeAudio.ready;
           BAPlayer();
+          window.dispatchEvent(new Event('music-library-ready'));
           loadState.hidden = true;
       } catch (error) {
           console.error(error);

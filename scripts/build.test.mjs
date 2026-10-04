@@ -12,7 +12,7 @@ test('publication contains every catalog track and only public runtime files', (
   assert.equal(config.trackCount, tracks.length);
   assert.equal(config.appId, 'com.readiz.music');
   for (const track of tracks) assert.ok(existsSync(`dist/${decodeURI(track)}`), track);
-  for (const path of ['.git', 'node_modules', 'android', 'ops', 'scripts', 'package.json', 'README.md']) {
+  for (const path of ['.git', 'node_modules', 'android', 'ops', 'scripts', 'server', 'package.json', 'README.md']) {
     assert.equal(existsSync(`dist/${path}`), false, `Private/build file published: ${path}`);
   }
 });

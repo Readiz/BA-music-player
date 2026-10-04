@@ -1,0 +1,6 @@
+# Import inside invest_site, alongside the other explicit state-prefix relays.
+@music_oauth_relay {
+	path /api/auth/discord/callback /api/auth/discord/callback/
+	expression `{query.state}.startsWith("music_")`
+}
+redir @music_oauth_relay https://music.readiz.com/api/auth/discord/callback?{query} 302
