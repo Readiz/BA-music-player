@@ -3,8 +3,11 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, writeFileSync, existsSync, rmSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { createImports, createDownloader, youtubeVideo, ImportError } from '../server/imports.mjs';
+import { DatabaseSync } from 'node:sqlite';
+import { createImports as openImports, createDownloader, youtubeVideo, ImportError } from '../server/imports.mjs';
 import { createHandler } from '../server/app.mjs';
+const peaks = { duration: 12, peaks: [0.1, 0.5, 0.2] };
+const createImports = options => openImports({ waveform: async () => peaks, ...options });
 const url = 'https://www.youtube.com/watch?v=jNQXAC9IVRw';
 const id = 'jNQXAC9IVRw';
 const temp = t => { const root = mkdtempSync(join(tmpdir(), 'music-import-test-')); t.after(() => rmSync(root, { recursive: true, force: true })); return root; };
@@ -31,10 +34,12 @@ test('only completed audio is published; duplicates coalesce; restart preserves 
   assert.throws(() => store.enqueue(url, '2'), /다른 사용자/);
   await new Promise(resolve => setImmediate(resolve));
   assert.deepEqual(store.catalog(), []);
+  assert.deepEqual(store.waveforms(), {});
   release();
   const job = await done(store);
   assert.equal(job.status, 'ready'); assert.equal(calls, 1);
   assert.equal(store.catalog()[0].title, '<test> 음악');
+  assert.deepEqual(store.waveforms(), { ['./music/ETC/yt-'+id+'.mp3']: peaks });
   assert.equal(store.enqueue(url, '2').id, first.id);
   assert.deepEqual(store.list('2'), []);
   assert.ok(existsSync(join(root, 'media/ETC/yt-'+id+'.mp3')));
@@ -42,7 +47,33 @@ test('only completed audio is published; duplicates coalesce; restart preserves 
   await store.close();
   const reopened = createImports({ dataRoot: root, downloader: fakeDownload });
   assert.equal(reopened.catalog().length, 1);
+  assert.deepEqual(reopened.waveforms(), { ['./music/ETC/yt-'+id+'.mp3']: peaks });
   await reopened.close();
+});
+test('existing imports gain peaks after migration; failed visualization preserves playable audio', async t => {
+  const root = temp(t);
+  const store = createImports({ dataRoot: root, downloader: fakeDownload, waveform: async () => { throw new Error('decoder failure'); } });
+  store.enqueue(url, '1');
+  assert.equal((await done(store)).status, 'ready');
+  assert.equal(store.catalog().length, 1);
+  assert.deepEqual(store.waveforms(), {});
+  await store.close();
+  const db = new DatabaseSync(join(root, 'imports.sqlite'));
+  db.exec('ALTER TABLE imports DROP COLUMN waveform');
+  db.close();
+  let release, calls = 0;
+  const gate = new Promise(resolve => { release = resolve; });
+  const upgraded = createImports({ dataRoot: root, downloader: () => { throw new Error('Must not redownload'); }, waveform: async () => { calls++; await gate; return peaks; } });
+  t.after(() => upgraded.close());
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(upgraded.catalog().length, 1);
+  assert.deepEqual(upgraded.waveforms(), {});
+  release();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(calls, 1);
+  assert.deepEqual(upgraded.waveforms(), { ['./music/ETC/yt-'+id+'.mp3']: peaks });
+  rmSync(join(root, 'media/ETC/yt-'+id+'.mp3'));
+  assert.deepEqual(upgraded.waveforms(), {});
 });
 test('failed/partial downloads stay private and can be retried; interruption is recovered', async t => {
   const root = temp(t); let fail = true;
@@ -59,6 +90,7 @@ test('failed/partial downloads stay private and can be retried; interruption is 
 });
 test('API keeps catalog public but rejects missing auth, cross-origin and invalid requests before invoking worker', async t => {
   const root = temp(t); writeFileSync(join(root,'musicList.json'), JSON.stringify(['./music/ETC/original.mp3']));
+  writeFileSync(join(root,'waveforms.json'), JSON.stringify({ './music/ETC/original.mp3': peaks }));
   let calls = 0;
   const imports = createImports({ dataRoot: join(root,'data'), downloader: async args => { calls++; return fakeDownload(args); } });
   t.after(() => imports.close());
@@ -67,6 +99,7 @@ test('API keeps catalog public but rejects missing auth, cross-origin and invali
   const request = (path, method = 'GET', headers = {}, body) => new Request(auth.origin+path, { method, headers, ...(body === undefined ? {} : {body}) });
   assert.equal((await handler(request('/musicList.json'))).status, 200);
   assert.equal((await handler(request('/api/library'))).status, 200);
+  assert.deepEqual(await (await handler(request('/waveforms.json'))).json(), { './music/ETC/original.mp3': peaks });
   for (const method of ['GET','POST']) { const r = await handler(request('/api/imports',method)); assert.equal(r.status,401); assert.equal(r.headers.get('cache-control'),'private, no-store'); }
   const good = { cookie:'test=valid',origin:auth.origin,'content-type':'application/json' };
   for (const origin of ['', 'https://evil.example']) assert.equal((await handler(request('/api/imports','POST',{...good,origin},JSON.stringify({url})))).status,403);
@@ -79,6 +112,9 @@ test('API keeps catalog public but rejects missing auth, cross-origin and invali
   await done(imports); assert.equal(calls,1);
   const list = await (await handler(request('/musicList.json'))).json(); assert.equal(list.length,2);
   const catalog = await (await handler(request('/api/library'))).json(); assert.equal(catalog.tracks.length,1); assert.doesNotMatch(JSON.stringify(catalog), /owner|created_at|video_id/);
+  const waveformResponse = await handler(request('/waveforms.json'));
+  assert.equal(waveformResponse.headers.get('cache-control'), 'no-cache');
+  assert.deepEqual(await waveformResponse.json(), { './music/ETC/original.mp3': peaks, ['./music/ETC/yt-'+id+'.mp3']: peaks });
 });
 test('downloader uses bounded shell-free options, verifies metadata and emits MP3 only', async t => {
   const directory = temp(t); const calls = [], stages = [];

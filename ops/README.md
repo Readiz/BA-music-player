@@ -53,6 +53,7 @@ curl -f https://music.readiz.com/app-config.json
 - 인증 설정: `~/.config/readiz-music/discord-auth.json` (600). new-home 설정과 같은 `clientId`, `clientSecret`, `redirectUri`, `allowedUserIds`를 사용하되 `origin`은 `https://music.readiz.com`, `sessionSecret`은 새 무작위 비밀값, `storePath`는 `~/.local/share/readiz-music/auth/sessions.sqlite`의 절대 경로로 지정한다. 기존 서비스 세션을 공유하지 않는다.
 - 공용 콜백을 쓸 때 `/opt/homebrew/etc/Caddyfile`의 `invest_site`에 이 저장소 `ops/music-oauth-relay.Caddyfile`을 import한다. `music_` state만 고정된 music 콜백으로 보내고 music 서버가 자체 state 쿠키와 일회성 DB 레코드를 검증한다.
 - 추가 데이터: `~/.local/share/readiz-music/data/imports.sqlite`, 완성된 MP3: `data/media/ETC/yt-<영상ID>.mp3`, 비공개 임시 파일: `data/staging/`. Caddy는 정확한 MP3 경로만 공개한다. 제목은 `/api/library`로 전달하며 원본 목록과 합친 `/musicList.json`도 공개다.
+- 1.3.2부터 MP3 변환 뒤 ffmpeg로 480개 파형 피크를 생성해 `imports.sqlite`의 `waveform` 열에 보관한다. API 시작 때 기존 스키마를 확장하고 누락된 파형을 순차 보충한다. 파형 생성 실패는 완성된 음원 재생을 막지 않으며 다음 API 시작 때 재시도한다. `/waveforms.json`은 정적 파형과 완료된 추가 곡의 파형을 합쳐 `no-cache`로 제공하므로 Caddy의 API 프록시 경로에도 포함한다. GitHub 업로드는 하지 않으며 MP3와 SQLite를 함께 백업한다.
 - `GET /api/imports`와 `POST /api/imports`는 인증 필요. POST는 동일 Origin/JSON만 받고 입력은 허용된 유튜브 호스트의 11자 영상 ID로 정규화한다. 쿠키는 music 호스트 전용 Secure/HttpOnly/SameSite=Lax다. 인증·작업 응답은 `private, no-store`다.
 - 실행 도구는 [yt-dlp](https://github.com/yt-dlp/yt-dlp) + ffmpeg. 외부 설정·플러그인을 읽지 않고 shell 없이 고정 인자로 실행한다. 30분/100MB, 동시 다운로드 1개, 대기열 5개, 계정당 시간당 20곡, 전체 저장 10GiB, 최소 남은 공간 500MiB, 실행당 20분 제한. 서비스 재시작으로 끊긴 작업은 실패 표시 후 사용자 재시도로 복구한다. 원본 음원·카탈로그는 변경하지 않는다.
 
