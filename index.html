@@ -39,11 +39,8 @@
 </div>
 
 <!-- Audio Player JS -->
-<script  src="./js/script.js"></script>
+<script src="./js/script.js?v=20261004-background"></script>
 <script type="module">
-  import WaveSurfer from './js/wavesurfer.esm.js'
-  window.WaveSurfer = WaveSurfer;
-
   async function getMusics() {
       const [arr, catalog] = await Promise.all([
           fetch('./musicList.json', { cache: 'no-cache' }).then(res => {
