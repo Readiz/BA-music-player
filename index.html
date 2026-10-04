@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -34,7 +34,7 @@
 
     </ul>
   </div>
-  <div class="simp-footer">Song copyrights belong to its owner.</div>
+  <div class="simp-footer">Song copyrights belong to its owner. · 곡명 참고: <a href="https://ba.cnfast.top/en/track/ost/" target="_blank" rel="noopener noreferrer">BA OST Index</a></div>
 </div>
 </div>
 
@@ -42,46 +42,53 @@
 <script  src="./js/script.js"></script>
 <script type="module">
   import WaveSurfer from './js/wavesurfer.esm.js'
-// const wavesurfer = WaveSurfer.create({
-//   container: '#waveform',
-//   waveColor: '#4F4A85',
-//   progressColor: '#383351',
-//   url: './music/theme_001-Constant Moderato.ogg',
-// })
-
-// wavesurfer.on('interaction', () => {
-//   wavesurfer.play()
-// })
   window.WaveSurfer = WaveSurfer;
 
-  function getRandomArbitrary(min, max) {
-      return Math.random() * (max - min) + min;
-  }
   async function getMusics() {
-      const res = await fetch(`./musicList.json?` + getRandomArbitrary(0, 1000000));
-      const arr = await res.json();
-      let isFirst = true;
-      for (const item of arr) {
-          const name = unescape(String(item).substr(8).split('.ogg')[0].split('.mp3')[0].split('.m4a')[0]);
-          const artist = name.split('/')[0];
-          const songname = name.split('/')[1];
-          const li = (isFirst) ?
-          `<li class="simp-active"><span class="simp-source" data-src="${item}">${songname}</span><span class="simp-desc">${artist}</span></li>`:
-          `<li><span class="simp-source" data-src="${item}">${songname}</span><span class="simp-desc">${artist}</span></li>`;
-          document.getElementById('ulist').innerHTML += li;
-          isFirst = false;
+      const [arr, catalog] = await Promise.all([
+          fetch('./musicList.json', { cache: 'no-cache' }).then(res => {
+              if (!res.ok) throw new Error('음악 목록을 불러오지 못했습니다.');
+              return res.json();
+          }),
+          // Keep the filename-based playlist usable if metadata is unavailable.
+          fetch('./blue-archive-ost.json', { cache: 'no-cache' })
+              .then(res => res.ok ? res.json() : { titles: {} })
+              .catch(() => ({ titles: {} })),
+      ]);
+      const list = document.createDocumentFragment();
+      for (const [index, item] of arr.entries()) {
+          const parts = String(item).split('/');
+          const artist = decodeURIComponent(parts[parts.length - 2]);
+          let songname = decodeURIComponent(parts[parts.length - 1]).replace(/\.(ogg|mp3|m4a)$/i, '');
+          const unnamed = artist === 'Blue Archive' && songname.match(/^theme_(\d+)$/);
+          const title = unnamed && catalog.titles?.[Number(unnamed[1])];
+          // Fill missing names by OST number without changing audio URLs or known names.
+          if (title) songname += `-${title}`;
+
+          const li = document.createElement('li');
+          if (index === 0) li.classList.add('simp-active');
+          const source = document.createElement('span');
+          source.className = 'simp-source';
+          source.dataset.src = item;
+          source.textContent = songname;
+          const description = document.createElement('span');
+          description.className = 'simp-desc';
+          description.textContent = artist;
+          li.append(source, description);
+          list.append(li);
       }
+      document.getElementById('ulist').replaceChildren(list);
   }
   (async() => {
       await getMusics();
       BAPlayer();
-      // setTimeout(() => {
-      //     document.getElementById('loading-overlay').classList.add("hide-loading");
-      // }, 100)
       document.getElementById('loading-overlay').addEventListener('click', function(event) {
         document.getElementById('loading-overlay').classList.add("hide-loading");
       });
-  })();
+  })().catch(error => {
+      console.error(error);
+      document.querySelector('#loading-overlay p').textContent = '음악 목록을 불러오지 못했습니다. 새로고침해 주세요.';
+  });
 </script>
   </body>
 </html>
