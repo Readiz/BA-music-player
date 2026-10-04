@@ -1,19 +1,22 @@
 BAAlbumPanel();
 async function getMusics() {
   var _a;
-  const [arr, catalog] = await Promise.all([
+  const [arr, catalog, added] = await Promise.all([
     fetch("./musicList.json", { cache: "no-cache" }).then((res) => {
       if (!res.ok) throw new Error("음악 목록을 불러오지 못했습니다.");
       return res.json();
     }),
     // Keep the filename-based playlist usable if metadata is unavailable.
-    fetch("./blue-archive-ost.json", { cache: "no-cache" }).then((res) => res.ok ? res.json() : { titles: {} }).catch(() => ({ titles: {} }))
+    fetch("./blue-archive-ost.json", { cache: "no-cache" }).then((res) => res.ok ? res.json() : { titles: {} }).catch(() => ({ titles: {} })),
+    fetch("./api/library", { cache: "no-cache" }).then((res) => res.ok ? res.json() : { tracks: [] }).catch(() => ({ tracks: [] }))
   ]);
+  const addedTitles = new Map((added.tracks || []).map((track) => [track.src, track.title]));
   const list = document.createDocumentFragment();
   for (const [index, item] of arr.entries()) {
     const parts = String(item).split("/");
     const artist = decodeURIComponent(parts[parts.length - 2]);
     let songname = decodeURIComponent(parts[parts.length - 1]).replace(/\.(ogg|mp3|m4a)$/i, "");
+    songname = addedTitles.get(item) || songname;
     const unnamed = artist === "Blue Archive" && songname.match(/^theme_(\d+)$/);
     const title = unnamed && ((_a = catalog.titles) == null ? void 0 : _a[Number(unnamed[1])]);
     if (title) songname += `-${title}`;
@@ -46,6 +49,7 @@ async function loadLibrary() {
     await getMusics();
     if (window.BAMusicNativeAudio) await window.BAMusicNativeAudio.ready;
     BAPlayer();
+    window.dispatchEvent(new Event("music-library-ready"));
     loadState.hidden = true;
   } catch (error) {
     console.error(error);
