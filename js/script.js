@@ -38,6 +38,15 @@ function BAPlayer() {
     folderCounts.set(track.folder, (folderCounts.get(track.folder) || 0) + 1);
   }
   const albumInputs = new Map();
+  const albumArtwork = new Map([
+    ['Blue Archive', 'blue-archive'],
+    ['ETC', 'etc'],
+    ['Girls Band Cry', 'girls-band-cry'],
+    ['Kessoku Band', 'kessoku-band'],
+  ].map(([folder, slug]) => [folder, {
+    src: new URL(`./assets/albums/${slug}.jpg`, location.href).href,
+    sizes: '512x512', type: 'image/jpeg',
+  }]));
   for (const [folder, count] of folderCounts) {
     const card = document.createElement('label');
     card.className = 'album-card';
@@ -46,6 +55,16 @@ function BAPlayer() {
     cover.setAttribute('aria-hidden', 'true');
     const words = folder.split(/[\s/]+/);
     cover.textContent = (words.length === 1 ? folder : words.map(word => word[0]).join('')).slice(0, 3).toUpperCase();
+    if (albumArtwork.has(folder)) {
+      const image = document.createElement('img');
+      image.alt = '';
+      image.width = image.height = 512;
+      image.decoding = 'async';
+      image.draggable = false;
+      image.addEventListener('error', () => image.remove(), { once: true });
+      image.src = albumArtwork.get(folder).src;
+      cover.append(image);
+    }
     const input = document.createElement('input');
     input.type = 'checkbox';
     input.value = folder;
@@ -83,7 +102,7 @@ function BAPlayer() {
       <div class="simp-others flex flex-align">
         <button type="button" class="simp-repeat fa fa-repeat" aria-label="한 곡 반복" aria-pressed="false" title="한 곡 반복"></button>
         <button type="button" class="simp-plext simp-active fa fa-play-circle" aria-label="자동으로 다음 곡 재생" aria-pressed="true" title="자동으로 다음 곡 재생"></button>
-        <button type="button" class="simp-random fa fa-random" aria-label="무작위 재생" aria-pressed="false" title="무작위 재생"></button>
+        <button type="button" class="simp-random simp-active fa fa-random" aria-label="무작위 재생" aria-pressed="true" title="무작위 재생"></button>
       </div>
     </div>
     <p class="simp-status" role="status" hidden></p>`;
@@ -96,7 +115,7 @@ function BAPlayer() {
   const session = navigator.mediaSession;
   let index = -1;
   let autoNext = true;
-  let random = false;
+  let random = true;
   let playAttempt = 0;
   let WaveSurfer;
   let waveforms;
@@ -204,6 +223,7 @@ function BAPlayer() {
       if (typeof MediaMetadata !== 'undefined') {
         session.metadata = new MediaMetadata({
           title: track.title.replace(/^theme_\d+-/, ''), artist: track.artist, album: track.folder,
+          artwork: albumArtwork.has(track.folder) ? [albumArtwork.get(track.folder)] : [],
         });
       }
       try { session.setPositionState?.(); } catch { /* Optional. */ }
@@ -272,11 +292,16 @@ function BAPlayer() {
     } catch { /* Storage is optional, including in an iframe. */ }
     if (!queue.length) clearTrack();
     else if (queue.includes(index)) scrollToCurrent();
-    else selectTrack(queue[0], wasPlaying);
+    else selectTrack(startingTrack(), wasPlaying);
+  }
+
+  function startingTrack() {
+    return queue[random ? Math.floor(Math.random() * queue.length) : 0];
   }
 
   function readSavedAlbums() {
     const all = [...folderCounts.keys()];
+    const defaults = folderCounts.has('Blue Archive') ? ['Blue Archive'] : all;
     try {
       const raw = localStorage.getItem(albumStorageKey);
       if (raw !== null) {
@@ -284,15 +309,15 @@ function BAPlayer() {
         if (saved?.all === true) return all;
         if (Array.isArray(saved?.folders)) {
           const available = saved.folders.filter(folder => folderCounts.has(folder));
-          // An intentional empty choice stays empty; removed albums fall back to all.
-          return available.length || !saved.folders.length ? available : all;
+          // Preserve explicit choices; removed albums fall back to the default.
+          return available.length || !saved.folders.length ? available : defaults;
         }
       } else {
         const legacy = localStorage.getItem('ba-player-folder');
         if (folderCounts.has(legacy)) return [legacy];
       }
-    } catch { /* Invalid or unavailable storage falls back to all albums. */ }
-    return all;
+    } catch { /* Invalid or unavailable storage falls back to the default. */ }
+    return defaults;
   }
 
   function previousTrack() {
@@ -394,7 +419,7 @@ function BAPlayer() {
   });
   filterAlbums(readSavedAlbums());
   if (queue.length) {
-    selectTrack(queue[0], false);
+    selectTrack(startingTrack(), false);
     showStatus('재생 버튼이나 곡을 눌러 시작하세요. Space 키로도 재생할 수 있습니다.');
   }
   else clearTrack();

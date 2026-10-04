@@ -21,6 +21,23 @@ async (page) => {
     groups.get(folder).push(path);
   }
   const report = [];
+  for (const seed of [0, 0.5, 0.999999]) {
+    const fresh = await page.context().newPage();
+    try {
+      await fresh.addInitScript(seed => {
+        localStorage.removeItem('ba-player-folder');
+        localStorage.removeItem('ba-player-albums');
+        Math.random = () => seed;
+      }, seed);
+      await fresh.goto(page.url());
+      await fresh.waitForFunction(() => document.querySelector('#audio'));
+      const ba = groups.get('Blue Archive');
+      const expected = new URL(ba[Math.floor(seed * ba.length)], page.url()).href;
+      if (!(await fresh.locator('#audio').evaluate((a, expected) => a.src === expected && a.paused, expected))) throw new Error('First track did not use a random BA track or autoplayed');
+      if (await fresh.getByRole('button', {name:'무작위 재생',exact:true}).getAttribute('aria-pressed') !== 'true') throw new Error('Shuffle did not start enabled');
+    } finally { await fresh.close(); }
+  }
+  report.push('Fresh visits select only BA, enable shuffle and prepare a random first track without autoplay (three random values verified)');
   await page.setViewportSize({width:1280,height:900});
   await page.evaluate(() => { localStorage.removeItem('ba-player-folder'); localStorage.removeItem('ba-player-albums'); });
   await page.reload();
@@ -32,7 +49,12 @@ async (page) => {
   const expectSource = async path => {
     if (await source() !== new URL(path, page.url()).href) throw new Error('Wrong track: ' + path);
   };
-  if (await page.getByRole('checkbox').count() !== groups.size || await visible.count() !== paths.length) throw new Error('Default all-album selection is wrong');
+  if (await page.getByRole('checkbox').count() !== groups.size || await visible.count() !== groups.get('Blue Archive').length || await page.locator('.album-card input:checked').count() !== 1 || !(await album('Blue Archive').isChecked())) throw new Error('Default BA selection is wrong');
+  await page.waitForFunction(() => [...document.querySelectorAll('.album-cover img')].length === 4 && [...document.querySelectorAll('.album-cover img')].every(img => img.complete && img.naturalWidth === 512));
+  if (!(await page.evaluate(() => navigator.mediaSession.metadata.artwork[0]?.src.endsWith('/assets/albums/blue-archive.jpg')))) throw new Error('Media Session artwork is missing');
+  report.push('All four album covers load; Media Session receives the current cover');
+  // Ordered boundary tests explicitly disable the default shuffle.
+  await page.getByRole('button',{name:'무작위 재생',exact:true}).click();
   await page.evaluate(() => { window.__originalAudio = document.querySelector('#audio'); });
   await page.getByRole('button',{name:'전체 해제',exact:true}).click();
   if (await visible.count() || !(await page.getByRole('button',{name:'재생',exact:true}).isDisabled())) throw new Error('Empty queue still has tracks or allows playback');
@@ -103,11 +125,18 @@ async (page) => {
   await page.reload();
   await page.waitForFunction(()=>document.querySelector('#audio'));
   if (await visible.count()!==groups.get('ETC').length || !(await album('ETC').isChecked())) throw new Error('Legacy folder setting did not migrate');
+  for (const name of ['theme_999-ED', 'Younha - Memories of kindness', 'Younha - Thanks to']) {
+    await page.getByText(name,{exact:true}).click();
+    await waitPlaying();
+    if (!(await source()).includes('/music/ETC/') || !(await page.evaluate(() => navigator.mediaSession.metadata.artwork[0]?.src.endsWith('/assets/albums/etc.jpg')))) throw new Error('Moved track path or artwork is wrong: '+name);
+    await page.getByRole('button',{name:'일시정지',exact:true}).click();
+  }
+  report.push('999-ED and the two Younha tracks play from ETC with ETC artwork');
   for (const saved of ['{bad', JSON.stringify({folders:['removed album']})]) {
     await page.evaluate(saved=>localStorage.setItem('ba-player-albums',saved),saved);
     await page.reload();
     await page.waitForFunction(()=>document.querySelector('#audio'));
-    if (await visible.count()!==paths.length) throw new Error('Invalid selection did not fall back to all');
+    if (await visible.count()!==groups.get('Blue Archive').length) throw new Error('Invalid selection did not fall back to BA');
   }
   await page.getByRole('button',{name:'전체 해제',exact:true}).click();
   await page.getByRole('button',{name:'전체 선택',exact:true}).click();
@@ -137,8 +166,11 @@ async (page) => {
   try {
     await fallback.setViewportSize({width:1280,height:900});
     await fallback.addInitScript(()=>Object.defineProperty(window,'localStorage',{get(){throw new DOMException('Storage blocked','SecurityError');}}));
+    await fallback.route('**/assets/albums/*.jpg', route => route.abort());
     await fallback.goto(page.url());
     await fallback.waitForFunction(()=>document.querySelector('#audio'));
+    if (await fallback.locator('#ulist li:not([hidden])').count()!==groups.get('Blue Archive').length) throw new Error('Blocked storage did not default to BA');
+    await fallback.waitForFunction(() => !document.querySelector('.album-cover img'));
     await fallback.getByRole('button',{name:'전체 해제',exact:true}).click();
     await fallback.getByRole('checkbox',{name:'Kessoku Band',exact:true}).check();
     await fallback.getByRole('button',{name:'재생',exact:true}).click();
@@ -146,6 +178,6 @@ async (page) => {
     await fallback.getByRole('button',{name:'일시정지',exact:true}).click();
   } finally { await fallback.close(); }
   if (errors.length) throw new Error(errors.join('\n'));
-  report.push('Album selection and native playback work when storage is blocked; no page errors');
+  report.push('BA defaults, album selection and native playback work when storage and artwork are blocked; no page errors');
   return report;
 }

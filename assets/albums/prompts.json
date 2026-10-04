@@ -1,0 +1,29 @@
+{
+  "generatedOn": "2026-10-04",
+  "method": "Built-in image_gen",
+  "description": "Original generated illustrations for this player; not official album artwork.",
+  "output": {
+    "width": 512,
+    "height": 512,
+    "format": "JPEG",
+    "quality": 90
+  },
+  "covers": [
+    {
+      "file": "blue-archive.jpg",
+      "prompt": "Use case: stylized-concept\nAsset type: square album cover thumbnail for a personal music player.\nPrimary request: Blue Archive game soundtrack collection: an airy school rooftop opening onto brilliant summer clouds and distant academy architecture, with a delicate luminous circular halo suspended in the sky. Calm, hopeful, blue and white atmosphere.\nStyle/medium: polished original anime background illustration, painterly light with crisp simple silhouettes, part of a cohesive four-cover collection.\nComposition: square 1:1 full bleed, strong single focal area, readable at 64 pixels, generous uncluttered shapes.\nConstraints: no people, no text, no lettering, no logo, no watermark, no border. Original illustration, not a replica of official album artwork."
+    },
+    {
+      "file": "etc.jpg",
+      "prompt": "Use case: stylized-concept\nAsset type: square album cover thumbnail for a personal music player.\nPrimary request: An eclectic personal music collection: a cassette player and a neatly coiled headphone cable by a window at dusk, amber reflections and a rich warm night sky. Quiet, nostalgic listening mood.\nStyle/medium: polished original anime background illustration, painterly light with crisp simple silhouettes, part of a cohesive four-cover collection.\nComposition: square 1:1 full bleed, strong single focal area, readable at 64 pixels, generous uncluttered shapes.\nConstraints: no people, no text, no lettering, no logo, no watermark, no border. Original illustration, not a replica of official album artwork."
+    },
+    {
+      "file": "girls-band-cry.jpg",
+      "prompt": "Use case: stylized-concept\nAsset type: square album cover thumbnail for a personal music player.\nPrimary request: Girls Band Cry music collection: an electric guitar leaning against an amplifier on a small urban live-house stage, rain-streaked city light beyond, energetic rose and deep charcoal atmosphere.\nStyle/medium: polished original anime background illustration, painterly light with crisp simple silhouettes, part of a cohesive four-cover collection.\nComposition: square 1:1 full bleed, strong single focal area, readable at 64 pixels, generous uncluttered shapes.\nConstraints: no people, no text, no lettering, no logo, no watermark, no border. Original illustration, not a replica of official album artwork."
+    },
+    {
+      "file": "kessoku-band.jpg",
+      "prompt": "Use case: stylized-concept\nAsset type: square album cover thumbnail for a personal music player.\nPrimary request: Kessoku Band music collection: a guitar and bass on stands in an intimate band practice room, small drum kit in the background, soft violet stage lights and warm rehearsal atmosphere.\nStyle/medium: polished original anime background illustration, painterly light with crisp simple silhouettes, part of a cohesive four-cover collection.\nComposition: square 1:1 full bleed, strong single focal area, readable at 64 pixels, generous uncluttered shapes.\nConstraints: no people, no text, no lettering, no logo, no watermark, no border. Original illustration, not a replica of official album artwork."
+    }
+  ]
+}
