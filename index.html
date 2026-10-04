@@ -2,9 +2,17 @@
 <html lang="ko">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="author" content="CodeHim">
-    <title>Readiz's Player</title>
+    <title>Readiz Music</title>
+    <meta name="description" content="작업하며 듣는 음악. 앨범을 골라 편하게 이어 들으세요.">
+    <meta name="theme-color" content="#17212b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="canonical" href="https://music.readiz.com/">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./assets/icons/music.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png">
+    <link rel="stylesheet" href="./assets/vendor/font-awesome/font-awesome.min.css">
     
     <!-- Style CSS -->
     <link rel="stylesheet" href="css/style.css?v=20261004-artwork">
@@ -13,6 +21,7 @@
   
   </head>
   <body>
+<header class="app-header"><a class="app-brand" href="./"><img src="./assets/icons/music.svg" width="28" height="28" alt="">Readiz Music</a><div><button class="app-install" type="button" hidden>앱으로 설치</button><a class="app-home" href="https://www.readiz.com/" target="_blank" rel="noopener noreferrer">Readiz ↗</a></div></header>
 <div>
  <div class="simple-audio-player" id="simp" data-config='{"shide_top":false,"shide_btm":false,"auto_load":true}'>
   <div class="album-toolbar">
@@ -48,66 +57,7 @@
 
 <!-- Audio Player JS -->
 <script src="./js/script.js?v=20261004-artwork"></script>
-<script type="module">
-  BAAlbumPanel();
-  async function getMusics() {
-      const [arr, catalog] = await Promise.all([
-          fetch('./musicList.json', { cache: 'no-cache' }).then(res => {
-              if (!res.ok) throw new Error('음악 목록을 불러오지 못했습니다.');
-              return res.json();
-          }),
-          // Keep the filename-based playlist usable if metadata is unavailable.
-          fetch('./blue-archive-ost.json', { cache: 'no-cache' })
-              .then(res => res.ok ? res.json() : { titles: {} })
-              .catch(() => ({ titles: {} })),
-      ]);
-      const list = document.createDocumentFragment();
-      for (const [index, item] of arr.entries()) {
-          const parts = String(item).split('/');
-          const artist = decodeURIComponent(parts[parts.length - 2]);
-          let songname = decodeURIComponent(parts[parts.length - 1]).replace(/\.(ogg|mp3|m4a)$/i, '');
-          const unnamed = artist === 'Blue Archive' && songname.match(/^theme_(\d+)$/);
-          const title = unnamed && catalog.titles?.[Number(unnamed[1])];
-          // Fill missing names by OST number without changing audio URLs or known names.
-          if (title) songname += `-${title}`;
-
-          const li = document.createElement('li');
-          li.dataset.folder = parts.slice(2, -1).map(decodeURIComponent).join('/') || artist;
-          if (index === 0) li.classList.add('simp-active');
-          const source = document.createElement('span');
-          source.className = 'simp-source';
-          source.dataset.src = item;
-          source.textContent = songname;
-          const description = document.createElement('span');
-          description.className = 'simp-desc';
-          description.textContent = artist;
-          li.append(source, description);
-          list.append(li);
-      }
-      document.getElementById('ulist').replaceChildren(list);
-  }
-  const loadState = document.querySelector('.library-load-state');
-  const retry = document.querySelector('.library-retry');
-  let loading = false;
-  async function loadLibrary() {
-      if (loading) return;
-      loading = true;
-      retry.hidden = true;
-      loadState.querySelector('p').textContent = '음악 목록을 불러오는 중…';
-      try {
-          await getMusics();
-          BAPlayer();
-          loadState.hidden = true;
-      } catch (error) {
-          console.error(error);
-          loadState.querySelector('p').textContent = '음악 목록을 불러오지 못했습니다. 다시 시도해 주세요.';
-          retry.hidden = false;
-      } finally {
-          loading = false;
-      }
-  }
-  retry.addEventListener('click', loadLibrary);
-  loadLibrary();
-</script>
+<script type="module" src="./js/library.js"></script>
+<script defer src="./js/app.js"></script>
   </body>
 </html>

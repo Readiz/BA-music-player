@@ -120,3 +120,11 @@ ETC로 이동한 세 곡의 실제 재생을 확인합니다.
 확인이 필요합니다.
 
 https://blog.readiz.com/BA-music-player/
+
+## 독립 서비스와 앱 (1.1.0)
+
+대표 주소는 **https://music.readiz.com/** 입니다. 음악 프로젝트는 이 저장소에서 독립적으로 관리하며 홈페이지의 이전 음악 상세 주소는 새 서비스로 연결합니다. [운영·Cloudflare DNS·배포 안내](ops/README.md), [Android 앱 준비와 다음 단계](android/README.md)를 참고하세요.
+
+`npm test`는 공개 빌드의 음원 경로·파일 공개 경계·설치 자산을 검증합니다. `npm run build`로 338곡과 정적 화면을 `dist/`에 모으고, 깨끗한 커밋에서 `npm run deploy:local`로 독립 배포합니다. `npm run build:apk:debug`는 Android 시작 앱과 lint를 검증합니다. 앱 ID는 `com.readiz.music`입니다.
+
+홈 화면 설치용 매니페스트·전용 아이콘·오프라인 연결 안내를 제공합니다. 외부 폰트 CDN 의존성을 제거하고 Font Awesome 4.7.0의 CSS·WOFF2를 라이선스 안내와 함께 보관합니다. 음원은 설치 시 캐시하지 않으며 브라우저가 직접 스트리밍합니다. `app-config.json`은 후속 앱에서 목록과 제목 자료를 찾는 버전 1 계약입니다.
