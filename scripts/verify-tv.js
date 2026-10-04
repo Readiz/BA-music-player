@@ -5,6 +5,12 @@ async (sourcePage) => {
   try {
     const check = (condition, message) => { if (!condition) throw new Error(message); };
     const active = selector => page.evaluate(selector => document.activeElement.matches(selector), selector);
+    const currentQueueFocused = () => page.evaluate(() => document.activeElement === document.querySelector('#ulist li.simp-active:not([hidden])'));
+    const currentQueueVisible = () => page.evaluate(() => {
+      const row = document.querySelector('#ulist li.simp-active:not([hidden])').getBoundingClientRect();
+      const list = document.querySelector('#ulist').getBoundingClientRect();
+      return row.top >= list.top && row.bottom <= list.bottom;
+    });
     const state = () => page.evaluate(() => ({
       focus: document.activeElement.className,
       text: document.activeElement.textContent,
@@ -62,7 +68,9 @@ async (sourcePage) => {
       await page.keyboard.press('ArrowUp');
       check((await state()).folder==='Blue Archive', 'Album Up skipped previous card');
       await page.keyboard.press('ArrowRight');
-      check((await state()).text===remembered, 'Album Right lost queue memory');
+      check(await active('.simp-progress'), 'Album Right did not return to the last playback controller');
+      await page.keyboard.press('ArrowDown');
+      check((await state()).text===remembered, 'Returning through controls lost the browsed queue position');
       for(let i=0;i<20;i++) await page.keyboard.press('ArrowUp');
       check(await active('.simp-progress'), 'Repeated queue Up did not stop at last controller');
       await page.keyboard.press('ArrowDown');
@@ -72,11 +80,35 @@ async (sourcePage) => {
       const focusBeforeBack=(await state()).text;
       await page.keyboard.press('Escape');
       check(await page.locator('.tv-exit-dialog').isVisible() && await active('.exit-cancel') && !(await state()).paused, 'Single Back did not show safe exit confirmation');
-      await page.keyboard.press('Escape');
-      check(await page.locator('.tv-exit-dialog').isHidden() && (await state()).text===focusBeforeBack, 'Exit Back did not restore exact focus');
-      const scroll=await page.locator('#ulist').evaluate(el=>el.scrollTop);
       await page.evaluate(() => window.BAMusicPlayback.next());
-      check(await page.locator('#ulist').evaluate((el,scroll)=>el.scrollTop===scroll,scroll), 'Track change moved TV queue scrolling');
+      check(await active('.exit-cancel'), 'Track change stole exit dialog focus');
+      await page.keyboard.press('Escape');
+      check(await page.locator('.tv-exit-dialog').isHidden() && await currentQueueFocused(), 'Exit Back did not restore the new track focus');
+      check((await state()).text!==focusBeforeBack, 'Next track did not change while exit dialog was open');
+      for(let i=0;i<40;i++) await page.keyboard.press('ArrowDown');
+      await page.keyboard.press('MediaTrackNext');
+      await page.waitForFunction(() => !document.querySelector('audio').paused && document.querySelector('audio').duration > 0);
+      check(await currentQueueFocused() && await currentQueueVisible(), 'Media next did not correct queue focus and scrolling');
+      await page.keyboard.press('ArrowLeft');
+      const albumBeforeChange=(await state()).folder;
+      await page.keyboard.press('MediaTrackPrevious');
+      check((await state()).folder===albumBeforeChange && await active('.album-card input'), 'Track change stole album focus');
+      await page.keyboard.press('ArrowRight');
+      check(await active('.simp-controls button, .simp-progress'), 'Album Right returned to the playlist after a track change');
+      await page.keyboard.press('ArrowDown');
+      check(await currentQueueFocused() && await currentQueueVisible(), 'Controls Down returned to a stale track');
+      const beforeAutoNext=(await state()).selected;
+      await page.waitForFunction(() => !document.querySelector('audio').paused && document.querySelector('audio').duration > 0);
+      await page.evaluate(() => { const audio=document.querySelector('audio'); audio.currentTime=Math.max(0,audio.duration-.15); });
+      await page.waitForFunction(before => document.querySelector('#ulist .simp-active').textContent !== before, beforeAutoNext);
+      check(await currentQueueFocused() && await currentQueueVisible(), 'Natural ended transition did not correct queue focus');
+      await page.keyboard.press('ArrowLeft');
+      await page.keyboard.press('ArrowRight');
+      await page.locator('.simp-next').focus();
+      await page.keyboard.press('Enter');
+      check(await active('.simp-next'), 'Next-button track change stole controller focus');
+      await page.keyboard.press('ArrowDown');
+      check(await currentQueueFocused() && await currentQueueVisible(), 'Next button left a stale queue destination');
       await page.evaluate(() => document.dispatchEvent(new KeyboardEvent('keydown',{key:'Unidentified',keyCode:19,bubbles:true,cancelable:true})));
       check((await state()).paused, 'Samsung pause failed');
       await page.keyboard.press('ArrowLeft');
@@ -114,6 +146,6 @@ async (sourcePage) => {
     await page.waitForFunction(()=>window.BAMusicPlayback && document.activeElement.matches('.simp-plause'));
     check((await state()).paused, 'Retry autoplayed');
     check(errors.length===0, 'Page errors: '+errors.join('; '));
-    return {passed:true,checks:'720p/1080p top boundary, linear controls/albums, one focus outline, single Back popup, scroll ownership, real playback, seek, clear/retry and mobile toggle',errors};
+    return {passed:true,checks:'720p/1080p album return to controls, media/button/natural-ended queue correction, preserved album/controller/dialog focus, top boundary, real playback, seek, clear/retry and mobile toggle',errors};
   } finally { await context.close(); }
 }
