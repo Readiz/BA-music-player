@@ -29,7 +29,7 @@ async (sourcePage) => {
           host && host.shadowRoot && host.shadowRoot.querySelector('canvas')?.width > 0;
       });
       check((await state()).paused, 'TV startup autoplayed');
-      check(await page.locator('.album-toolbar').isHidden(), 'TV album toolbar remains visible');
+      check(await page.locator('.album-toggle').isHidden(), 'TV album toggle remains visible');
       check(await page.locator('.app-header button:visible').count() === 0, 'TV header still has buttons');
       for(let i=0;i<8;i++) await page.keyboard.press('ArrowUp');
       check(await active('.simp-plause'), 'Repeated Up left the top controls');
@@ -102,7 +102,7 @@ async (sourcePage) => {
     await page.goto(base+'/');
     await page.waitForFunction(()=>window.BAMusicPlayback);
     await page.setViewportSize({width:390,height:844});
-    check(await page.locator('.album-toolbar').isVisible(), 'Mobile lost album toggle');
+    check(await page.locator('.album-toggle').isVisible(), 'Mobile lost album toggle');
     check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth), 'Mobile overflow');
     let failCatalog=true;
     await page.route('**/musicList.json',route=>failCatalog?route.fulfill({status:503,body:'unavailable'}):route.continue());

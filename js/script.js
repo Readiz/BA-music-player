@@ -11,7 +11,9 @@ function BAAlbumPanel() {
     panel.hidden = !open;
     root.classList.toggle('albums-collapsed', !open);
     toggle.setAttribute('aria-expanded', String(open));
-    toggle.querySelector('.album-toggle-label').textContent = open ? '앨범 접기' : '앨범 펼치기';
+    const label = open ? '앨범 접기' : '앨범 펼치기';
+    toggle.setAttribute('aria-label', label);
+    toggle.title = label;
   }
   toggle.addEventListener('click', () => setOpen(panel.hidden));
   panel.addEventListener('keydown', event => {
@@ -256,7 +258,6 @@ function BAPlayer() {
     }
     const summary = `${selectedAlbums.size}개 앨범 · ${queue.length}곡`;
     root.querySelector('.album-selection-summary').textContent = summary;
-    root.querySelector('.album-toolbar-summary').textContent = summary;
     root.querySelector('.queue-count').textContent = `${queue.length}곡`;
     root.querySelector('.simp-empty').hidden = queue.length > 0;
     root.querySelector('#ulist').hidden = !queue.length;

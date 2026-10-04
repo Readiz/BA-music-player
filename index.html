@@ -16,25 +16,22 @@
     <link rel="stylesheet" href="./assets/vendor/font-awesome/font-awesome.min.css">
     
     <!-- Style CSS -->
-    <link rel="stylesheet" href="css/style.css?v=20261004-artwork">
+    <link rel="stylesheet" href="css/style.css?v=20261004-mobile">
 	<!-- Demo CSS (No need to include it into your project) -->
 	<link rel="stylesheet" href="css/demo.css">
     <link rel="stylesheet" href="./css/tv.css">
   
   </head>
   <body>
-<header class="app-header"><a class="app-brand" href="./"><img src="./assets/icons/music.svg" width="28" height="28" alt="">Readiz Music</a><div><button class="app-install" type="button" hidden>앱으로 설치</button><a class="app-home" href="https://www.readiz.com/" target="_blank" rel="noopener noreferrer">Readiz ↗</a></div></header>
+<header class="app-header"><a class="app-brand" href="./"><img src="./assets/icons/music.svg" width="28" height="28" alt="">Readiz Music</a><button class="app-install" type="button" hidden>앱 설치</button></header>
 <div>
  <div class="simple-audio-player" id="simp" data-config='{"shide_top":false,"shide_btm":false,"auto_load":true}'>
-  <div class="album-toolbar">
-    <button type="button" class="album-toggle" aria-controls="album-panel" aria-expanded="true"><span aria-hidden="true">☷</span> <span class="album-toggle-label">앨범 접기</span></button>
-    <span class="album-toolbar-summary"></span>
+  <div class="album-heading-row">
+    <h2 id="album-heading">앨범</h2>
+    <button type="button" class="album-toggle" aria-label="앨범 접기" title="앨범 접기" aria-controls="album-panel" aria-expanded="true"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <span class="album-selection-summary" role="status"></span>
   </div>
   <aside class="simp-albums" id="album-panel" aria-labelledby="album-heading">
-    <div class="album-heading-row">
-      <div><p class="library-eyebrow">MY LIBRARY</p><h2 id="album-heading">앨범</h2></div>
-    </div>
-    <p class="album-selection-summary" role="status"></p>
     <div class="album-actions">
       <button type="button" class="albums-select-all" disabled>전체 선택</button>
       <button type="button" class="albums-clear" disabled>전체 해제</button>
@@ -65,7 +62,7 @@
   </div>
 </section>
 <!-- Audio Player JS -->
-<script src="./js/script.js?v=20261004-artwork"></script>
+<script src="./js/script.js?v=20261004-mobile"></script>
 <script defer src="./js/library.js"></script>
 <script defer src="./js/remote-core.js"></script>
 <script defer src="./js/remote.js"></script>

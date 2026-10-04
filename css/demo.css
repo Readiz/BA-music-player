@@ -7,7 +7,7 @@ body{
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
   font-size: 15px;
-  background: #eee;
+  background: #17212b;
    overflow: hidden; /* Hide scrollbars */
 }
 .intro{
