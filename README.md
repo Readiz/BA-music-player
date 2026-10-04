@@ -1,4 +1,16 @@
-# BA-music-player
+# Readiz Music
+
+## TV 리모컨과 앱 준비 (1.2.0)
+
+[음악 서비스](https://music.readiz.com/) · [TV 화면 미리보기](https://music.readiz.com/?tv=1) · [삼성 TV WGT](https://music.readiz.com/app.wgt)
+
+방향키/확인/뒤로, 앨범과 곡의 포커스 기억, 화면 밖 곡으로 이동할 때 스크롤,
+5초 탐색 모드, 미디어 키와 종료 확인을 지원한다. TV에서는 읽기 쉬운 큰 글씨·버튼을 쓰며
+마우스·터치 조작도 유지한다. 웹 JavaScript는 Chromium 63 대상으로 빌드한다.
+
+TV 프로젝트와 같은 방식의 독립 Tizen 실행기 0.1.0과 Android TV 지원 APK 0.2.0을 준비했다.
+[삼성 TV 서명·설치 및 검증 범위](tizen/README.md), [Android 빌드·TV 진입점](android/README.md).
+WGT는 미서명 개인 개발용이며 실제 TV 설치·재생과 스토어 배포는 별도 확인 단계다.
 
 ## 곡명 보완
 

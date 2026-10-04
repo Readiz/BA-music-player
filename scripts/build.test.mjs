@@ -30,3 +30,20 @@ test('standalone runtime uses local dependencies and install metadata', () => {
     assert.doesNotMatch(readFileSync(`dist/css/${css}`, 'utf8'), /@import.*https?:/);
   }
 });
+test('Tizen archive is reproducible and contains only the independent launcher', () => {
+  const first = readFileSync('dist/app.wgt');
+  execFileSync('python3', ['scripts/build-wgt.py']);
+  assert.deepEqual(readFileSync('dist/app.wgt'), first);
+  const report = JSON.parse(execFileSync('python3', ['-c', `import zipfile,json,xml.etree.ElementTree as ET
+with zipfile.ZipFile('dist/app.wgt') as z:
+ assert z.testzip() is None
+ c=ET.fromstring(z.read('config.xml'))
+ app=c.find('{http://tizen.org/ns/widgets}application')
+ print(json.dumps({'files':sorted(z.namelist()),'app':app.attrib,'url':z.read('app-url.js').decode(),'version':c.attrib['version']}))`], { encoding: 'utf8' }));
+  assert.deepEqual(report.files, ['app-url.js','config.xml','icon.png','index.html','launcher.css','launcher.js']);
+  assert.equal(report.app.id, 'ReadizMU01.ReadizMusic');
+  assert.equal(report.app.required_version, '5.0');
+  assert.equal(report.version, '0.1.0');
+  assert.match(report.url, /https:\/\/music\.readiz\.com\//);
+  assert.ok(existsSync('dist/app-start.html'));
+});

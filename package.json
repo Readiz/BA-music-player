@@ -1,15 +1,16 @@
 {
   "name": "BA-music-player",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Readiz Music independent web player and Android app foundation",
   "main": "index.js",
   "scripts": {
-    "test": "node --test scripts/build.test.mjs",
+    "test": "node --test scripts/*.test.mjs",
     "dev": "node node_modules/serve/build/main.js dist -l tcp://127.0.0.1:4523",
     "devwin": "node node_modules/serve/build/main.js dist",
     "build": "node scripts/build.mjs",
     "deploy:local": "npm run build && node scripts/deploy-local.mjs",
-    "build:apk:debug": "bash scripts/build-android.sh"
+    "build:apk:debug": "bash scripts/build-android.sh",
+    "build:wgt": "python3 scripts/build-wgt.py"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
     "wavesurfer.js": "^7.8.1"
   },
   "devDependencies": {
+    "esbuild": "0.28.1",
     "serve": "^14.2.0"
   }
 }

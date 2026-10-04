@@ -9,3 +9,6 @@ for (const size of [192, 512, 180]) {
 }
 const opaque = '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512"><rect width="512" height="512" fill="#17212b"/></svg>';
 await sharp(Buffer.from(opaque)).composite([{ input: await sharp(source).resize(410, 410).png().toBuffer(), gravity: 'centre' }]).png().toFile(new URL('../assets/icons/icon-maskable-512.png', import.meta.url).pathname);
+// TV launcher icons are rasterized directly, without screenshot cropping.
+await sharp(source).resize(117, 117).png().toFile(new URL('../tizen/icon.png', import.meta.url).pathname);
+await sharp(readFileSync(new URL('../android/tv-banner.svg', import.meta.url))).png().toFile(new URL('../android/app/src/main/res/drawable-xhdpi/tv_banner.png', import.meta.url).pathname);

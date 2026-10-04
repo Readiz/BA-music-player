@@ -38,3 +38,9 @@ curl -f https://music.readiz.com/app-config.json
 매니페스트·앱 아이콘·서비스 워커를 제공한다. 지원 브라우저에서는 설치 버튼 또는 브라우저 메뉴의 홈 화면 추가를 사용한다. 오프라인 상태에서는 연결 안내를 표시하며 음원 전체를 미리 내려받지 않는다. 서비스 워커 업데이트는 다음 실행에 적용되어 재생 중인 화면을 강제로 새로고침하지 않는다.
 
 브라우저 설정은 원점별이므로 `blog.readiz.com`에서 저장한 앨범 선택은 새 도메인으로 자동 이동하지 않는다. 첫 방문은 기존 기본값인 Blue Archive·무작위 모드이며 자동 재생하지 않는다. 이전 GitHub Pages 주소도 보존한다.
+
+## TV 패키지 배포
+
+1.2.0부터 `npm run build`에 Chromium 63 대상 JavaScript 변환과 미서명 WGT 빌드가 포함된다. `app.wgt`, `app.wgt.sha256`, `app-start.html`, `app-config.json`의 `tv` 필드를 웹과 함께 원자적으로 배포한다. APK는 로컬 디버그 산출물이며 공개 정적 파일에 넣지 않는다. GitHub Actions도 WGT/체크섬을 별도 artifact로 보관한다.
+
+배포 후 `/?tv=1`에서 방향키·확인·뒤로와 실제 재생을 확인하고, `/app.wgt`의 SHA-256이 빌드 산출물과 같은지 확인한다. TV 설치는 [Tizen 안내](../tizen/README.md)를 따른다. 이번 화면·패키지 배포는 Caddy나 DNS 변경이 필요 없다.

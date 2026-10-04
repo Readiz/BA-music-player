@@ -15,7 +15,7 @@ function BAAlbumPanel() {
   }
   toggle.addEventListener('click', () => setOpen(panel.hidden));
   panel.addEventListener('keydown', event => {
-    if (event.key === 'Escape') { event.preventDefault(); setOpen(false); }
+    if (!event.defaultPrevented && event.key === 'Escape') { event.preventDefault(); setOpen(false); }
   });
 }
 
@@ -235,6 +235,8 @@ function BAPlayer() {
 
   function scrollToCurrent() {
     if (index < 0) return;
+    const focused = document.activeElement;
+    if (document.documentElement.classList.contains('remote-mode') && focused && focused.closest('#ulist') && focused !== rows[index]) return;
     const list = rows[index].parentElement;
     list.scrollTop += rows[index].getBoundingClientRect().top - list.getBoundingClientRect().top;
   }
@@ -429,9 +431,16 @@ function BAPlayer() {
   filterAlbums(readSavedAlbums());
   if (queue.length) {
     selectTrack(startingTrack(), false);
-    showStatus('재생 버튼이나 곡을 눌러 시작하세요. Space 키로도 재생할 수 있습니다.');
+    showStatus(window.BAMusicTV ? '재생 버튼이나 곡에서 확인 키를 눌러 시작하세요.' : '재생 버튼이나 곡을 눌러 시작하세요. Space 키로도 재생할 수 있습니다.');
   }
   else clearTrack();
+  window.BAMusicPlayback = {
+    play, pause, toggle: () => audio.paused ? play() : pause(),
+    stop: () => { pause(); seek(0); }, next: nextTrack, previous: previousTrack,
+    seekBy: seconds => seek(audio.currentTime + seconds),
+  };
+  // The waveform is decorative. Older TV engines still use native audio and the seek slider.
+  if (typeof ResizeObserver !== 'function' || window.BAMusicTV) return;
   Promise.all([
     import('./wavesurfer.esm.js'),
     fetch('./waveforms.json', { cache: 'no-cache' }).then(response => {

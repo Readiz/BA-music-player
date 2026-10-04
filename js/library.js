@@ -33,7 +33,9 @@ BAAlbumPanel();
           li.append(source, description);
           list.append(li);
       }
-      document.getElementById('ulist').replaceChildren(list);
+      const listRoot = document.getElementById('ulist');
+      listRoot.textContent = '';
+      listRoot.appendChild(list);
   }
   const loadState = document.querySelector('.library-load-state');
   const retry = document.querySelector('.library-retry');
