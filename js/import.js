@@ -12,7 +12,7 @@
   const jobs = modal.querySelector('.music-add-jobs');
   const logout = modal.querySelector('.music-logout');
   let authenticated = false, timer, priorFocus, refreshing = false, duplicate;
-  const labels = { queued: '대기 중', checking: '영상 확인 중', downloading: '다운로드 중', converting: 'MP3 변환 중', ready: 'ETC에 추가됨', failed: '추가 실패' };
+  const labels = { queued: '대기 중', checking: '영상 확인 중', downloading: '다운로드 중', converting: '음악 준비 중', syncing: '동기화 중 · 완료 후 ETC에 추가됩니다', ready: '동기화 완료 · ETC에 추가됨', failed: '추가 실패' };
   open.hidden = false;
   const message = text => { status.textContent = text; };
   async function api(path, options = {}) {
@@ -87,7 +87,7 @@
     message('추가 요청 중…');
     try {
       const { job } = await api('/api/imports', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: input.value }) });
-      message(job.status === 'ready' ? '이미 ETC에 있는 곡입니다. 바로 들을 수 있습니다.' : '추가를 시작했습니다. 창을 닫아도 다운로드는 계속됩니다.');
+      message(job.status === 'ready' ? '이미 ETC에 있는 곡입니다. 바로 들을 수 있습니다.' : '동기화가 끝나면 ETC에 추가됩니다. 몇 분 걸릴 수 있으며, 창을 닫아도 계속 진행됩니다.');
       duplicate = job.status === 'ready' ? job : null;
       input.value = ''; await refreshJobs();
     } catch (error) { message(error.message); }

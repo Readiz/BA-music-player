@@ -3,7 +3,6 @@ import { randomUUID } from 'node:crypto';
 import { chmodSync, existsSync, mkdirSync, readdirSync, renameSync, rmSync, statSync, statfsSync } from 'node:fs';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import { createWaveform } from './waveforms.mjs';
 
 export class ImportError extends Error {
   constructor(message, status = 400) { super(message); this.status = status; }
@@ -77,12 +76,12 @@ export function createDownloader({ command = process.env.MUSIC_YTDLP || 'yt-dlp'
     return { path, title, duration: metadata.duration, bytes: size };
   };
 }
-export function createImports({ dataRoot, downloader = createDownloader(), waveform = createWaveform, now = Date.now }) {
+export function createImports({ dataRoot, downloader = createDownloader(), synchronize, now = Date.now }) {
+  if (typeof synchronize !== 'function') throw new Error('A durable music synchronizer is required');
   mkdirSync(dataRoot, { recursive: true, mode: 0o700 });
   const staging = join(dataRoot, 'staging');
   const media = join(dataRoot, 'media', 'ETC');
   mkdirSync(media, { recursive: true });
-  // A single worker owns this store. A killed process cannot publish partial files.
   rmSync(staging, { recursive: true, force: true });
   mkdirSync(staging, { recursive: true, mode: 0o700 });
   const dbPath = join(dataRoot, 'imports.sqlite');
@@ -93,47 +92,53 @@ export function createImports({ dataRoot, downloader = createDownloader(), wavef
       id TEXT PRIMARY KEY, video_id TEXT UNIQUE NOT NULL, owner TEXT NOT NULL,
       status TEXT NOT NULL, title TEXT, duration REAL, bytes INTEGER, error TEXT,
       created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL
-    );
-    UPDATE imports SET status='failed', error='서버가 재시작되었습니다. 같은 링크로 다시 추가해 주세요.' WHERE status IN ('queued','checking','downloading','converting');`);
-  if (!db.prepare('PRAGMA table_info(imports)').all().some(column => column.name === 'waveform')) {
-    db.exec('ALTER TABLE imports ADD COLUMN waveform TEXT');
-  }
+    );`);
+  const columns = new Set(db.prepare('PRAGMA table_info(imports)').all().map(column => column.name));
+  for (const column of ['sync_state', 'sync_revision']) if (!columns.has(column)) db.exec(`ALTER TABLE imports ADD COLUMN ${column} TEXT`);
+  // Resume interrupted synchronization, and migrate audio from the old local-only library.
+  db.exec("UPDATE imports SET status='queued',error=NULL WHERE status IN ('checking','downloading','converting','syncing') OR (status='ready' AND sync_revision IS NULL)");
   let running = null, closed = false;
-  const waveformFailures = new Set();
   const publicTrack = row => ({ src: `./music/ETC/yt-${row.video_id}.mp3`, title: row.title, folder: 'ETC', artist: 'ETC' });
-  const view = row => row && ({ id: row.id, status: row.status, title: row.title, error: row.error, createdAt: row.created_at, ...(row.status === 'ready' ? { track: publicTrack(row) } : {}) });
+  const view = row => row && ({ id: row.id, status: row.status, title: row.title, error: row.error, createdAt: row.created_at,
+    ...(row.status === 'ready' && row.sync_revision ? { track: publicTrack(row) } : {}) });
   const update = (id, status) => db.prepare('UPDATE imports SET status=?, updated_at=? WHERE id=?').run(status, now(), id);
   const get = id => db.prepare('SELECT * FROM imports WHERE id=?').get(id);
   async function work(row) {
     const controller = new AbortController();
     const directory = join(staging, row.id);
+    const path = join(media, `yt-${row.video_id}.mp3`);
     mkdirSync(directory, { mode: 0o700 });
     const promise = (async () => {
       try {
-        update(row.id, 'checking');
-        const result = await downloader({ video: youtubeVideo(`https://youtu.be/${row.video_id}`), directory, signal: controller.signal, stage: status => update(row.id, status) });
-        let peaks = null;
-        try { peaks = await waveform(result.path, { signal: controller.signal }); }
-        catch { waveformFailures.add(row.id); /* A display failure must not discard completed audio. */ }
-        if (controller.signal.aborted) throw new Error('aborted');
-        renameSync(result.path, join(media, `yt-${row.video_id}.mp3`));
-        db.prepare("UPDATE imports SET status='ready', title=?, duration=?, bytes=?, waveform=?, error=NULL, updated_at=? WHERE id=?").run(result.title, result.duration, result.bytes, peaks ? JSON.stringify(peaks) : null, now(), row.id);
+        const video = youtubeVideo(`https://youtu.be/${row.video_id}`);
+        let result;
+        if (existsSync(path) && row.title && row.bytes) {
+          result = { path, title: row.title, duration: row.duration, bytes: statSync(path).size };
+        } else {
+          update(row.id, 'checking');
+          result = await downloader({ video, directory, signal: controller.signal, stage: status => update(row.id, status) });
+          controller.signal.throwIfAborted();
+          renameSync(result.path, path);
+          result.path = path;
+          db.prepare('UPDATE imports SET title=?,duration=?,bytes=? WHERE id=?').run(result.title, result.duration, result.bytes, row.id);
+        }
+        update(row.id, 'syncing');
+        const synced = await synchronize({ video, result, signal: controller.signal, checkpoint: JSON.parse(row.sync_state || '{}'),
+          saveCheckpoint: state => db.prepare('UPDATE imports SET sync_state=? WHERE id=?').run(JSON.stringify(state), row.id) });
+        controller.signal.throwIfAborted();
+        if (!/^[a-f0-9]{40}$/.test(synced.revision || '')) throw new Error('Missing synchronization proof');
+        db.prepare("UPDATE imports SET status='ready',title=?,sync_revision=?,error=NULL,updated_at=? WHERE id=?").run(synced.track?.title || result.title, synced.revision, now(), row.id);
+        // GitHub and the verified static release now own the final file.
+        try { rmSync(path, { force: true }); } catch { /* A cache cleanup failure cannot undo Pages publication. */ }
       } catch (error) {
-        db.prepare("UPDATE imports SET status='failed', error=?, updated_at=? WHERE id=?").run(error instanceof ImportError ? error.message : '음악 추가에 실패했습니다. 잠시 후 다시 시도해 주세요.', now(), row.id);
+        if (controller.signal.aborted) update(row.id, 'queued');
+        else {
+          const message = get(row.id).status === 'syncing'
+            ? '음악 동기화에 실패했습니다. 같은 링크로 다시 요청해 주세요. 다운로드한 파일은 보관됩니다.'
+            : error instanceof ImportError ? error.message : '음악 추가에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+          db.prepare("UPDATE imports SET status='failed',error=?,updated_at=? WHERE id=?").run(message, now(), row.id);
+        }
       } finally { rmSync(directory, { recursive: true, force: true }); }
-    })();
-    running = { controller, promise };
-    await promise;
-    running = null;
-    pump();
-  }
-  async function backfill(row) {
-    const controller = new AbortController();
-    const promise = (async () => {
-      try {
-        const data = await waveform(join(media, `yt-${row.video_id}.mp3`), { signal: controller.signal });
-        if (!controller.signal.aborted) db.prepare('UPDATE imports SET waveform=? WHERE id=?').run(JSON.stringify(data), row.id);
-      } catch { waveformFailures.add(row.id); }
     })();
     running = { controller, promise };
     await promise;
@@ -143,10 +148,7 @@ export function createImports({ dataRoot, downloader = createDownloader(), wavef
   function pump() {
     if (closed || running) return;
     const row = db.prepare("SELECT * FROM imports WHERE status='queued' ORDER BY created_at LIMIT 1").get();
-    if (row) { void work(row); return; }
-    const missing = db.prepare("SELECT * FROM imports WHERE status='ready' AND waveform IS NULL ORDER BY created_at").all()
-      .find(item => !waveformFailures.has(item.id) && existsSync(join(media, `yt-${item.video_id}.mp3`)));
-    if (missing) void backfill(missing);
+    if (row) void work(row);
   }
   queueMicrotask(pump);
   return {
@@ -154,26 +156,22 @@ export function createImports({ dataRoot, downloader = createDownloader(), wavef
       const video = youtubeVideo(value);
       const existing = db.prepare('SELECT * FROM imports WHERE video_id=?').get(video.id);
       if (existing && existing.status !== 'failed') {
-        if (existing.status !== 'ready' && existing.owner !== owner) throw new ImportError('다른 사용자가 이 곡을 추가하고 있습니다. 잠시 후 ETC에서 확인해 주세요.', 409);
+        if (existing.status !== 'ready' && existing.owner !== owner) throw new ImportError('다른 사용자가 이 곡을 추가하고 있습니다. 동기화 후 ETC에서 확인해 주세요.', 409);
         return view(existing);
       }
-      if (db.prepare("SELECT count(*) AS n FROM imports WHERE status IN ('queued','checking','downloading','converting')").get().n >= 5) throw new ImportError('추가 대기열이 가득 찼습니다. 잠시 후 다시 시도해 주세요.', 429);
+      if (db.prepare("SELECT count(*) AS n FROM imports WHERE status IN ('queued','checking','downloading','converting','syncing')").get().n >= 5) throw new ImportError('추가 대기열이 가득 찼습니다. 잠시 후 다시 시도해 주세요.', 429);
       if (db.prepare('SELECT count(*) AS n FROM imports WHERE owner=? AND updated_at>?').get(owner, now() - 3600_000).n >= 20) throw new ImportError('한 시간에 최대 20곡까지 추가할 수 있습니다. 잠시 후 다시 시도해 주세요.', 429);
       const disk = statfsSync(dataRoot);
-      const used = db.prepare("SELECT coalesce(sum(bytes),0) AS bytes FROM imports WHERE status='ready'").get().bytes;
+      const used = db.prepare('SELECT coalesce(sum(bytes),0) AS bytes FROM imports').get().bytes;
       if (disk.bavail * disk.bsize < 500 * 1024 * 1024 || used >= 10 * 1024 ** 3) throw new ImportError('음악 저장 공간이 부족합니다.', 507);
       const id = existing?.id || randomUUID();
       db.prepare(`INSERT INTO imports (id,video_id,owner,status,created_at,updated_at) VALUES (?,?,?,'queued',?,?)
-        ON CONFLICT(video_id) DO UPDATE SET owner=excluded.owner,status='queued',error=NULL,updated_at=excluded.updated_at`).run(id, video.id, owner, now(), now());
+        ON CONFLICT(video_id) DO UPDATE SET owner=excluded.owner,status='queued',error=NULL,sync_state=NULL,updated_at=excluded.updated_at`).run(id, video.id, owner, now(), now());
       const result = view(get(id));
       queueMicrotask(pump);
       return result;
     },
     list: owner => db.prepare('SELECT * FROM imports WHERE owner=? ORDER BY updated_at DESC LIMIT 20').all(owner).map(view),
-    catalog: () => db.prepare("SELECT * FROM imports WHERE status='ready' ORDER BY created_at").all().filter(row => existsSync(join(media, `yt-${row.video_id}.mp3`))).map(publicTrack),
-    waveforms: () => Object.fromEntries(db.prepare("SELECT * FROM imports WHERE status='ready' AND waveform IS NOT NULL").all()
-      .filter(row => existsSync(join(media, `yt-${row.video_id}.mp3`)))
-      .map(row => [publicTrack(row).src, JSON.parse(row.waveform)])),
     async close() { closed = true; running?.controller.abort(); if (running) await running.promise; db.close(); },
   };
 }

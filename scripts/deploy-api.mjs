@@ -11,6 +11,8 @@ const root = join(home, '.local/share/readiz-music');
 const authPath = join(home, '.config/readiz-music/discord-auth.json');
 const command = join(root, 'downloader/bin/yt-dlp');
 if (!existsSync(authPath) || !existsSync(command)) throw new Error('Set up music Discord configuration and yt-dlp first; see ops/README.md.');
+const github = JSON.parse(execFileSync('/opt/homebrew/bin/gh', ['api', 'repos/Readiz/BA-music-player'], { encoding: 'utf8' }));
+if (!github.permissions?.push) throw new Error('GitHub music synchronization requires repository write access through gh.');
 const revision = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const release = join(root, 'api-releases', `${Date.now()}-${revision.slice(0, 12)}`);
 mkdirSync(release, { recursive: true });

@@ -11,7 +11,8 @@ test('publication contains every catalog track and only public runtime files', (
   const config = JSON.parse(readFileSync('dist/app-config.json', 'utf8'));
   assert.equal(config.trackCount, tracks.length);
   assert.equal(config.appId, 'com.readiz.music');
-  for (const track of tracks) assert.ok(existsSync(`dist/${decodeURI(track)}`), track);
+  for (const track of tracks) assert.equal(existsSync(`dist/${decodeURI(track)}`), process.env.MUSIC_BUILD_TARGET === 'pages', track);
+  assert.equal(config.mediaBase, 'https://blog.readiz.com/BA-music-player/');
   for (const path of ['.git', 'node_modules', 'android', 'ops', 'scripts', 'server', 'package.json', 'README.md']) {
     assert.equal(existsSync(`dist/${path}`), false, `Private/build file published: ${path}`);
   }

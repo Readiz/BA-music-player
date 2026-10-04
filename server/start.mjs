@@ -4,8 +4,9 @@ import { join } from 'node:path';
 import { getAuth } from './auth.mjs';
 import { createImports } from './imports.mjs';
 import { createHandler } from './app.mjs';
+import { createGithubSync } from './github-sync.mjs';
 const auth = getAuth();
-const imports = createImports({ dataRoot: process.env.MUSIC_DATA_ROOT || join(homedir(), '.local/share/readiz-music/data') });
+const imports = createImports({ dataRoot: process.env.MUSIC_DATA_ROOT || join(homedir(), '.local/share/readiz-music/data'), synchronize: createGithubSync() });
 const staticRoot = process.env.MUSIC_STATIC_ROOT || '/opt/homebrew/var/www/readiz-music/current';
 const handler = createHandler({ auth, imports, staticRoot, revision: process.env.MUSIC_REVISION || 'development' });
 const server = createServer(async (req, res) => {

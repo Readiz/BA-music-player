@@ -67,7 +67,7 @@
     <div class="music-add-heading"><h2 id="music-add-title">유튜브 음악 추가</h2><button type="button" class="music-add-close" aria-label="음악 추가 닫기">닫기</button></div>
     <div class="music-add-guest" hidden><p>디스코드로 로그인하면 유튜브 음악을 ETC에 추가할 수 있습니다. 음악 감상은 로그인 없이 이용할 수 있습니다.</p><a href="/api/auth/discord/start">디스코드로 로그인</a></div>
     <div class="music-add-account" hidden>
-      <form><label for="youtube-url">유튜브 영상 링크</label><input id="youtube-url" type="url" name="url" placeholder="https://www.youtube.com/watch?v=…" required maxlength="2048" autocomplete="off" inputmode="url" aria-describedby="music-add-help"><p class="music-add-help" id="music-add-help">한 번에 한 곡 · 최대 30분 / 100MB<br>완료된 곡은 ETC에서 누구나 들을 수 있습니다.</p><button type="submit" class="music-add-submit">ETC에 추가</button></form>
+      <form><label for="youtube-url">유튜브 영상 링크</label><input id="youtube-url" type="url" name="url" placeholder="https://www.youtube.com/watch?v=…" required maxlength="2048" autocomplete="off" inputmode="url" aria-describedby="music-add-help"><p class="music-add-help" id="music-add-help">한 번에 한 곡 · 최대 30분 / 100MB<br>동기화가 끝나면 ETC에 추가됩니다. 몇 분 걸릴 수 있습니다.</p><button type="submit" class="music-add-submit">ETC에 추가</button></form>
       <ul class="music-add-jobs" aria-label="최근 음악 추가" aria-live="polite"></ul>
       <button type="button" class="music-logout">로그아웃</button>
     </div>
@@ -75,6 +75,7 @@
   </div>
 </section>
 <!-- Audio Player JS -->
+<script src="./js/music-source.js"></script>
 <script src="./js/native-player.js"></script>
 <script src="./js/script.js?v=20261005-native"></script>
 <script defer src="./js/library.js"></script>

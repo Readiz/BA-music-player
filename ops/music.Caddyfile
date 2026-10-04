@@ -11,21 +11,16 @@ music.readiz.com {
 		X-Frame-Options "DENY"
 		?Referrer-Policy "strict-origin-when-cross-origin"
 		Permissions-Policy "camera=(), microphone=(), geolocation=()"
-		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self' blob:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://blog.readiz.com; media-src 'self' blob: https://blog.readiz.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 	}
 	@audio path /music/*
 	header @audio Cache-Control "public, max-age=3600, must-revalidate"
+	redir @audio https://blog.readiz.com/BA-music-player{uri} 307
 
 	@music_api path /api/* /musicList.json /waveforms.json
 	handle @music_api {
 		# Preserve the API's private/no-store authentication headers.
 		reverse_proxy 127.0.0.1:4525
-	}
-	@imported_audio path_regexp imported ^/music/ETC/yt-[A-Za-z0-9_-]{11}\.mp3$
-	handle @imported_audio {
-		uri strip_prefix /music
-		root * /Users/readiz/.local/share/readiz-music/data/media
-		file_server
 	}
 	handle {
 		file_server

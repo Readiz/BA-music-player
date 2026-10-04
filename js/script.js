@@ -223,6 +223,8 @@ function BAPlayer() {
 
   function syncNativeQueue(autoplay = !audio.paused, preserve = true) {
     if (!native) return;
+    // Existing APKs trust the music host. Its audio URLs redirect to Pages;
+    // audio bytes are delivered by Pages without a local copy or an APK update.
     native.configure(queue.map(i => ({
       ...tracks[i], id: tracks[i].src, src: new URL(tracks[i].src, location.href).href,
       title: tracks[i].title.replace(/^theme_\d+-/, ''),
@@ -247,7 +249,7 @@ function BAPlayer() {
         } else syncNativeQueue(autoplay, false);
       }
     } else {
-      audio.src = new URL(track.src, location.href).href;
+      audio.src = window.BAMusicSource.media(track.src);
       audio.load();
     }
     if (session) {
@@ -533,7 +535,7 @@ function BAPlayer() {
   if (typeof ResizeObserver !== 'function') return;
   function refreshWaveforms() {
     if (!waveformRequest) {
-      waveformRequest = fetch('./waveforms.json', { cache: 'no-cache' }).then(response => {
+      waveformRequest = fetch(window.BAMusicSource.catalog('waveforms.json'), { cache: 'no-cache' }).then(response => {
         if (!response.ok) throw new Error('Waveform data unavailable');
         return response.json();
       }).then(data => {
