@@ -62,7 +62,7 @@ try {
   await until('window.BAMusicNativeAudio && window.BAMusicPlayback && document.querySelector(".simp-title").textContent');
   await until('window.BAMusicNativeAudio.state.queue.length > 0');
   assert.equal(await evaluate('document.querySelector("#audio").getAttribute("src")'), null);
-  await evaluate('window.BAMusicPlayback.play()');
+  await evaluate('window.BAMusicNativeAudio.options({repeat:false,autoNext:true}); window.BAMusicPlayback.play()');
   await until('window.BAMusicNativeAudio.currentTime > 1 && !window.BAMusicNativeAudio.paused');
   const start = await evaluate('({...window.BAMusicNativeAudio.state})');
   report.push({play: start.id, queue: start.queue.length});
@@ -90,10 +90,11 @@ try {
   android('shell', 'cmd', 'media_session', 'dispatch', 'previous');
   await until(`window.BAMusicNativeAudio.state.id === ${JSON.stringify(start.id)}`);
   report.push('System previous returned to the same track in the fixed shuffle queue');
+  await until('!window.BAMusicNativeAudio.state.buffering && window.BAMusicNativeAudio.currentTime > 0.3');
   android('shell', 'input', 'keyevent', '223'); // SLEEP
   const beforeLock = await evaluate('window.BAMusicNativeAudio.currentTime');
   await delay(3000);
-  assert.ok(await evaluate('window.BAMusicNativeAudio.currentTime') > beforeLock + 1.5);
+  await until(`window.BAMusicNativeAudio.currentTime > ${beforeLock + 1.5}`);
   android('shell', 'input', 'keyevent', '224'); // WAKEUP
   android('shell', 'wm', 'dismiss-keyguard');
   android('shell', 'am', 'start', '-n', 'com.readiz.music/.MainActivity');

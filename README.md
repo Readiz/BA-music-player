@@ -21,7 +21,7 @@
 앨범에서 오른쪽으로 돌아오면 마지막 재생 컨트롤에 포커스를 둔다. 곡이 바뀌면 목록의
 포커스 진입 위치와 스크롤을 새 곡에 맞추고, 목록을 조작 중인 경우 포커스도 함께 이동한다.
 
-TV 프로젝트와 같은 방식의 독립 Tizen 실행기 0.1.0과 Android TV 지원 APK 0.2.0을 준비했다.
+TV 프로젝트와 같은 방식의 독립 Tizen 실행기 0.1.0과 Android TV 지원 APK 0.3.0을 준비했다.
 [삼성 TV 서명·설치 및 검증 범위](tizen/README.md), [Android 빌드·TV 진입점](android/README.md).
 WGT는 미서명 개인 개발용이며 실제 TV 설치·재생과 스토어 배포는 별도 확인 단계다.
 
@@ -150,6 +150,6 @@ https://blog.readiz.com/BA-music-player/
 
 대표 주소는 **https://music.readiz.com/** 입니다. 음악 프로젝트는 이 저장소에서 독립적으로 관리하며 홈페이지의 이전 음악 상세 주소는 새 서비스로 연결합니다. [운영·Cloudflare DNS·배포 안내](ops/README.md), [Android 앱 준비와 다음 단계](android/README.md)를 참고하세요.
 
-`npm test`는 공개 빌드의 음원 경로·파일 공개 경계·설치 자산을 검증합니다. `npm run build`로 338곡과 정적 화면을 `dist/`에 모으고, 깨끗한 커밋에서 `npm run deploy:local`로 독립 배포합니다. `npm run build:apk:debug`는 Android 시작 앱과 lint를 검증합니다. 앱 ID는 `com.readiz.music`입니다.
+`npm test`는 공개 빌드의 음원 경로·파일 공개 경계·설치 자산을 검증합니다. `npm run build`로 338곡과 정적 화면을 `dist/`에 모으고, 깨끗한 커밋에서 `npm run deploy:local`로 독립 배포합니다. `npm run build:apk`는 정식 APK·lint·Android 단위 테스트를 검증하고 배포용 메타데이터를 만듭니다. 앱 ID는 `com.readiz.music`입니다.
 
 홈 화면 설치용 매니페스트·전용 아이콘·오프라인 연결 안내를 제공합니다. 외부 폰트 CDN 의존성을 제거하고 Font Awesome 4.7.0의 CSS·WOFF2를 라이선스 안내와 함께 보관합니다. 음원은 설치 시 캐시하지 않으며 브라우저가 직접 스트리밍합니다. `app-config.json`은 후속 앱에서 목록과 제목 자료를 찾는 버전 1 계약입니다.
