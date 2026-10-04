@@ -122,6 +122,7 @@ function BAPlayer() {
   let playAttempt = 0;
   let WaveSurfer;
   let waveforms;
+  let waveformRequest;
   let waveform;
   let waveformSource = '';
 
@@ -527,6 +528,12 @@ function BAPlayer() {
   window.BAMusicLibrary = {
     add(track) {
       if (!track || !/^\.\/music\/ETC\/yt-[\w-]{11}\.mp3$/.test(track.src)) return;
+      // The player may have opened before this import finished.
+      if (!waveforms?.[track.src]) {
+        Promise.resolve(waveformRequest).catch(() => {}).then(() => {
+          if (!waveforms?.[track.src]) return refreshWaveforms();
+        }).catch(() => {});
+      }
       const existing = tracks.findIndex(item => item.src === track.src);
       if (existing >= 0) return existing;
       const row = document.createElement('li');
@@ -551,15 +558,23 @@ function BAPlayer() {
   };
   // The waveform is optional; engines without ResizeObserver retain native audio and seeking.
   if (typeof ResizeObserver !== 'function') return;
+  function refreshWaveforms() {
+    if (!waveformRequest) {
+      waveformRequest = fetch('./waveforms.json', { cache: 'no-cache' }).then(response => {
+        if (!response.ok) throw new Error('Waveform data unavailable');
+        return response.json();
+      }).then(data => {
+        waveforms = data;
+        renderWaveform();
+      }).finally(() => { waveformRequest = undefined; });
+    }
+    return waveformRequest;
+  }
   Promise.all([
     import('./wavesurfer.esm.js'),
-    fetch('./waveforms.json', { cache: 'no-cache' }).then(response => {
-      if (!response.ok) throw new Error('Waveform data unavailable');
-      return response.json();
-    }),
-  ]).then(([module, data]) => {
+    refreshWaveforms(),
+  ]).then(([module]) => {
     WaveSurfer = module.default;
-    waveforms = data;
     renderWaveform();
   }).catch(() => { /* Playback remains available without the visualizer. */ });
 }

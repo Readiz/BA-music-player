@@ -16,7 +16,7 @@ music.readiz.com {
 	@audio path /music/*
 	header @audio Cache-Control "public, max-age=3600, must-revalidate"
 
-	@music_api path /api/* /musicList.json
+	@music_api path /api/* /musicList.json /waveforms.json
 	handle @music_api {
 		# Preserve the API's private/no-store authentication headers.
 		reverse_proxy 127.0.0.1:4525

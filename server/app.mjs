@@ -8,6 +8,11 @@ export function createHandler({ auth, imports, staticRoot, revision = 'developme
     const path = new URL(request.url).pathname.replace(/\/$/, '');
     if (path.startsWith('/api/auth/')) return handleAuth(request, auth, ip);
     if (path === '/api/health' && request.method === 'GET') return authJson({ service: 'readiz-music', revision, auth: !!auth });
+    if (path === '/waveforms.json' && request.method === 'GET') {
+      return new Response(JSON.stringify({
+        ...JSON.parse(readFileSync(join(staticRoot, 'waveforms.json'), 'utf8')), ...imports.waveforms(),
+      }), { headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-cache' } });
+    }
     if (['/musicList.json', '/api/library'].includes(path) && request.method === 'GET') {
       const tracks = imports.catalog();
       return new Response(JSON.stringify(path === '/api/library' ? { tracks } : [
