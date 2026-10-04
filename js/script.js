@@ -440,8 +440,8 @@ function BAPlayer() {
     stop: () => { pause(); seek(0); }, next: nextTrack, previous: previousTrack,
     seekBy: seconds => seek(audio.currentTime + seconds),
   };
-  // The waveform is decorative. Older TV engines still use native audio and the seek slider.
-  if (typeof ResizeObserver !== 'function' || window.BAMusicTV) return;
+  // The waveform is optional; engines without ResizeObserver retain native audio and seeking.
+  if (typeof ResizeObserver !== 'function') return;
   Promise.all([
     import('./wavesurfer.esm.js'),
     fetch('./waveforms.json', { cache: 'no-cache' }).then(response => {

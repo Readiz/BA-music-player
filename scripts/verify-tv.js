@@ -22,6 +22,12 @@ async (sourcePage) => {
       await page.setViewportSize({width,height});
       await page.goto(base+'/?tv=1');
       await page.waitForFunction(() => window.BAMusicPlayback && document.querySelector('audio').duration > 0 && document.activeElement.matches('.simp-plause'));
+      await page.waitForFunction(() => {
+        const waveform = document.querySelector('#waveform');
+        const host = waveform.firstElementChild;
+        return getComputedStyle(waveform).display !== 'none' && getComputedStyle(waveform).visibility === 'visible' &&
+          host && host.shadowRoot && host.shadowRoot.querySelector('canvas')?.width > 0;
+      });
       check((await state()).paused, 'TV startup autoplayed');
       check(await page.locator('.album-toolbar').isHidden(), 'TV album toolbar remains visible');
       check(await page.locator('.app-header button:visible').count() === 0, 'TV header still has buttons');

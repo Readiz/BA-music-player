@@ -1,6 +1,6 @@
 # Readiz Music Tizen 실행기
 
-웹 1.2.1 / 실행기 0.1.0. TV 프로젝트의 원격 포커스와 최상위 웹 탐색·종료 복귀 구조를 참고했다. `ReadizMU01.ReadizMusic` / package `ReadizMU01`은 음악 전용 고정 ID이며 기존 Readiz TV와 별도로 설치한다.
+웹 1.2.2 / 실행기 0.1.0. TV 프로젝트의 원격 포커스와 최상위 웹 탐색·종료 복귀 구조를 참고했다. `ReadizMU01.ReadizMusic` / package `ReadizMU01`은 음악 전용 고정 ID이며 기존 Readiz TV와 별도로 설치한다.
 
 ## 패키지와 배포
 
@@ -36,7 +36,7 @@ TV에서는 앨범을 항상 열어 두고 상단 앨범 접기·종료 버튼�
 
 ## 지원 범위와 확인
 
-Tizen 5.0 이상을 선언하고 JavaScript는 Chromium 63 대상으로 변환한다. TV에서는 파형 장식을 생략하고 native audio와 탐색 막대를 쓴다. 오래된 엔진의 DOM `replaceChildren`, CSS `aspect-ratio`, flex gap에 TV 화면이 의존하지 않도록 했다. [Samsung 엔진 표](https://developer.samsung.com/smarttv/develop/specifications/web-engine-specifications.html).
+Tizen 5.0 이상을 선언하고 JavaScript는 Chromium 63 대상으로 변환한다. TV에서도 웹과 같은 파형을 표시한다. 파형을 불러오는 동안에도 native audio와 탐색 막대로 재생·탐색할 수 있다. 오래된 엔진의 DOM `replaceChildren`, CSS `aspect-ratio`, flex gap에 TV 화면이 의존하지 않도록 했다. [Samsung 엔진 표](https://developer.samsung.com/smarttv/develop/specifications/web-engine-specifications.html).
 
 ```sh
 npm run dev
