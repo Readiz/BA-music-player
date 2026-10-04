@@ -35,6 +35,10 @@ async (page) => {
       const expected = new URL(ba[Math.floor(seed * ba.length)], page.url()).href;
       if (!(await fresh.locator('#audio').evaluate((a, expected) => a.src === expected && a.paused, expected))) throw new Error('First track did not use a random BA track or autoplayed');
       if (await fresh.getByRole('button', {name:'무작위 재생',exact:true}).getAttribute('aria-pressed') !== 'true') throw new Error('Shuffle did not start enabled');
+      await fresh.getByRole('button', {name:'다음 곡',exact:true}).click();
+      if (await fresh.locator('#audio').evaluate((a, expected) => a.src === expected, expected)) throw new Error('Startup shuffle immediately repeated its first track');
+      await fresh.getByRole('button', {name:'이전 곡',exact:true}).click();
+      if (!(await fresh.locator('#audio').evaluate((a, expected) => a.src === expected, expected))) throw new Error('Startup shuffle did not return to its prepared first track');
     } finally { await fresh.close(); }
   }
   report.push('Fresh visits select only BA, enable shuffle and prepare a random first track without autoplay (three random values verified)');
@@ -94,15 +98,46 @@ async (page) => {
   await expectSource(combined[0]);
   report.push('Current position survives album additions; real ended and media controls cross selected album boundaries and wrap');
 
+  const shuffleStart = await source();
   await page.getByRole('button',{name:'무작위 재생',exact:true}).click();
-  for (let i=0;i<8;i++) {
-    const before=await source();
+  if (await source() !== shuffleStart) throw new Error('Enabling shuffle changed the current track');
+  const shuffled = [shuffleStart];
+  for (let i=1;i<combined.length;i++) {
     await page.getByRole('button',{name:'다음 곡',exact:true}).click();
     await waitPlaying();
     const after=await source();
-    if (before===after || !combined.some(path=>new URL(path,page.url()).href===after)) throw new Error('Shuffle repeated or left the selected albums');
+    if (shuffled.includes(after) || !combined.some(path=>new URL(path,page.url()).href===after)) throw new Error('Shuffle repeated before a full cycle or left the selected albums');
+    shuffled.push(after);
   }
+  await page.getByRole('button',{name:'다음 곡',exact:true}).click();
+  await waitPlaying();
+  if (await source() !== shuffled[0]) throw new Error('Shuffle did not wrap in its fixed order');
+  for (let i=shuffled.length-1;i>=0;i--) {
+    await page.getByRole('button',{name:'이전 곡',exact:true}).click();
+    await waitPlaying();
+    if (await source() !== shuffled[i]) throw new Error('Previous did not reverse the shuffled order');
+  }
+  await page.evaluate(()=>window.__mediaActions.nexttrack());
+  await waitPlaying();
+  if (await source() !== shuffled[1]) throw new Error('Media next did not reuse the shuffled order');
+  await page.evaluate(()=>window.__mediaActions.previoustrack());
+  await waitPlaying();
+  if (await source() !== shuffled[0]) throw new Error('Media previous did not reverse the shuffled order');
+  await visible.nth(3).click();
+  await waitPlaying();
+  const selectedPosition = shuffled.indexOf(await source());
+  const following = shuffled[(selectedPosition + 1) % shuffled.length];
+  await page.locator('#audio').evaluate(a=>{ a.currentTime=a.duration-0.3; });
+  await page.waitForFunction(expected=>document.querySelector('#audio').src===expected && document.querySelector('#audio').currentTime>0.2, following);
+  await page.getByRole('button',{name:'이전 곡',exact:true}).click();
+  await waitPlaying();
+  if (await source() !== shuffled[selectedPosition]) throw new Error('Direct selection or auto-next reshuffled the queue');
   await page.getByRole('button',{name:'무작위 재생',exact:true}).click();
+  if (await source() !== shuffled[selectedPosition]) throw new Error('Disabling shuffle changed the current track');
+  await page.getByRole('button',{name:'다음 곡',exact:true}).click();
+  await waitPlaying();
+  await expectSource(combined[4]);
+  report.push('Shuffle visits every selected track once, wraps in a fixed order, and reverses exactly through buttons, Media Session and auto-next; direct selection preserves the order and disabling restores catalog order');
   await visible.first().click();
   await waitPlaying();
   await album('Girls Band Cry').uncheck();

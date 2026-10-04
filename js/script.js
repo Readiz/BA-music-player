@@ -246,6 +246,7 @@ function BAPlayer() {
       row.hidden = !selectedAlbums.has(tracks[i].folder);
       if (!row.hidden) queue.push(i);
     });
+    orderQueue();
     for (const [folder, input] of albumInputs) {
       input.checked = selectedAlbums.has(folder);
       input.closest('.album-card').classList.toggle('is-selected', input.checked);
@@ -296,7 +297,17 @@ function BAPlayer() {
   }
 
   function startingTrack() {
-    return queue[random ? Math.floor(Math.random() * queue.length) : 0];
+    return queue[0];
+  }
+
+  function orderQueue() {
+    queue.sort((a, b) => a - b);
+    if (!random) return;
+    // Fix one shuffled order on entry or album changes; navigation never reshuffles.
+    for (let i = 0; i < queue.length - 1; i++) {
+      const next = i + Math.floor(Math.random() * (queue.length - i));
+      [queue[i], queue[next]] = [queue[next], queue[i]];
+    }
   }
 
   function readSavedAlbums() {
@@ -329,10 +340,7 @@ function BAPlayer() {
   function nextTrack() {
     if (!queue.length) return;
     const position = queue.indexOf(index);
-    const step = random && queue.length > 1
-      ? 1 + Math.floor(Math.random() * (queue.length - 1))
-      : 1;
-    selectTrack(queue[(position + step) % queue.length]);
+    selectTrack(queue[(position + 1) % queue.length]);
   }
 
   function toggleOption(selector, enabled) {
@@ -370,6 +378,7 @@ function BAPlayer() {
   });
   player.querySelector('.simp-random').addEventListener('click', () => {
     random = !random;
+    orderQueue();
     toggleOption('.simp-random', random);
   });
   rows.forEach((row, i) => {
