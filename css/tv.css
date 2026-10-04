@@ -36,7 +36,6 @@
 .tv-layout #simp .album-count{font-size:16px;margin:4px 0 0;}
 .tv-layout #simp .simp-album{padding:18px 24px 4px;}
 .tv-layout #simp .simp-title{font-size:25px;}
-.tv-layout #simp #waveform{display:none;}
 .tv-layout #simp .simp-controls{padding:14px 20px;flex-wrap:nowrap;}
 .tv-layout #simp .simp-controls button{width:48px;height:48px;font-size:23px;flex-shrink:0;}
 .tv-layout #simp .simp-controls .simp-prev,.tv-layout #simp .simp-controls .simp-next{font-size:20px;}

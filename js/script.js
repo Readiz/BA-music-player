@@ -454,7 +454,7 @@ function BAPlayer() {
     previous: previousTrack,
     seekBy: (seconds) => seek(audio.currentTime + seconds)
   };
-  if (typeof ResizeObserver !== "function" || window.BAMusicTV) return;
+  if (typeof ResizeObserver !== "function") return;
   Promise.all([
     import("./wavesurfer.esm.js"),
     fetch("./waveforms.json", { cache: "no-cache" }).then((response) => {
