@@ -1,5 +1,6 @@
 // Adapted from new-home Discord auth; music owns separate cookies, state and storage.
-import { AuthError,                  } from './auth.mjs';
+import { AuthError, cookieValue } from './auth.mjs';
+import { authLog } from './auth-log.mjs';
 
 const privateHeaders = {
   'Cache-Control': 'private, no-store',
@@ -24,9 +25,13 @@ export async function handleAuth(
   request         ,
   auth                    ,
   ip = 'local',
+  writeLog = console.info,
 )                    {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/$/, '');
+  const audit = (event, details = {}) => authLog(event, request, details, writeLog);
+  const failure = error => ({ code: error instanceof AuthError ? error.code : 'internal',
+    reason: error instanceof AuthError ? error.reason : 'unexpected_error', upstreamStatus: error?.upstreamStatus });
   if (path === '/api/auth/me' && request.method === 'GET') {
     const user = auth?.user(request) ?? null;
     return authJson({ enabled: !!auth, authenticated: !!user, user });
@@ -53,8 +58,10 @@ export async function handleAuth(
       return authJson({ error: 'rate-limited' }, 429);
     try {
       const result = auth.begin(url.searchParams.get('returnTo'));
+      audit('auth_start', { state: new URL(result.location).searchParams.get('state') });
       return redirect(result.location, [result.cookie], 302);
     } catch (error) {
+      audit('auth_start_failure', failure(error));
       if (error instanceof AuthError)
         return redirect(`/?authError=${error.code}`);
       throw error;
@@ -63,10 +70,14 @@ export async function handleAuth(
   if (path === '/api/auth/discord/callback') {
     if (auth.limited(`callback:${ip}`, 40))
       return authJson({ error: 'rate-limited' }, 429);
+    const context = { state: url.searchParams.get('state'),
+      hasStateCookie: Boolean(cookieValue(request, auth.stateCookie)), hasCode: url.searchParams.has('code') };
     try {
       const result = await auth.complete(request);
+      audit('auth_success', context);
       return redirect(result.location, [auth.clearState(), result.cookie]);
     } catch (error) {
+      audit('auth_failure', { ...context, ...failure(error) });
       if (error instanceof AuthError)
         return redirect(`/?authError=${error.code}`, [auth.clearState()]);
       throw error;

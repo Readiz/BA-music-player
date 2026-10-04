@@ -70,6 +70,6 @@ caddy reload --config /opt/homebrew/etc/Caddyfile --adapter caddyfile
 curl -f https://music.readiz.com/api/health
 ```
 
-`deploy:local`은 API 릴리스를 설치·상태 검사한 뒤 정적 릴리스를 교체한다. API 시작에 실패하면 이전 API 링크와 launchd 설정을 복원한다. 이후 정적 배포에 실패했을 때는 이전 정적 릴리스가 유지되며 호환되는 새 API가 실행될 수 있으므로 `/api/health`와 `/app-config.json`의 revision을 각각 확인한다. 설정/SQLite/완성 음원은 별도 백업 대상이며 릴리스 롤백으로 삭제하지 않는다. API 로그는 `~/.local/share/readiz-music/logs/`에 있고, OAuth 쿼리·토큰·다운로드 도구의 서명 URL/진단은 기록하지 않는다.
+`deploy:local`은 API 릴리스를 설치·상태 검사한 뒤 정적 릴리스를 교체한다. API 시작에 실패하면 이전 API 링크와 launchd 설정을 복원한다. 이후 정적 배포에 실패했을 때는 이전 정적 릴리스가 유지되며 호환되는 새 API가 실행될 수 있으므로 `/api/health`와 `/app-config.json`의 revision을 각각 확인한다. 설정/SQLite/완성 음원은 별도 백업 대상이며 릴리스 롤백으로 삭제하지 않는다. API 로그는 `~/.local/share/readiz-music/logs/`에 있다. `api.log`에는 `auth_start`·`auth_success`·`auth_failure` JSON 행을 기록한다. UTC 시각, 앱/브라우저 구분, 단방향 flow 태그, 실패 단계, Discord HTTP 상태, state 쿠키/코드의 존재 여부를 남긴다. `state_cookie_missing`은 시작한 앱/브라우저의 쿠키가 콜백에 없다는 뜻이고, `state_cookie_mismatch`는 다른 로그인 시도의 쿠키와 충돌했다는 뜻이다. OAuth 쿼리·state 원문·쿠키·토큰·사용자 정보·다운로드 도구의 서명 URL/진단은 기록하지 않는다. 로그 도입 이전 실패 원인을 이 기록으로 소급 확인할 수는 없다.
 
 다운로더 설치 확인 버전은 2026.8.19 (`yt-dlp-ejs` 0.8.0)이다. 업데이트는 위 가상환경의 pip로 수행하고 실제 공개 영상 다운로드·MP3 검사를 다시 확인한다. 브라우저 모의 로그인 검증은 실제 디스코드 계정 인증 완료를 뜻하지 않는다.

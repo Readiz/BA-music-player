@@ -21,9 +21,11 @@ import { DatabaseSync } from 'node:sqlite';
                                                                               
 export class AuthError extends Error {
   code               ;
-  constructor(code               ) {
+  constructor(code, reason = code, upstreamStatus) {
     super(code);
     this.code = code;
+    this.reason = reason;
+    this.upstreamStatus = upstreamStatus;
   }
 }
 
@@ -192,13 +194,11 @@ export function createAuth(
     const params = new URL(request.url).searchParams;
     const state = params.get('state') ?? '';
     const bound = cookieValue(request, stateCookie);
-    if (
-      !cookiePattern.test(state) ||
-      !cookiePattern.test(bound) ||
-      state.length !== bound.length ||
-      !timingSafeEqual(Buffer.from(state), Buffer.from(bound))
-    )
-      throw new AuthError('state');
+    if (!cookiePattern.test(state)) throw new AuthError('state', 'state_invalid');
+    if (!bound) throw new AuthError('state', 'state_cookie_missing');
+    if (!cookiePattern.test(bound)) throw new AuthError('state', 'state_cookie_invalid');
+    if (state.length !== bound.length || !timingSafeEqual(Buffer.from(state), Buffer.from(bound)))
+      throw new AuthError('state', 'state_cookie_mismatch');
     // DELETE ... RETURNING consumes the state atomically before any network await.
     const saved = db
       .prepare(
@@ -206,11 +206,13 @@ export function createAuth(
       )
       .get(hash(state))   
                                                            ;
-    if (!saved || saved.expires_at <= now()) throw new AuthError('state');
+    if (!saved) throw new AuthError('state', 'state_consumed_or_unknown');
+    if (saved.expires_at <= now()) throw new AuthError('state', 'state_expired');
     if (params.has('error')) throw new AuthError('cancelled');
     const code = params.get('code');
-    if (!code || code.length > 2048) throw new AuthError('state');
-    let profile                                                               ;
+    if (!code || code.length > 2048) throw new AuthError('state', 'code_missing_or_invalid');
+    let profile;
+    let stage = 'token';
     try {
       const tokenResponse = await fetcher(
         'https://discord.com/api/oauth2/token',
@@ -227,10 +229,11 @@ export function createAuth(
           signal: AbortSignal.timeout(10_000),
         },
       );
-      if (!tokenResponse.ok) throw new Error();
+      if (!tokenResponse.ok) throw new AuthError('discord', 'token_http_error', tokenResponse.status);
       const token = await tokenResponse.json();
       if (typeof token.access_token !== 'string' || !token.access_token)
-        throw new Error();
+        throw new AuthError('discord', 'token_invalid_response');
+      stage = 'profile';
       const profileResponse = await fetcher(
         'https://discord.com/api/users/@me',
         {
@@ -238,16 +241,18 @@ export function createAuth(
           signal: AbortSignal.timeout(10_000),
         },
       );
-      if (!profileResponse.ok) throw new Error();
+      if (!profileResponse.ok) throw new AuthError('discord', 'profile_http_error', profileResponse.status);
       profile = await profileResponse.json();
       if (
         typeof profile.id !== 'string' ||
         typeof profile.username !== 'string'
       )
-        throw new Error();
-    } catch {
-      // Never log codes, tokens, the callback query, or upstream response bodies.
-      throw new AuthError('discord');
+        throw new AuthError('discord', 'profile_invalid_response');
+    } catch (error) {
+      // Only controlled reason labels and HTTP status leave this boundary.
+      if (error instanceof AuthError) throw error;
+      const timeout = error?.name === 'TimeoutError' || error?.name === 'AbortError';
+      throw new AuthError('discord', `${stage}_${timeout ? 'timeout' : 'request_failed'}`);
     }
     if (!allowed.has(profile.id)) throw new AuthError('forbidden');
     prune();

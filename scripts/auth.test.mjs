@@ -307,3 +307,34 @@ test('unsafe return targets, missing configuration, methods and rate limits fail
     createAuth({ ...config, origin: 'http://blog.example.com' }),
   );
 });
+
+test('auth diagnostics distinguish missing cookies and Discord HTTP failures without leaking credentials', async (t) => {
+  const f = fixture();
+  t.after(() => f.auth.close());
+  const logs = [];
+  const record = line => logs.push(JSON.parse(line));
+  const start = await handleAuth(new Request(`${config.origin}/api/auth/discord/start`, {
+    headers: { 'user-agent': 'Mozilla Android ReadizMusic/0.3.0' },
+  }), f.auth, 'local', record);
+  const state = new URL(start.headers.get('location')).searchParams.get('state');
+  const callback = new Request(`${config.origin}/api/auth/discord/callback?code=sensitive-code&state=${state}`, {
+    headers: { 'user-agent': 'Mozilla Android Chrome/100' },
+  });
+  await handleAuth(callback, f.auth, 'local', record);
+  assert.equal(logs[0].event, 'auth_start');
+  assert.equal(logs[0].client, 'android-app');
+  assert.equal(logs[1].event, 'auth_failure');
+  assert.equal(logs[1].client, 'android-browser');
+  assert.equal(logs[1].reason, 'state_cookie_missing');
+  assert.equal(logs[1].hasStateCookie, false);
+  assert.equal(logs[1].hasCode, true);
+  assert.equal(logs[0].flow, logs[1].flow);
+  f.fail();
+  await handleAuth(new Request(callback, { headers: { cookie: start.headers.getSetCookie()[0].split(';')[0] } }), f.auth, 'local', record);
+  assert.equal(logs[2].reason, 'token_http_error');
+  assert.equal(logs[2].upstreamStatus, 502);
+  const output = JSON.stringify(logs);
+  for (const sensitive of [state, 'sensitive-code', 'test-client-secret', 'test-access-token', 'upstream failed', 'relay.example.com', 'test-owner']) {
+    assert.equal(output.includes(sensitive), false, sensitive);
+  }
+});
