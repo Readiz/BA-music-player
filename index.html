@@ -7,7 +7,7 @@
     <title>Readiz's Player</title>
     
     <!-- Style CSS -->
-    <link rel="stylesheet" href="css/style.css?v=20261004-background">
+    <link rel="stylesheet" href="css/style.css?v=20261004-folders">
 	<!-- Demo CSS (No need to include it into your project) -->
 	<link rel="stylesheet" href="css/demo.css">
   
@@ -29,6 +29,12 @@
     </div>
 </div>
  <div class="simple-audio-player" id="simp" data-config='{"shide_top":false,"shide_btm":false,"auto_load":true}'>
+  <div class="simp-library">
+    <label for="music-folder">폴더</label>
+    <select id="music-folder" aria-controls="ulist">
+      <option value="">전체</option>
+    </select>
+  </div>
   <div class="simp-playlist">
     <ul id="ulist">
 
@@ -39,7 +45,7 @@
 </div>
 
 <!-- Audio Player JS -->
-<script src="./js/script.js?v=20261004-background"></script>
+<script src="./js/script.js?v=20261004-folders"></script>
 <script type="module">
   async function getMusics() {
       const [arr, catalog] = await Promise.all([
@@ -63,6 +69,7 @@
           if (title) songname += `-${title}`;
 
           const li = document.createElement('li');
+          li.dataset.folder = parts.slice(2, -1).map(decodeURIComponent).join('/') || artist;
           if (index === 0) li.classList.add('simp-active');
           const source = document.createElement('span');
           source.className = 'simp-source';

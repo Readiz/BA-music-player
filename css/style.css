@@ -44,6 +44,7 @@ a,a:hover,a:visited{color:#ddd;text-decoration:none;}
 /* playlist */
 #simp ul{margin:5px 0 0;padding:0;list-style:none;max-height:calc(100vh - 255px);}
 #simp ul li{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;margin:0;padding:8px 20px;cursor:pointer;}
+#simp ul li[hidden]{display:none;}
 #simp ul li:last-child{padding-bottom:13px;}
 #simp ul li:nth-child(odd){background:#0e1621;}
 #simp ul li:hover{background:#242f3d;}
@@ -68,8 +69,11 @@ a,a:hover,a:visited{color:#ddd;text-decoration:none;}
 }
 #simp .simp-cover {display:none;}
 #simp {display:flex;flex-direction:column;height:100vh;height:100dvh;}
-#simp .simp-player,#simp .simp-footer {flex-shrink:0;}
+#simp .simp-player,#simp .simp-footer,#simp .simp-library {flex-shrink:0;}
+#simp .simp-library {display:flex;align-items:center;gap:12px;padding:0 20px 12px;}
+#simp .simp-library label {font-size:13px;color:#b4c2ce;white-space:nowrap;}
+#simp .simp-library select {flex:1;min-width:0;min-height:40px;padding:8px 12px;border:1px solid #4b6072;border-radius:6px;background:#0e1621;color:#eee;font:inherit;color-scheme:dark;}
 #simp .simp-playlist {flex:1;min-height:0;}
 #simp ul {height:100%;max-height:none;margin-top:0;}
 #simp .simp-status {margin:0;padding:0 20px 12px;color:#f4d49a;line-height:1.5;}
-#simp button:focus-visible,#simp li:focus-visible,#simp input:focus-visible {outline:2px solid #8ccaff;outline-offset:-2px;}
+#simp button:focus-visible,#simp li:focus-visible,#simp input:focus-visible,#simp select:focus-visible {outline:2px solid #8ccaff;outline-offset:-2px;}

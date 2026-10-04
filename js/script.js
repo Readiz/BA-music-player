@@ -10,7 +10,19 @@ function BAPlayer() {
     src: row.querySelector('.simp-source').dataset.src,
     title: row.querySelector('.simp-source').textContent,
     artist: row.querySelector('.simp-desc')?.textContent || '',
+    folder: row.dataset.folder,
   }));
+  const folderSelect = root.querySelector('#music-folder');
+  const folderCounts = new Map();
+  for (const track of tracks) {
+    folderCounts.set(track.folder, (folderCounts.get(track.folder) || 0) + 1);
+  }
+  folderSelect.options[0].textContent = `전체 (${tracks.length}곡)`;
+  for (const [folder, count] of folderCounts) {
+    folderSelect.add(new Option(`${folder} (${count}곡)`, folder));
+  }
+  const folderStorageKey = 'ba-player-folder';
+  let queue = [];
   const player = document.createElement('div');
   player.className = 'simp-player';
   player.innerHTML = `
@@ -34,7 +46,7 @@ function BAPlayer() {
       </div>
     </div>
     <p class="simp-status" role="status" hidden></p>`;
-  root.insertBefore(player, root.querySelector('.simp-playlist'));
+  root.insertBefore(player, root.firstElementChild);
   const audio = player.querySelector('audio');
   const playButton = player.querySelector('.simp-plause');
   const progress = player.querySelector('.simp-progress');
@@ -136,11 +148,10 @@ function BAPlayer() {
 
   function selectTrack(nextIndex, autoplay = true) {
     ++playAttempt;
-    index = (nextIndex + tracks.length) % tracks.length;
+    index = nextIndex;
     const track = tracks[index];
     rows.forEach((row, i) => row.classList.toggle('simp-active', i === index));
-    const list = rows[index].parentElement;
-    list.scrollTop += rows[index].getBoundingClientRect().top - list.getBoundingClientRect().top;
+    scrollToCurrent();
     player.querySelector('.simp-title').textContent = track.title;
     player.querySelector('.simp-artist').textContent = track.artist;
     showStatus();
@@ -159,11 +170,32 @@ function BAPlayer() {
     if (autoplay) play();
   }
 
+  function scrollToCurrent() {
+    const list = rows[index].parentElement;
+    list.scrollTop += rows[index].getBoundingClientRect().top - list.getBoundingClientRect().top;
+  }
+
+  function filterFolder(value) {
+    const folder = folderCounts.has(value) ? value : '';
+    folderSelect.value = folder;
+    queue = [];
+    rows.forEach((row, i) => {
+      row.hidden = !!folder && tracks[i].folder !== folder;
+      if (!row.hidden) queue.push(i);
+    });
+  }
+
+  function previousTrack() {
+    const position = queue.indexOf(index);
+    selectTrack(queue[(position - 1 + queue.length) % queue.length]);
+  }
+
   function nextTrack() {
-    const next = random && tracks.length > 1
-      ? (index + 1 + Math.floor(Math.random() * (tracks.length - 1))) % tracks.length
-      : index + 1;
-    selectTrack(next);
+    const position = queue.indexOf(index);
+    const step = random && queue.length > 1
+      ? 1 + Math.floor(Math.random() * (queue.length - 1))
+      : 1;
+    selectTrack(queue[(position + step) % queue.length]);
   }
 
   function toggleOption(selector, enabled) {
@@ -173,8 +205,17 @@ function BAPlayer() {
   }
 
   playButton.addEventListener('click', () => audio.paused ? play() : pause());
-  player.querySelector('.simp-prev').addEventListener('click', () => selectTrack(index - 1));
+  player.querySelector('.simp-prev').addEventListener('click', previousTrack);
   player.querySelector('.simp-next').addEventListener('click', nextTrack);
+  folderSelect.addEventListener('change', () => {
+    const wasPlaying = !audio.paused && !audio.ended;
+    filterFolder(folderSelect.value);
+    try { localStorage.setItem(folderStorageKey, folderSelect.value); } catch { /* Storage is optional, including in an iframe. */ }
+    // Keep the current stream if it belongs to the selected folder.
+    // Otherwise select the first song without starting a paused player.
+    if (queue.includes(index)) scrollToCurrent();
+    else selectTrack(queue[0], wasPlaying);
+  });
   progress.addEventListener('input', () => seek(Number(progress.value) / 100 * audio.duration));
   player.querySelector('.simp-repeat').addEventListener('click', () => {
     // Native looping does not depend on a JavaScript callback in a hidden tab.
@@ -218,7 +259,7 @@ function BAPlayer() {
     const actions = {
       play, pause,
       stop: () => { pause(); seek(0); },
-      previoustrack: () => selectTrack(index - 1),
+      previoustrack: previousTrack,
       nexttrack: nextTrack,
       seekbackward: details => seek(audio.currentTime - (details.seekOffset ?? 10)),
       seekforward: details => seek(audio.currentTime + (details.seekOffset ?? 10)),
@@ -233,7 +274,10 @@ function BAPlayer() {
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) { syncPlayback(); renderWaveform(); }
   });
-  selectTrack(0, false);
+  let savedFolder = '';
+  try { savedFolder = localStorage.getItem(folderStorageKey) || ''; } catch { /* Storage is optional. */ }
+  filterFolder(savedFolder);
+  selectTrack(queue[0], false);
   Promise.all([
     import('./wavesurfer.esm.js'),
     fetch('./waveforms.json', { cache: 'no-cache' }).then(response => {
