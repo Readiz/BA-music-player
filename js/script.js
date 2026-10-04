@@ -232,12 +232,13 @@ function BAPlayer() {
     }
     syncPlayback();
     renderWaveform();
+    root.dispatchEvent(new CustomEvent('simp-track-change'));
     if (autoplay) play();
   }
 
   function scrollToCurrent() {
     if (index < 0 || window.BAMusicTV) return;
-    // TV focus owns queue scrolling; track changes must not move it elsewhere.
+    // The remote controller aligns queue focus and scrolling on track changes.
     const focused = document.activeElement;
     if (document.documentElement.classList.contains('remote-mode') && focused && focused.closest('#ulist') && focused !== rows[index]) return;
     const list = rows[index].parentElement;

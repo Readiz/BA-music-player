@@ -26,11 +26,18 @@
     return 'header';
   }
   function rect(element) { return (element.closest('.album-card') || element).getBoundingClientRect(); }
+  function reveal(element) {
+    // Explicit scrolling also works on older Tizen engines without scrollIntoView options.
+    const scroller = element.closest('#ulist, .simp-albums');
+    if (!scroller) return;
+    const box = rect(element), viewport = scroller.getBoundingClientRect();
+    if (box.top < viewport.top + 8) scroller.scrollTop -= viewport.top + 8 - box.top;
+    else if (box.bottom > viewport.bottom - 8) scroller.scrollTop += box.bottom - viewport.bottom + 8;
+  }
   function remember(element) {
     if (!usable(element) || !element.matches(selector)) return;
     const zone = group(element);
     memory[zone] = element;
-    if (zone === 'queue' || zone === 'controls') memory.main = element;
     if (lastFocus) {
       lastFocus.classList.remove('remote-focus');
       const card = lastFocus.closest('.album-card');
@@ -39,13 +46,7 @@
     lastFocus = element;
     if (remote) {
       (element.closest('.album-card') || element).classList.add('remote-focus');
-      // Explicit scrolling also works on older Tizen engines without scrollIntoView options.
-      const scroller = element.closest('#ulist, .simp-albums');
-      if (scroller) {
-        const box = rect(element), viewport = scroller.getBoundingClientRect();
-        if (box.top < viewport.top + 8) scroller.scrollTop -= viewport.top + 8 - box.top;
-        else if (box.bottom > viewport.bottom - 8) scroller.scrollTop += box.bottom - viewport.bottom + 8;
-      }
+      reveal(element);
     }
   }
   function focus(element) {
@@ -66,6 +67,19 @@
     const target = usable(memory.controls) ? memory.controls : initial();
     return group(target) === 'controls' && focus(target);
   }
+  function syncTrackFocus() {
+    // Keep startup on the controls; later track changes refresh the queue destination.
+    if (initialPending) return;
+    const row = document.querySelector('#ulist li.simp-active:not([hidden])');
+    if (!usable(row)) return;
+    memory.queue = row;
+    if (!remote) return;
+    const current = document.activeElement;
+    if (!dialog.hidden && group(priorFocus) === 'queue') priorFocus = row;
+    if (group(current) === 'queue' || (current === document.body && lastFocus && group(lastFocus) === 'queue')) focus(row);
+    else reveal(row);
+  }
+  document.querySelector('#simp').addEventListener('simp-track-change', syncTrackFocus);
   function enterRemote() { remote = true; root.classList.add('remote-mode'); remember(document.activeElement); }
   function setEditing(value) {
     editing = value;
@@ -146,7 +160,7 @@
         const index = row.indexOf(from);
         if (direction === 'ArrowRight') {
           if (!inCard && focus(row[index + 1])) return;
-          focus(usable(memory.main) ? memory.main : initial());
+          focusControls();
         } else if (direction === 'ArrowLeft') {
           if (!inCard) focus(row[index - 1]);
         } else if (direction === 'ArrowDown') {
@@ -165,7 +179,7 @@
       const candidates = all(panel).filter(item => !horizontal || rect(item).bottom > origin.top && rect(item).top < origin.bottom);
       const target = nearest(from, candidates, direction);
       if (target) { focus(target); return; }
-      if (direction === 'ArrowRight') { focus(usable(memory.main) ? memory.main : initial()); return; }
+      if (direction === 'ArrowRight') { focusControls(); return; }
       if (direction === 'ArrowUp') focus(toggle);
       return;
     }
