@@ -1,5 +1,5 @@
 // Adapted from new-home Discord auth; music owns separate cookies, state and storage.
-import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
+import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { chmodSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, isAbsolute } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
@@ -31,6 +31,8 @@ export class AuthError extends Error {
 
 const STATE_TTL = 10 * 60 * 1000;
 const SESSION_TTL = 14 * 24 * 60 * 60 * 1000;
+const HANDOFF_TTL = 2 * 60 * 1000;
+const proofPattern = /^[A-Za-z0-9_-]{43}$/;
 const cookiePattern = /^[A-Za-z0-9_-]{32,100}$/;
 
 export function safeReturnTo(value                           )         {
@@ -124,6 +126,8 @@ export function createAuth(
     PRAGMA busy_timeout = 5000;
     CREATE TABLE IF NOT EXISTS oauth_states (hash TEXT PRIMARY KEY, return_to TEXT NOT NULL, expires_at INTEGER NOT NULL);
     CREATE TABLE IF NOT EXISTS sessions (hash TEXT PRIMARY KEY, user_id TEXT NOT NULL, username TEXT NOT NULL, display_name TEXT NOT NULL, expires_at INTEGER NOT NULL);
+    CREATE TABLE IF NOT EXISTS android_handoffs (hash TEXT PRIMARY KEY, challenge TEXT NOT NULL, user_id TEXT NOT NULL, username TEXT NOT NULL, display_name TEXT NOT NULL, expires_at INTEGER NOT NULL);
+    CREATE TABLE IF NOT EXISTS android_oauth (hash TEXT PRIMARY KEY, challenge TEXT NOT NULL, expires_at INTEGER NOT NULL);
   `);
   const hash = (value        ) =>
     createHmac('sha256', config.sessionSecret).update(value).digest('hex');
@@ -132,6 +136,8 @@ export function createAuth(
   function prune() {
     db.prepare('DELETE FROM oauth_states WHERE expires_at <= ?').run(now());
     db.prepare('DELETE FROM sessions WHERE expires_at <= ?').run(now());
+    db.prepare('DELETE FROM android_handoffs WHERE expires_at <= ?').run(now());
+    db.prepare('DELETE FROM android_oauth WHERE expires_at <= ?').run(now());
   }
   const rate = new Map                                            ();
   function limited(key        , max        )          {
@@ -144,7 +150,9 @@ export function createAuth(
     return false;
   }
 
-  function begin(returnTo                ) {
+  function begin(returnTo, appChallenge = null) {
+    if (appChallenge !== null && !proofPattern.test(appChallenge))
+      throw new AuthError('state', 'app_challenge_invalid');
     prune();
     const count = db
       .prepare('SELECT count(*) AS count FROM oauth_states')
@@ -156,6 +164,7 @@ export function createAuth(
       safeReturnTo(returnTo),
       now() + STATE_TTL,
     );
+    if (appChallenge) db.prepare('INSERT INTO android_oauth VALUES (?, ?, ?)').run(hash(state), appChallenge, now() + STATE_TTL);
     const params = new URLSearchParams({
       client_id: config.clientId,
       redirect_uri: config.redirectUri,
@@ -207,6 +216,7 @@ export function createAuth(
       .get(hash(state))   
                                                            ;
     if (!saved) throw new AuthError('state', 'state_consumed_or_unknown');
+    const app = db.prepare('DELETE FROM android_oauth WHERE hash = ? RETURNING challenge').get(hash(state));
     if (saved.expires_at <= now()) throw new AuthError('state', 'state_expired');
     if (params.has('error')) throw new AuthError('cancelled');
     const code = params.get('code');
@@ -255,6 +265,20 @@ export function createAuth(
       throw new AuthError('discord', `${stage}_${timeout ? 'timeout' : 'request_failed'}`);
     }
     if (!allowed.has(profile.id)) throw new AuthError('forbidden');
+    const identity = { id: profile.id, username: profile.username,
+      displayName: typeof profile.global_name === 'string' && profile.global_name ? profile.global_name : profile.username };
+    if (app) {
+      prune();
+      const ticket = randomBytes(32).toString('base64url');
+      db.prepare('INSERT INTO android_handoffs VALUES (?, ?, ?, ?, ?, ?)').run(
+        hash(ticket), app.challenge, identity.id, identity.username, identity.displayName, now() + HANDOFF_TTL);
+      // This ticket grants no access without the verifier retained by the initiating app.
+      return { appReturn: `com.readiz.music://auth?ticket=${ticket}` };
+    }
+    return { location: saved.return_to, cookie: issueSession(identity, request) };
+  }
+
+  function issueSession(profile, request) {
     prune();
     revoke(request);
     // Keep at most ten active devices per account.
@@ -262,21 +286,28 @@ export function createAuth(
       'DELETE FROM sessions WHERE user_id = ? AND hash NOT IN (SELECT hash FROM sessions WHERE user_id = ? ORDER BY expires_at DESC LIMIT 9)',
     ).run(profile.id, profile.id);
     const token = randomBytes(32).toString('base64url');
-    const displayName =
-      typeof profile.global_name === 'string' && profile.global_name
-        ? profile.global_name
-        : profile.username;
     db.prepare('INSERT INTO sessions VALUES (?, ?, ?, ?, ?)').run(
       hash(token),
       profile.id,
       profile.username,
-      displayName,
+      profile.displayName,
       now() + SESSION_TTL,
     );
-    return {
-      location: saved.return_to,
-      cookie: cookie(sessionCookie, token, SESSION_TTL),
-    };
+    return cookie(sessionCookie, token, SESSION_TTL);
+  }
+
+  function redeemAndroid(request, ticket, verifier) {
+    if (typeof ticket !== 'string' || !proofPattern.test(ticket) ||
+        typeof verifier !== 'string' || !proofPattern.test(verifier))
+      throw new AuthError('handoff', 'handoff_invalid');
+    const challenge = createHash('sha256').update(verifier).digest('base64url');
+    // Wrong proofs cannot burn another app's ticket. DELETE is atomic, with no await before session creation.
+    const saved = db.prepare('DELETE FROM android_handoffs WHERE hash = ? AND challenge = ? RETURNING *')
+      .get(hash(ticket), challenge);
+    if (!saved) throw new AuthError('handoff', 'handoff_unknown_or_proof_mismatch');
+    if (saved.expires_at <= now()) throw new AuthError('handoff', 'handoff_expired');
+    if (!allowed.has(saved.user_id)) throw new AuthError('forbidden');
+    return issueSession({ id: saved.user_id, username: saved.username, displayName: saved.display_name }, request);
   }
 
   return {
@@ -287,6 +318,7 @@ export function createAuth(
     isAllowedUser: (id        ) => allowed.has(id),
     begin,
     complete,
+    redeemAndroid,
     user,
     revoke,
     limited,

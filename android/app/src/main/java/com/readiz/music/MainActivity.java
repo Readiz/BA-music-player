@@ -26,6 +26,7 @@ public final class MainActivity extends ComponentActivity {
     private WebView webView;
     private PlaybackBridge playback;
     private AndroidUpdates updates;
+    private AndroidLogin login;
     private boolean tvMode;
     private String startUrl;
     private LinearLayout root;
@@ -61,6 +62,7 @@ public final class MainActivity extends ComponentActivity {
         settings.setUserAgentString(settings.getUserAgentString() + (tvMode ? " ReadizMusicTV/" : " ReadizMusic/") + BuildConfig.VERSION_NAME);
         webView.setWebViewClient(new WebViewClient() {
             @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                if (!request.isForMainFrame()) return true;
                 return navigate(request.getUrl());
             }
             @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -79,8 +81,10 @@ public final class MainActivity extends ComponentActivity {
         try { playback = new PlaybackBridge(this, webView); }
         catch (IllegalStateException unsupported) { /* Older WebViews retain the web player. */ }
         updates = new AndroidUpdates(this, webView, () -> playback != null && playback.busy());
+        login = new AndroidLogin(this, webView);
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
         webView.loadUrl(startUrl);
+        login.accept(getIntent());
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override public void handleOnBackPressed() {
                 if (tvMode && errorView == null && trusted(Uri.parse(webView.getUrl() == null ? "" : webView.getUrl()))) {
@@ -104,7 +108,13 @@ public final class MainActivity extends ComponentActivity {
             finishAndRemoveTask();
             return true;
         }
-        if (trusted(uri)) return false;
+        if (trusted(uri)) {
+            if ("/api/auth/discord/start".equals(uri.getPath()) || "/api/auth/discord/start/".equals(uri.getPath())) {
+                login.begin();
+                return true;
+            }
+            return false;
+        }
         if ("https".equals(uri.getScheme())) {
             try { startActivity(new Intent(Intent.ACTION_VIEW, uri)); }
             catch (ActivityNotFoundException ignored) { /* No external browser installed. */ }
@@ -167,11 +177,16 @@ public final class MainActivity extends ComponentActivity {
         super.onResume();
         if (updates != null) updates.onResume();
     }
+    @Override protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (login != null) login.accept(intent);
+    }
     @Override public void onPause() {
         if (updates != null) updates.onPause();
         super.onPause();
     }
     @Override public void onDestroy() {
+        if (login != null) login.close();
         if (updates != null) updates.close();
         if (playback != null) playback.close();
         root.removeView(webView);

@@ -1,4 +1,4 @@
-# Readiz Music Android 0.3.0
+# Readiz Music Android 0.3.1
 
 휴대전화와 Android TV에서 같은 `com.readiz.music` APK를 사용한다. 웹 화면은 `https://music.readiz.com/`에서 받고, Android 재생은 Media3 `PlaybackService`가 담당한다.
 
@@ -32,3 +32,11 @@ npm run deploy:local
 정식 빌드는 `output/android/readiz-music.apk`와 `.apk.json`을 만든다. 웹 빌드는 실제 APK와 메타데이터의 해시·크기가 일치해야 공개 산출물에 `app.apk`/`android-update.json`을 넣는다. 정적 배포는 웹·APK·메타데이터를 같은 릴리스에 복사한 뒤 `current` 링크를 원자적으로 전환한다. APK가 없는 로컬/CI 웹 빌드는 허용하지만 운영 배포는 APK 누락이나 불일치를 거부한다.
 
 TV의 리모컨, Leanback 실행기·배너, TV 화면 진입과 폴드·회전 시 Activity 유지 정책은 유지한다. 삼성 TV WGT는 [별도 Tizen 안내](../tizen/README.md)를 따른다. 단위 테스트·브라우저·에뮬레이터 결과와 실제 휴대전화/TV의 절전·블루투스·설치 확인은 구분한다.
+
+## 앱 로그인
+
+0.3.1부터 Discord 로그인은 시작 주소부터 외부 브라우저에서 연다. 이전 버전은 WebView에 state 쿠키를 만든 후 Discord만 브라우저로 넘겨 콜백에서 쿠키 검증에 실패할 수 있었다. 로그인 완료 화면의 **뮤직앱으로 돌아가기**를 누르면 앱 내부 세션을 저장하고 음악 추가 화면을 연다.
+
+앱은 임의 verifier를 비공개 설정에 저장하고 SHA-256 challenge만 시작 주소에 전달한다. 서버는 기존 브라우저 state 쿠키와 계정 허용 목록을 검증한 뒤 2분짜리 일회용 ticket을 발급한다. `com.readiz.music://auth`에는 ticket만 들어가고, 이를 가로채도 verifier 없이는 세션을 받을 수 없다. 고정 HTTPS 경로에서 ticket과 verifier를 교환한 뒤 Secure/HttpOnly 세션 쿠키를 WebView에 저장한다. OAuth 토큰과 세션 쿠키는 앱 복귀 주소에 넣지 않는다. Android가 브라우저 로그인 중 앱을 종료해도 verifier는 12분 동안 유지한다.
+
+0.3.0 정식 앱에서는 앱을 다시 열어 표시되는 업데이트로 설치할 수 있다. 0.3.1도 같은 정식 서명 키를 사용한다. 서버 인증·교환 테스트와 Android 단위 테스트는 모의 계정으로 검증하며, 실제 Discord 계정의 휴대전화 로그인 성공을 뜻하지 않는다.

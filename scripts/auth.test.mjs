@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { test } from 'node:test';
 import { mkdtempSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -337,4 +338,83 @@ test('auth diagnostics distinguish missing cookies and Discord HTTP failures wit
   for (const sensitive of [state, 'sensitive-code', 'test-client-secret', 'test-access-token', 'upstream failed', 'relay.example.com', 'test-owner']) {
     assert.equal(output.includes(sensitive), false, sensitive);
   }
+});
+
+const verifier = 'a'.repeat(43);
+const appChallenge = createHash('sha256').update(verifier).digest('base64url');
+async function appTicket(f, record = () => {}) {
+  const start = await handleAuth(f.request(`/api/auth/discord/start?app_challenge=${appChallenge}`), f.auth, 'app', record);
+  const state = new URL(start.headers.get('location')).searchParams.get('state');
+  const callback = f.request(`/api/auth/discord/callback?code=test-code&state=${state}`, start.headers.getSetCookie()[0].split(';')[0]);
+  const response = await handleAuth(callback, f.auth, 'app', record);
+  const html = await response.text();
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-security-policy'), /frame-ancestors 'none'/);
+  assert.equal(response.headers.get('cache-control'), 'private, no-store');
+  assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
+  assert.ok(response.headers.getSetCookie().every(cookie => cookie.includes('Max-Age=0')));
+  for (const secret of [state, 'test-code', 'test-access-token', 'test-owner', verifier]) assert.ok(!html.includes(secret));
+  assert.equal((await handleAuth(callback, f.auth, 'app', record)).headers.get('location'), '/?authError=state');
+  return html.match(/com\.readiz\.music:\/\/auth\?ticket=([A-Za-z0-9_-]{43})/)[1];
+}
+function redemption(f, ticket, proof = verifier, origin) {
+  return new Request(`${config.origin}/api/auth/android/redeem`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'User-Agent': 'ReadizMusic/0.3.1', ...(origin ? { origin } : {}) },
+    body: JSON.stringify({ ticket, verifier: proof }),
+  });
+}
+
+test('Android browser login needs its original cookie and only the initiating app can redeem once', async (t) => {
+  const f = fixture(); t.after(() => f.auth.close());
+  const logs = []; const record = line => logs.push(line);
+  const start = f.auth.begin('/', appChallenge);
+  const state = new URL(start.location).searchParams.get('state');
+  const missing = await handleAuth(f.request(`/api/auth/discord/callback?code=test-code&state=${state}`), f.auth, 'app', record);
+  assert.equal(missing.headers.get('location'), '/?authError=state');
+  assert.equal(f.calls.length, 0);
+  const ticket = await appTicket(f, record);
+  assert.equal((await handleAuth(redemption(f, ticket, 'b'.repeat(43)), f.auth, 'app', record)).status, 400);
+  const response = await handleAuth(redemption(f, ticket, verifier, config.origin), f.auth, 'app', record);
+  assert.equal(response.status, 200);
+  const session = response.headers.getSetCookie()[0];
+  assert.match(session, /__Host-readiz_music_session=.*HttpOnly; SameSite=Lax; Max-Age=1209600; Secure/);
+  assert.deepEqual(await response.json(), { authenticated: true });
+  assert.equal(f.auth.user(f.request('/api/auth/me', session.split(';')[0])).id, '123456');
+  assert.equal((await handleAuth(redemption(f, ticket), f.auth, 'app', record)).status, 400);
+  assert.ok(logs.some(line => line.includes('auth_android_success')));
+  assert.ok(logs.some(line => line.includes('handoff_unknown_or_proof_mismatch')));
+  for (const secret of [ticket, verifier, session, 'test-access-token', 'test-code']) assert.ok(!logs.join('').includes(secret));
+});
+
+test('Android handoff expiry, validation, method and cross-origin requests fail closed', async (t) => {
+  const f = fixture(); t.after(() => f.auth.close());
+  const ticket = await appTicket(f);
+  const origin = await handleAuth(redemption(f, ticket, verifier, 'https://evil.example'), f.auth);
+  assert.equal(origin.status, 403);
+  assert.equal((await handleAuth(f.request('/api/auth/android/redeem'), f.auth)).status, 405);
+  for (const proof of ['', null, 42, 'too-short']) {
+    assert.equal((await handleAuth(redemption(f, ticket, proof), f.auth)).status, 400);
+  }
+  const malformed = new Request(`${config.origin}/api/auth/android/redeem`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: 'null' });
+  assert.equal((await handleAuth(malformed, f.auth)).status, 400);
+  for (const challenge of ['', 'bad', 'a'.repeat(100), '<script>']) assert.throws(() => f.auth.begin('/', challenge));
+  f.advance(120_000);
+  assert.equal((await handleAuth(redemption(f, ticket), f.auth)).status, 400);
+});
+
+test('Android handoffs survive restart, store no bearer secret and recheck account permission', async (t) => {
+  const directory = mkdtempSync(join(tmpdir(), 'music-app-auth-'));
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  const storePath = join(directory, 'sessions.sqlite');
+  const f = fixture({ storePath });
+  const ticket = await appTicket(f);
+  const revokedTicket = await appTicket(f);
+  f.auth.close();
+  for (const secret of [ticket, revokedTicket, verifier, 'test-access-token']) assert.ok(!readFileSync(storePath).includes(Buffer.from(secret)));
+  const restarted = fixture({ storePath });
+  assert.equal((await handleAuth(redemption(restarted, ticket), restarted.auth)).status, 200);
+  restarted.auth.close();
+  const revoked = fixture({ storePath, allowedUserIds: ['999999'] });
+  assert.equal((await handleAuth(redemption(revoked, revokedTicket), revoked.auth)).status, 400);
+  revoked.auth.close();
 });
