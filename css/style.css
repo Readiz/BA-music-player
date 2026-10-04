@@ -102,8 +102,9 @@ a,a:hover,a:visited{color:#ddd;text-decoration:none;}
 #simp .album-actions button:not(:disabled):hover,#simp .album-toggle:hover,#simp .library-retry:hover {background:#29445a;}
 #simp .album-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 12px;}
 #simp .album-card {position:relative;display:flex;flex-direction:column;min-width:0;cursor:pointer;}
-#simp .album-cover {position:relative;display:grid;place-items:center;aspect-ratio:1;isolation:isolate;border:2px solid transparent;border-radius:9px;background:linear-gradient(145deg,#326e99,#173249);color:#e2f4ff;font-weight:750;font-size:22px;letter-spacing:.06em;opacity:.45;transition:opacity .15s,border-color .15s;}
+#simp .album-cover {position:relative;display:grid;place-items:center;aspect-ratio:1;isolation:isolate;border:2px solid transparent;border-radius:9px;background:linear-gradient(145deg,#326e99,#173249);color:#e2f4ff;font-weight:750;font-size:22px;letter-spacing:.06em;opacity:.72;transition:opacity .15s,border-color .15s;}
 #simp .album-cover:before {content:'';position:absolute;inset:15%;border:1px solid #ffffff35;border-radius:50%;box-shadow:0 0 0 8px #ffffff08,0 0 0 16px #ffffff06;z-index:-1;}
+#simp .album-cover img {position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:7px;}
 #simp .album-card:nth-child(4n+2) .album-cover {background:linear-gradient(145deg,#9b7033,#49341c);}
 #simp .album-card:nth-child(4n+3) .album-cover {background:linear-gradient(145deg,#a84c67,#442538);}
 #simp .album-card:nth-child(4n) .album-cover {background:linear-gradient(145deg,#7958a8,#30254b);}

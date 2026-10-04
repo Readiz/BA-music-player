@@ -27,6 +27,8 @@ async (page) => {
   await page.reload();
   await page.waitForFunction(count => document.querySelectorAll('#ulist li').length === count, expectedTracks);
   if (!(await page.locator('#audio').evaluate(audio => audio.paused))) throw new Error('Unexpected autoplay');
+  // This test verifies an ordered next-track boundary; shuffle defaults to on.
+  await page.getByRole('button', {name:'무작위 재생', exact:true}).click();
   await page.getByText("theme_103-Poppin' Memories", {exact:true}).click();
   await page.waitForFunction(() => document.querySelector('#audio').currentTime > 0.5);
   await page.evaluate(() => { window.__originalAudio = document.querySelector('#audio'); });
