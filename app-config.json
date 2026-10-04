@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "appId": "com.readiz.music",
   "name": "Readiz Music",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "origin": "https://music.readiz.com",
   "catalog": "./musicList.json",
   "titles": "./blue-archive-ost.json",
@@ -16,6 +16,6 @@
     "appId": "ReadizMU01.ReadizMusic"
   },
   "trackCount": 338,
-  "revision": "992610577c4b5a6d32f5e3f40bc12437b019bf2d",
+  "revision": "834969267cef1812350abddabbcc9fe6eb9e5d25",
   "dirty": true
 }

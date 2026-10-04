@@ -11,6 +11,7 @@
   let priorFocus;
   let lastFocus;
   let pending = false;
+  let initialPending = !!window.BAMusicTV;
   const selector = "button, input, #ulist li[tabindex]";
   function usable(element) {
     return !!(element && element.isConnected && !element.disabled && !element.closest("[hidden]") && element.getClientRects().length);
@@ -30,7 +31,7 @@
     return (element.closest(".album-card") || element).getBoundingClientRect();
   }
   function remember(element) {
-    if (!usable(element)) return;
+    if (!usable(element) || !element.matches(selector)) return;
     const zone = group(element);
     memory[zone] = element;
     if (zone === "queue" || zone === "controls") memory.main = element;
@@ -61,7 +62,15 @@
     return true;
   }
   function initial() {
-    return document.querySelector(".simp-plause:not(:disabled)") || document.querySelector(".library-retry:not([hidden])") || toggle;
+    return document.querySelector(".simp-plause:not(:disabled)") || document.querySelector(".library-retry:not([hidden])") || (window.BAMusicTV ? panel.querySelector(".album-card input") || all(panel)[0] : toggle);
+  }
+  function controls() {
+    const player = document.querySelector(".simp-player");
+    return player ? all(player) : all(document.querySelector(".simp-main")).filter((item) => group(item) === "controls");
+  }
+  function focusControls() {
+    const target = usable(memory.controls) ? memory.controls : initial();
+    return group(target) === "controls" && focus(target);
   }
   function enterRemote() {
     remote = true;
@@ -71,10 +80,13 @@
   function setEditing(value) {
     editing = value;
     root.classList.toggle("remote-seeking", value);
-    hint.textContent = value ? "탐색 중 · ◀ ▶ 5초 이동 · 확인 / 뒤로 완료" : "방향키 이동 · 확인 선택 · 뒤로 앨범 / 종료";
+    hint.textContent = value ? "탐색 중 · ◀ ▶ 5초 이동 · 확인 / 뒤로 완료" : "방향키 이동 · 확인 선택 · 뒤로 종료";
   }
   function openAlbums() {
-    if (panel.hidden) toggle.click();
+    if (panel.hidden) {
+      if (window.BAMusicTV) panel.hidden = false;
+      else toggle.click();
+    }
     const target = usable(memory.album) ? memory.album : panel.querySelector(".album-card input") || all(panel)[0];
     if (focus(target)) return true;
     focus(toggle);
@@ -93,6 +105,7 @@
     focus(dialog.querySelector(".exit-cancel"));
   }
   function back() {
+    initialPending = false;
     enterRemote();
     if (!dialog.hidden) {
       closeDialog();
@@ -102,13 +115,16 @@
       setEditing(false);
       return;
     }
+    if (window.BAMusicTV) {
+      showExit();
+      return;
+    }
     const zone = group(document.activeElement);
     if (zone === "queue" || zone === "controls") {
       openAlbums();
       return;
     }
-    if (window.BAMusicTV) showExit();
-    else if (!panel.hidden) {
+    if (!panel.hidden) {
       toggle.click();
       focus(toggle);
     }
@@ -154,14 +170,40 @@
         openAlbums();
         return;
       }
-      if (direction === "ArrowRight" || direction === "ArrowUp" && index === 0) {
-        focus(usable(memory.controls) ? memory.controls : initial());
+      if (direction === "ArrowRight") {
+        if (!window.BAMusicTV) focusControls();
+        return;
+      }
+      if (direction === "ArrowUp" && index === 0) {
+        focusControls();
         return;
       }
       focus(rows[index + (direction === "ArrowDown" ? 1 : -1)]);
       return;
     }
     if (zone === "album") {
+      if (window.BAMusicTV) {
+        const cards = all(panel.querySelector(".album-grid"));
+        const actions = all(panel.querySelector(".album-actions"));
+        const inCard = !!from.closest(".album-card");
+        const row = inCard ? cards : actions;
+        const index = row.indexOf(from);
+        if (direction === "ArrowRight") {
+          if (!inCard && focus(row[index + 1])) return;
+          focus(usable(memory.main) ? memory.main : initial());
+        } else if (direction === "ArrowLeft") {
+          if (!inCard) focus(row[index - 1]);
+        } else if (direction === "ArrowDown") {
+          focus(inCard ? cards[index + 1] : cards[0]);
+        } else if (inCard && index > 0) {
+          focus(cards[index - 1]);
+        } else if (inCard && actions.length) {
+          focus(actions[0]);
+        } else {
+          focusControls();
+        }
+        return;
+      }
       const horizontal = direction === "ArrowLeft" || direction === "ArrowRight";
       const origin = rect(from);
       const candidates = all(panel).filter((item) => !horizontal || rect(item).bottom > origin.top && rect(item).top < origin.bottom);
@@ -179,14 +221,16 @@
     }
     if (zone === "controls") {
       if (direction === "ArrowDown") {
-        focus(usable(memory.queue) ? memory.queue : document.querySelector("#ulist li.simp-active:not([hidden])") || document.querySelector("#ulist li:not([hidden])"));
+        focus(usable(memory.queue) ? memory.queue : !window.BAMusicTV && document.querySelector("#ulist li.simp-active:not([hidden])") || document.querySelector("#ulist li:not([hidden])"));
         return;
       }
       if (direction === "ArrowUp") {
-        focus(toggle);
+        if (!window.BAMusicTV) focus(toggle);
         return;
       }
-      const target = nearest(from, all(document.querySelector(".simp-player") || document.querySelector(".simp-main")).filter((item) => group(item) === "controls"), direction);
+      const buttons = controls();
+      const index = buttons.indexOf(from);
+      const target = window.BAMusicTV ? buttons[index + (direction === "ArrowRight" ? 1 : -1)] : nearest(from, buttons, direction);
       if (target) focus(target);
       else if (direction === "ArrowLeft") openAlbums();
       return;
@@ -195,10 +239,11 @@
       if (from !== toggle || !openAlbums()) focus(initial());
       return;
     }
-    focus(nearest(from, [toggle, document.querySelector(".app-exit")].filter(usable), direction));
+    focus(nearest(from, [toggle].filter(usable), direction));
   }
   document.addEventListener("focusin", (event) => remember(event.target));
   function pointer() {
+    initialPending = false;
     remote = false;
     root.classList.remove("remote-mode");
     setEditing(false);
@@ -215,6 +260,7 @@
     const key = core.key(event);
     if (key === "Enter" && !window.BAMusicTV && document.activeElement.closest("a")) return;
     if (key === "Tab") {
+      initialPending = false;
       enterRemote();
       if (!dialog.hidden) {
         event.preventDefault();
@@ -227,6 +273,7 @@
     if (event.target.closest && event.target.closest("textarea, [contenteditable], input:not([type=checkbox]):not([type=range])")) return;
     event.preventDefault();
     event.stopImmediatePropagation();
+    initialPending = false;
     enterRemote();
     if ((key === "Enter" || key === "Back" || /^Media/.test(key)) && event.repeat) return;
     if (key === "Back") {
@@ -263,6 +310,11 @@
     pending = true;
     requestAnimationFrame(() => {
       pending = false;
+      if (initialPending && (window.BAMusicPlayback || usable(document.querySelector(".library-retry")))) {
+        initialPending = false;
+        focus(initial());
+        return;
+      }
       if (editing && (!usable(document.activeElement) || !document.activeElement.matches(".simp-progress"))) setEditing(false);
       if (!usable(document.activeElement) || document.activeElement === document.body) {
         if (!dialog.hidden) focus(dialog.querySelector(".exit-cancel"));
@@ -271,7 +323,6 @@
       }
     });
   }).observe(document.querySelector("#simp"), { subtree: true, childList: true, attributes: true, attributeFilter: ["hidden", "disabled"] });
-  document.querySelector(".app-exit").addEventListener("click", showExit);
   dialog.querySelector(".exit-cancel").addEventListener("click", closeDialog);
   dialog.querySelector(".exit-confirm").addEventListener("click", exit);
   for (const key of ["MediaPlay", "MediaPause", "MediaPlayPause", "MediaStop", "MediaRewind", "MediaFastForward", "MediaTrackNext", "MediaTrackPrevious"]) {
@@ -283,6 +334,9 @@
   window.BAMusicRemote = { back };
   if (window.BAMusicTV) {
     document.querySelector(".app-brand").tabIndex = -1;
+    toggle.hidden = true;
+    panel.hidden = false;
+    document.querySelector("#simp").classList.remove("albums-collapsed");
     enterRemote();
     focus(initial());
   }
