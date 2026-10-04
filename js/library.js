@@ -47,6 +47,7 @@ BAAlbumPanel();
       loadState.querySelector('p').textContent = '음악 목록을 불러오는 중…';
       try {
           await getMusics();
+          if (window.BAMusicNativeAudio) await window.BAMusicNativeAudio.ready;
           BAPlayer();
           loadState.hidden = true;
       } catch (error) {

@@ -21,7 +21,7 @@ curl -f https://music.readiz.com/app-config.json
 
 일반 정적 업데이트에는 Caddy reload가 필요 없다. 릴리스의 모든 파일을 복사한 뒤 `current` 심볼릭 링크를 원자적으로 바꾼다. 롤백은 배포 결과의 `previous` 경로로 임시 심볼릭 링크를 만든 뒤 `current`를 rename으로 교체한다. 음원 경로를 재사용하므로 최대 한 시간의 브라우저 음원 캐시를 고려한다. HTML·JS·목록·매니페스트·서비스 워커는 매번 재검증한다.
 
-공개 출력은 허용 목록으로 구성하며 `.git`, `node_modules`, Android 소스·APK·서명키, 스크립트, 운영 문서는 배포하지 않는다. `file_server`는 없는 경로를 404로 반환하며 음원 요청의 Range를 그대로 지원한다. 별도 Node 데몬이나 홈페이지 서버 재시작은 필요 없다.
+공개 출력은 허용 목록으로 구성하며 `.git`, `node_modules`, Android 소스·서명키, 스크립트, 운영 문서는 배포하지 않는다. `file_server`는 없는 경로를 404로 반환하며 음원 요청의 Range를 그대로 지원한다. 별도 Node 데몬이나 홈페이지 서버 재시작은 필요 없다.
 
 ## 확인 기준
 
@@ -41,6 +41,6 @@ curl -f https://music.readiz.com/app-config.json
 
 ## TV 패키지 배포
 
-1.2.0부터 `npm run build`에 Chromium 63 대상 JavaScript 변환과 미서명 WGT 빌드가 포함된다. `app.wgt`, `app.wgt.sha256`, `app-start.html`, `app-config.json`의 `tv` 필드를 웹과 함께 원자적으로 배포한다. APK는 로컬 디버그 산출물이며 공개 정적 파일에 넣지 않는다. GitHub Actions도 WGT/체크섬을 별도 artifact로 보관한다.
+1.2.0부터 `npm run build`에 Chromium 63 대상 JavaScript 변환과 미서명 WGT 빌드가 포함된다. `app.wgt`, `app.wgt.sha256`, `app-start.html`, `app-config.json`의 `tv` 필드를 웹과 함께 원자적으로 배포한다. 1.3.0부터 정식 서명 APK와 검증된 업데이트 메타데이터도 같은 릴리스에 넣는다. 먼저 `npm run build:apk`를 실행하며, 고정 주소는 `/app.apk`와 `/android-update.json`이다. 디버그 APK는 공개하지 않는다. GitHub Actions도 WGT/체크섬을 별도 artifact로 보관한다.
 
 배포 후 `/?tv=1`에서 방향키·확인·뒤로와 실제 재생을 확인하고, `/app.wgt`의 SHA-256이 빌드 산출물과 같은지 확인한다. TV 설치는 [Tizen 안내](../tizen/README.md)를 따른다. 이번 화면·패키지 배포는 Caddy나 DNS 변경이 필요 없다.

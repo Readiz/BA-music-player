@@ -20,16 +20,18 @@ import android.widget.TextView;
 import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
 
-/** Initial web shell. Native Media3 background playback is the next app milestone. */
+/** Hosted controls backed by the independent native playback service. */
 public final class MainActivity extends ComponentActivity {
     private static final String ORIGIN = "https://music.readiz.com/";
     private WebView webView;
+    private PlaybackBridge playback;
+    private AndroidUpdates updates;
     private boolean tvMode;
     private String startUrl;
     private LinearLayout root;
     private LinearLayout errorView;
 
-    @SuppressLint("SetJavaScriptEnabled") // Required by the trusted same-origin player; no native bridge.
+    @SuppressLint("SetJavaScriptEnabled") // Required by the trusted same-origin player.
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tvMode = ((UiModeManager) getSystemService(UI_MODE_SERVICE)).getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
@@ -56,7 +58,7 @@ public final class MainActivity extends ComponentActivity {
         settings.setAllowFileAccess(false);
         settings.setAllowContentAccess(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
-        settings.setUserAgentString(settings.getUserAgentString() + (tvMode ? " ReadizMusicTV/0.2.0" : " ReadizMusic/0.2.0"));
+        settings.setUserAgentString(settings.getUserAgentString() + (tvMode ? " ReadizMusicTV/" : " ReadizMusic/") + BuildConfig.VERSION_NAME);
         webView.setWebViewClient(new WebViewClient() {
             @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 return navigate(request.getUrl());
@@ -69,10 +71,15 @@ public final class MainActivity extends ComponentActivity {
             }
             @Override public void onPageFinished(WebView view, String url) {
                 if (tvMode && errorView == null) view.requestFocus();
+                if (updates != null) updates.onPageFinished();
             }
             // Default SSL handling cancels invalid certificates. Never override it with proceed().
         });
         root.addView(webView, new LinearLayout.LayoutParams(-1, -1));
+        try { playback = new PlaybackBridge(this, webView); }
+        catch (IllegalStateException unsupported) { /* Older WebViews retain the web player. */ }
+        updates = new AndroidUpdates(this, webView, () -> playback != null && playback.busy());
+        WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
         webView.loadUrl(startUrl);
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override public void handleOnBackPressed() {
@@ -93,6 +100,7 @@ public final class MainActivity extends ComponentActivity {
 
     private boolean navigate(Uri uri) {
         if (tvMode && "readiz-music://exit".equals(uri.toString()) && trusted(Uri.parse(webView.getUrl() == null ? "" : webView.getUrl()))) {
+            if (playback != null) playback.stop();
             finishAndRemoveTask();
             return true;
         }
@@ -155,7 +163,17 @@ public final class MainActivity extends ComponentActivity {
         return true;
     }
 
+    @Override public void onResume() {
+        super.onResume();
+        if (updates != null) updates.onResume();
+    }
+    @Override public void onPause() {
+        if (updates != null) updates.onPause();
+        super.onPause();
+    }
     @Override public void onDestroy() {
+        if (updates != null) updates.close();
+        if (playback != null) playback.close();
         root.removeView(webView);
         webView.destroy();
         super.onDestroy();

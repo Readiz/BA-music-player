@@ -1,4 +1,5 @@
 import { transformSync } from 'esbuild';
+import { readAndroidRelease } from './android-release.mjs';
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { resolve, sep } from 'node:path';
@@ -31,10 +32,17 @@ execFileSync('python3', ['scripts/build-wgt.py'], { stdio: 'inherit' });
 const revision = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const dirty = Boolean(execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim());
 const version = JSON.parse(readFileSync('package.json', 'utf8')).version;
+let android;
+if (existsSync('output/android/readiz-music.apk')) {
+  const release = readAndroidRelease('output/android/readiz-music.apk');
+  cpSync('output/android/readiz-music.apk', 'dist/app.apk');
+  writeFileSync('dist/android-update.json', JSON.stringify(release, null, 2) + '\n');
+  android = { version: release.versionName, versionCode: release.versionCode, package: './app.apk', update: './android-update.json' };
+}
 writeFileSync('dist/app-config.json', JSON.stringify({
   schemaVersion: 1, appId: 'com.readiz.music', name: 'Readiz Music', version,
   origin: 'https://music.readiz.com', catalog: './musicList.json',
   titles: './blue-archive-ost.json', waveforms: './waveforms.json',
-  mediaBase: './', tv: { preview: './?tv=1', tizenPackage: './app.wgt', tizenChecksum: './app.wgt.sha256', signed: false, appId: 'ReadizMU01.ReadizMusic' }, trackCount: tracks.length, revision, dirty,
+  mediaBase: './', android, tv: { preview: './?tv=1', tizenPackage: './app.wgt', tizenChecksum: './app.wgt.sha256', signed: false, appId: 'ReadizMU01.ReadizMusic' }, trackCount: tracks.length, revision, dirty,
 }, null, 2) + '\n');
 console.log(`Built Readiz Music ${version}: ${tracks.length} tracks, ${revision.slice(0, 12)}${dirty ? ' (working tree)' : ''}`);

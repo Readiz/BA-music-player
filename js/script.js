@@ -109,12 +109,13 @@ function BAPlayer() {
     </div>
     <p class="simp-status" role="status" hidden></p>`;
   main.insertBefore(player, main.querySelector('.simp-queue-heading'));
-  const audio = player.querySelector('audio');
+  const native = window.BAMusicNativeAudio;
+  const audio = native || player.querySelector('audio');
   const playButton = player.querySelector('.simp-plause');
   const progress = player.querySelector('.simp-progress');
   const tracker = player.querySelector('.simp-tracker');
   const status = player.querySelector('.simp-status');
-  const session = navigator.mediaSession;
+  const session = native ? null : navigator.mediaSession;
   let index = -1;
   let autoNext = true;
   let random = true;
@@ -137,6 +138,7 @@ function BAPlayer() {
   }
 
   function syncPosition() {
+    if (native) drawNativeWaveform();
     const duration = audio.duration;
     const position = audio.currentTime;
     player.querySelector('.start-time').textContent = formatTime(position);
@@ -189,7 +191,43 @@ function BAPlayer() {
     syncPosition();
   }
 
+  let nativeCanvas;
+  function drawNativeWaveform() {
+    if (!nativeCanvas || !waveforms || index < 0 || document.hidden) return;
+    const data = waveforms[tracks[index].src];
+    if (!data) return;
+    const width = Math.max(1, nativeCanvas.clientWidth);
+    nativeCanvas.width = width * (window.devicePixelRatio || 1);
+    nativeCanvas.height = 70 * (window.devicePixelRatio || 1);
+    const context = nativeCanvas.getContext('2d');
+    context.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+    data.peaks.forEach((peak, i) => {
+      const x = i / data.peaks.length * width;
+      const height = Math.max(1, Math.abs(peak) * 70);
+      context.fillStyle = i / data.peaks.length < audio.currentTime / data.duration ? '#ffffff' : '#5f5f5f';
+      context.fillRect(x, (70 - height) / 2, Math.max(1, width / data.peaks.length), height);
+    });
+  }
+
   function renderWaveform() {
+    if (native) {
+      const container = player.querySelector('#waveform');
+      const data = index >= 0 && waveforms?.[tracks[index].src];
+      container.style.visibility = data ? 'visible' : 'hidden';
+      if (data && !nativeCanvas) {
+        nativeCanvas = document.createElement('canvas');
+        nativeCanvas.style.cssText = 'width:100%;height:70px;display:block;cursor:pointer';
+        nativeCanvas.setAttribute('aria-hidden', 'true');
+        nativeCanvas.addEventListener('click', event => {
+          const bounds = nativeCanvas.getBoundingClientRect();
+          seek((event.clientX - bounds.left) / bounds.width * audio.duration);
+          play();
+        });
+        container.append(nativeCanvas);
+      }
+      drawNativeWaveform();
+      return;
+    }
     if (index < 0 || !WaveSurfer || !waveforms || document.hidden) return;
     const data = waveforms[tracks[index].src];
     const container = player.querySelector('#waveform');
@@ -209,7 +247,16 @@ function BAPlayer() {
     }
   }
 
-  function selectTrack(nextIndex, autoplay = true) {
+  function syncNativeQueue(autoplay = !audio.paused, preserve = true) {
+    if (!native) return;
+    native.configure(queue.map(i => ({
+      ...tracks[i], id: tracks[i].src, src: new URL(tracks[i].src, location.href).href,
+      title: tracks[i].title.replace(/^theme_\d+-/, ''),
+      artwork: albumArtwork.get(tracks[i].folder)?.src || '',
+    })), Math.max(0, queue.indexOf(index)), autoplay, preserve);
+  }
+
+  function selectTrack(nextIndex, autoplay = true, fromNative = false) {
     if (!queue.includes(nextIndex)) return;
     ++playAttempt;
     index = nextIndex;
@@ -219,8 +266,16 @@ function BAPlayer() {
     player.querySelector('.simp-title').textContent = track.title;
     player.querySelector('.simp-artist').textContent = track.artist;
     showStatus();
-    audio.src = new URL(track.src, location.href).href;
-    audio.load();
+    if (native) {
+      if (!fromNative) {
+        if (native.state.queue.length && native.state.queue.join('|') === queue.map(i => tracks[i].src).join('|')) {
+          native.send('select', { index: queue.indexOf(index), play: autoplay });
+        } else syncNativeQueue(autoplay, false);
+      }
+    } else {
+      audio.src = new URL(track.src, location.href).href;
+      audio.load();
+    }
     if (session) {
       if (typeof MediaMetadata !== 'undefined') {
         session.metadata = new MediaMetadata({
@@ -232,7 +287,7 @@ function BAPlayer() {
     }
     syncPlayback();
     renderWaveform();
-    if (autoplay) play();
+    if (autoplay && !native) play();
   }
 
   function scrollToCurrent() {
@@ -296,7 +351,7 @@ function BAPlayer() {
       localStorage.setItem(albumStorageKey, JSON.stringify(saved));
     } catch { /* Storage is optional, including in an iframe. */ }
     if (!queue.length) clearTrack();
-    else if (queue.includes(index)) scrollToCurrent();
+    else if (queue.includes(index)) { scrollToCurrent(); syncNativeQueue(wasPlaying); }
     else selectTrack(startingTrack(), wasPlaying);
   }
 
@@ -336,12 +391,14 @@ function BAPlayer() {
   }
 
   function previousTrack() {
+    if (native) { native.send('previous'); return; }
     if (!queue.length) return;
     const position = queue.indexOf(index);
     selectTrack(queue[(position - 1 + queue.length) % queue.length]);
   }
 
   function nextTrack() {
+    if (native) { native.send('next'); return; }
     if (!queue.length) return;
     const position = queue.indexOf(index);
     selectTrack(queue[(position + 1) % queue.length]);
@@ -379,11 +436,13 @@ function BAPlayer() {
   player.querySelector('.simp-plext').addEventListener('click', () => {
     autoNext = !autoNext;
     toggleOption('.simp-plext', autoNext);
+    if (native) native.options({ autoNext });
   });
   player.querySelector('.simp-random').addEventListener('click', () => {
     random = !random;
     orderQueue();
     toggleOption('.simp-random', random);
+    if (native) { native.options({ random }); syncNativeQueue(); }
   });
   rows.forEach((row, i) => {
     row.tabIndex = 0;
@@ -403,7 +462,7 @@ function BAPlayer() {
   for (const event of ['canplay', 'playing', 'pause', 'error']) audio.addEventListener(event, () => tracker.classList.remove('simp-loading'));
   audio.addEventListener('playing', () => showStatus());
   audio.addEventListener('ended', () => {
-    if (autoNext && !audio.loop) nextTrack();
+    if (!native && autoNext && !audio.loop) nextTrack();
   });
   audio.addEventListener('error', () => {
     if (!queue.length) return;
@@ -430,8 +489,30 @@ function BAPlayer() {
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) { syncPlayback(); renderWaveform(); }
   });
-  filterAlbums(readSavedAlbums());
-  if (queue.length) {
+  if (native) {
+    native.addEventListener('trackchange', () => {
+      const next = tracks.findIndex(track => track.src === native.state.id);
+      if (next >= 0) selectTrack(next, false, true);
+    });
+    native.addEventListener('optionschange', () => {
+      autoNext = native.state.autoNext;
+      random = native.state.random;
+      toggleOption('.simp-repeat', native.loop);
+      toggleOption('.simp-plext', autoNext);
+      toggleOption('.simp-random', random);
+    });
+  }
+  const restored = native?.state.queue.length && tracks.some(track => track.src === native.state.id);
+  filterAlbums(restored ? [...new Set(tracks.filter(track => native.state.queue.includes(track.src)).map(track => track.folder))] : readSavedAlbums());
+  if (restored) {
+    queue = native.state.queue.map(id => tracks.findIndex(track => track.src === id)).filter(i => i >= 0);
+    random = native.state.random;
+    autoNext = native.state.autoNext;
+    toggleOption('.simp-repeat', native.loop);
+    toggleOption('.simp-plext', autoNext);
+    toggleOption('.simp-random', random);
+    selectTrack(tracks.findIndex(track => track.src === native.state.id), false, true);
+  } else if (queue.length) {
     selectTrack(startingTrack(), false);
     showStatus(window.BAMusicTV ? '재생 버튼이나 곡에서 확인 키를 눌러 시작하세요.' : '재생 버튼이나 곡을 눌러 시작하세요. Space 키로도 재생할 수 있습니다.');
   }

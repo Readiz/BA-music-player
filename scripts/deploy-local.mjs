@@ -1,3 +1,4 @@
+import { readAndroidRelease } from './android-release.mjs';
 import { cpSync, existsSync, mkdirSync, readFileSync, readlinkSync, renameSync, rmSync, symlinkSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
@@ -10,6 +11,7 @@ if (execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim())
 const revision = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const build = JSON.parse(readFileSync('dist/app-config.json', 'utf8'));
 if (build.dirty || build.revision !== revision) throw new Error('Rebuild the clean current commit before deploying.');
+readAndroidRelease('dist/app.apk', 'dist/android-update.json');
 const root = resolve(process.env.MUSIC_DEPLOY_ROOT || '/opt/homebrew/var/www/readiz-music');
 mkdirSync(`${root}/releases`, { recursive: true });
 const release = `${root}/releases/${Date.now()}-${revision.slice(0, 12)}`;
