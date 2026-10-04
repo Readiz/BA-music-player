@@ -7,7 +7,7 @@
     <title>Readiz's Player</title>
     
     <!-- Style CSS -->
-    <link rel="stylesheet" href="css/style.css?v=20261004-folders">
+    <link rel="stylesheet" href="css/style.css?v=20261004-albums">
 	<!-- Demo CSS (No need to include it into your project) -->
 	<link rel="stylesheet" href="css/demo.css">
   
@@ -29,23 +29,38 @@
     </div>
 </div>
  <div class="simple-audio-player" id="simp" data-config='{"shide_top":false,"shide_btm":false,"auto_load":true}'>
-  <div class="simp-library">
-    <label for="music-folder">폴더</label>
-    <select id="music-folder" aria-controls="ulist">
-      <option value="">전체</option>
-    </select>
-  </div>
-  <div class="simp-playlist">
-    <ul id="ulist">
-
-    </ul>
-  </div>
+  <aside class="simp-albums" id="album-panel" aria-labelledby="album-heading">
+    <div class="album-heading-row">
+      <div><p class="library-eyebrow">MY LIBRARY</p><h2 id="album-heading">앨범</h2></div>
+      <button type="button" class="album-close" aria-label="앨범 패널 닫기">닫기</button>
+    </div>
+    <p class="album-selection-summary" role="status"></p>
+    <div class="album-actions">
+      <button type="button" class="albums-select-all">전체 선택</button>
+      <button type="button" class="albums-clear">전체 해제</button>
+    </div>
+    <div class="album-grid" role="group" aria-label="재생할 앨범"></div>
+    <p class="album-hint">앨범을 여러 개 골라 함께 들어보세요.</p>
+    <button type="button" class="album-done">선택 완료</button>
+  </aside>
+  <button type="button" class="album-backdrop" aria-label="앨범 패널 닫기" tabindex="-1"></button>
+  <section class="simp-main" aria-label="음악 플레이어">
+    <div class="album-mobile-bar">
+      <button type="button" class="album-open" aria-controls="album-panel" aria-expanded="false">앨범 선택</button>
+      <span class="album-mobile-summary"></span>
+    </div>
+    <div class="simp-queue-heading"><h2>재생 목록</h2><span class="queue-count"></span></div>
+    <div class="simp-playlist">
+      <p class="simp-empty" hidden>들을 앨범을 선택해 주세요.</p>
+      <ul id="ulist" aria-label="선택한 앨범의 곡"></ul>
+    </div>
+  </section>
   <div class="simp-footer">Song copyrights belong to its owner. · 곡명 참고: <a href="https://ba.cnfast.top/en/track/ost/" target="_blank" rel="noopener noreferrer">BA OST Index</a> · <a href="https://bluearchive.fandom.com/wiki/Soundtrack" target="_blank" rel="noopener noreferrer">BA Wiki</a></div>
 </div>
 </div>
 
 <!-- Audio Player JS -->
-<script src="./js/script.js?v=20261004-folders"></script>
+<script src="./js/script.js?v=20261004-albums"></script>
 <script type="module">
   async function getMusics() {
       const [arr, catalog] = await Promise.all([

@@ -12,16 +12,41 @@ function BAPlayer() {
     artist: row.querySelector('.simp-desc')?.textContent || '',
     folder: row.dataset.folder,
   }));
-  const folderSelect = root.querySelector('#music-folder');
+  const main = root.querySelector('.simp-main');
+  const albumPanel = root.querySelector('.simp-albums');
+  const albumGrid = root.querySelector('.album-grid');
+  const selectAll = root.querySelector('.albums-select-all');
+  const clearAll = root.querySelector('.albums-clear');
   const folderCounts = new Map();
   for (const track of tracks) {
     folderCounts.set(track.folder, (folderCounts.get(track.folder) || 0) + 1);
   }
-  folderSelect.options[0].textContent = `전체 (${tracks.length}곡)`;
+  const albumInputs = new Map();
   for (const [folder, count] of folderCounts) {
-    folderSelect.add(new Option(`${folder} (${count}곡)`, folder));
+    const card = document.createElement('label');
+    card.className = 'album-card';
+    const cover = document.createElement('span');
+    cover.className = 'album-cover';
+    cover.setAttribute('aria-hidden', 'true');
+    const words = folder.split(/[\s/]+/);
+    cover.textContent = (words.length === 1 ? folder : words.map(word => word[0]).join('')).slice(0, 3).toUpperCase();
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.value = folder;
+    input.setAttribute('aria-label', folder);
+    input.setAttribute('aria-controls', 'ulist');
+    const title = document.createElement('strong');
+    title.className = 'album-name';
+    title.textContent = folder;
+    const total = document.createElement('span');
+    total.className = 'album-count';
+    total.textContent = `${count}곡`;
+    card.append(cover, input, title, total);
+    albumGrid.append(card);
+    albumInputs.set(folder, input);
   }
-  const folderStorageKey = 'ba-player-folder';
+  const albumStorageKey = 'ba-player-albums';
+  let selectedAlbums = new Set();
   let queue = [];
   const player = document.createElement('div');
   player.className = 'simp-player';
@@ -46,14 +71,14 @@ function BAPlayer() {
       </div>
     </div>
     <p class="simp-status" role="status" hidden></p>`;
-  root.insertBefore(player, root.firstElementChild);
+  main.insertBefore(player, main.querySelector('.simp-queue-heading'));
   const audio = player.querySelector('audio');
   const playButton = player.querySelector('.simp-plause');
   const progress = player.querySelector('.simp-progress');
   const tracker = player.querySelector('.simp-tracker');
   const status = player.querySelector('.simp-status');
   const session = navigator.mediaSession;
-  let index = 0;
+  let index = -1;
   let autoNext = true;
   let random = false;
   let playAttempt = 0;
@@ -79,7 +104,7 @@ function BAPlayer() {
     const position = audio.currentTime;
     player.querySelector('.start-time').textContent = formatTime(position);
     player.querySelector('.end-time').textContent = formatTime(duration);
-    const seekable = Number.isFinite(duration) && duration > 0;
+    const seekable = queue.length > 0 && Number.isFinite(duration) && duration > 0;
     progress.disabled = !seekable;
     progress.value = seekable ? position / duration * 100 : 0;
     if (session?.setPositionState && seekable) {
@@ -94,11 +119,12 @@ function BAPlayer() {
     playButton.classList.toggle('fa-play', !playing);
     playButton.classList.toggle('fa-pause', playing);
     playButton.setAttribute('aria-label', playing ? '일시정지' : '재생');
-    if (session) session.playbackState = playing ? 'playing' : 'paused';
+    if (session) session.playbackState = queue.length ? (playing ? 'playing' : 'paused') : 'none';
     syncPosition();
   }
 
   function play() {
+    if (!queue.length) return;
     const attempt = ++playAttempt;
     showStatus();
     if (audio.error) audio.load();
@@ -127,7 +153,7 @@ function BAPlayer() {
   }
 
   function renderWaveform() {
-    if (!WaveSurfer || !waveforms || document.hidden) return;
+    if (index < 0 || !WaveSurfer || !waveforms || document.hidden) return;
     const data = waveforms[tracks[index].src];
     const container = player.querySelector('#waveform');
     container.style.visibility = data ? 'visible' : 'hidden';
@@ -147,6 +173,7 @@ function BAPlayer() {
   }
 
   function selectTrack(nextIndex, autoplay = true) {
+    if (!queue.includes(nextIndex)) return;
     ++playAttempt;
     index = nextIndex;
     const track = tracks[index];
@@ -160,7 +187,7 @@ function BAPlayer() {
     if (session) {
       if (typeof MediaMetadata !== 'undefined') {
         session.metadata = new MediaMetadata({
-          title: track.title.replace(/^theme_\d+-/, ''), artist: track.artist, album: 'Readiz’s Player',
+          title: track.title.replace(/^theme_\d+-/, ''), artist: track.artist, album: track.folder,
         });
       }
       try { session.setPositionState?.(); } catch { /* Optional. */ }
@@ -171,26 +198,95 @@ function BAPlayer() {
   }
 
   function scrollToCurrent() {
+    if (index < 0) return;
     const list = rows[index].parentElement;
     list.scrollTop += rows[index].getBoundingClientRect().top - list.getBoundingClientRect().top;
   }
 
-  function filterFolder(value) {
-    const folder = folderCounts.has(value) ? value : '';
-    folderSelect.value = folder;
+  function filterAlbums(values) {
+    selectedAlbums = new Set(values.filter(folder => folderCounts.has(folder)));
     queue = [];
     rows.forEach((row, i) => {
-      row.hidden = !!folder && tracks[i].folder !== folder;
+      row.hidden = !selectedAlbums.has(tracks[i].folder);
       if (!row.hidden) queue.push(i);
     });
+    for (const [folder, input] of albumInputs) {
+      input.checked = selectedAlbums.has(folder);
+      input.closest('.album-card').classList.toggle('is-selected', input.checked);
+    }
+    const summary = `${selectedAlbums.size}개 앨범 · ${queue.length}곡`;
+    root.querySelector('.album-selection-summary').textContent = summary;
+    root.querySelector('.album-mobile-summary').textContent = summary;
+    root.querySelector('.queue-count').textContent = `${queue.length}곡`;
+    root.querySelector('.simp-empty').hidden = queue.length > 0;
+    root.querySelector('#ulist').hidden = !queue.length;
+    selectAll.disabled = selectedAlbums.size === folderCounts.size;
+    clearAll.disabled = !selectedAlbums.size;
+    player.querySelectorAll('button').forEach(button => { button.disabled = !queue.length; });
+  }
+
+  function clearTrack() {
+    pause();
+    index = -1;
+    audio.removeAttribute('src');
+    audio.load();
+    rows.forEach(row => row.classList.remove('simp-active'));
+    player.querySelector('.simp-title').textContent = '앨범을 선택해 주세요';
+    player.querySelector('.simp-artist').textContent = '';
+    waveform?.destroy();
+    waveform = undefined;
+    waveformSource = '';
+    player.querySelector('#waveform').style.visibility = 'hidden';
+    if (session) {
+      session.metadata = null;
+      try { session.setPositionState?.(); } catch { /* Optional. */ }
+    }
+    showStatus();
+    syncPlayback();
+  }
+
+  function changeAlbums(values) {
+    const wasPlaying = !audio.paused && !audio.ended;
+    filterAlbums(values);
+    try {
+      // Remember "all" as a mode so newly added albums are included next time.
+      const saved = selectedAlbums.size === folderCounts.size
+        ? { all: true } : { folders: [...selectedAlbums] };
+      localStorage.setItem(albumStorageKey, JSON.stringify(saved));
+    } catch { /* Storage is optional, including in an iframe. */ }
+    if (!queue.length) clearTrack();
+    else if (queue.includes(index)) scrollToCurrent();
+    else selectTrack(queue[0], wasPlaying);
+  }
+
+  function readSavedAlbums() {
+    const all = [...folderCounts.keys()];
+    try {
+      const raw = localStorage.getItem(albumStorageKey);
+      if (raw !== null) {
+        const saved = JSON.parse(raw);
+        if (saved?.all === true) return all;
+        if (Array.isArray(saved?.folders)) {
+          const available = saved.folders.filter(folder => folderCounts.has(folder));
+          // An intentional empty choice stays empty; removed albums fall back to all.
+          return available.length || !saved.folders.length ? available : all;
+        }
+      } else {
+        const legacy = localStorage.getItem('ba-player-folder');
+        if (folderCounts.has(legacy)) return [legacy];
+      }
+    } catch { /* Invalid or unavailable storage falls back to all albums. */ }
+    return all;
   }
 
   function previousTrack() {
+    if (!queue.length) return;
     const position = queue.indexOf(index);
     selectTrack(queue[(position - 1 + queue.length) % queue.length]);
   }
 
   function nextTrack() {
+    if (!queue.length) return;
     const position = queue.indexOf(index);
     const step = random && queue.length > 1
       ? 1 + Math.floor(Math.random() * (queue.length - 1))
@@ -207,14 +303,38 @@ function BAPlayer() {
   playButton.addEventListener('click', () => audio.paused ? play() : pause());
   player.querySelector('.simp-prev').addEventListener('click', previousTrack);
   player.querySelector('.simp-next').addEventListener('click', nextTrack);
-  folderSelect.addEventListener('change', () => {
-    const wasPlaying = !audio.paused && !audio.ended;
-    filterFolder(folderSelect.value);
-    try { localStorage.setItem(folderStorageKey, folderSelect.value); } catch { /* Storage is optional, including in an iframe. */ }
-    // Keep the current stream if it belongs to the selected folder.
-    // Otherwise select the first song without starting a paused player.
-    if (queue.includes(index)) scrollToCurrent();
-    else selectTrack(queue[0], wasPlaying);
+  selectAll.addEventListener('click', () => changeAlbums([...folderCounts.keys()]));
+  clearAll.addEventListener('click', () => changeAlbums([]));
+  albumGrid.addEventListener('change', () => changeAlbums(
+    [...albumInputs].filter(([, input]) => input.checked).map(([folder]) => folder),
+  ));
+
+  const compact = matchMedia('(max-width: 640px)');
+  const albumOpen = root.querySelector('.album-open');
+  function setAlbumsOpen(open, moveFocus = true) {
+    open = open && compact.matches;
+    root.classList.toggle('albums-open', open);
+    albumOpen.setAttribute('aria-expanded', String(open));
+    main.inert = open;
+    if (moveFocus) {
+      if (open) albumPanel.querySelector('input').focus();
+      else albumOpen.focus();
+    }
+  }
+  albumOpen.addEventListener('click', () => setAlbumsOpen(true));
+  for (const selector of ['.album-close', '.album-done', '.album-backdrop']) {
+    root.querySelector(selector).addEventListener('click', () => setAlbumsOpen(false));
+  }
+  compact.addEventListener('change', () => setAlbumsOpen(false, false));
+  albumPanel.addEventListener('keydown', event => {
+    if (!root.classList.contains('albums-open')) return;
+    if (event.key === 'Escape') { event.preventDefault(); setAlbumsOpen(false); }
+    if (event.key === 'Tab') {
+      const controls = [...albumPanel.querySelectorAll('button:not(:disabled), input')].filter(control => control.offsetParent !== null);
+      const first = controls[0], last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    }
   });
   progress.addEventListener('input', () => seek(Number(progress.value) / 100 * audio.duration));
   player.querySelector('.simp-repeat').addEventListener('click', () => {
@@ -251,6 +371,7 @@ function BAPlayer() {
     if (autoNext && !audio.loop) nextTrack();
   });
   audio.addEventListener('error', () => {
+    if (!queue.length) return;
     syncPlayback();
     showStatus('음악을 불러오지 못했습니다. 연결을 확인하고 다시 재생하거나 다음 곡을 선택해 주세요.');
   });
@@ -274,10 +395,9 @@ function BAPlayer() {
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) { syncPlayback(); renderWaveform(); }
   });
-  let savedFolder = '';
-  try { savedFolder = localStorage.getItem(folderStorageKey) || ''; } catch { /* Storage is optional. */ }
-  filterFolder(savedFolder);
-  selectTrack(queue[0], false);
+  filterAlbums(readSavedAlbums());
+  if (queue.length) selectTrack(queue[0], false);
+  else clearTrack();
   Promise.all([
     import('./wavesurfer.esm.js'),
     fetch('./waveforms.json', { cache: 'no-cache' }).then(response => {
