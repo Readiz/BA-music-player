@@ -138,7 +138,7 @@ function BAPlayer() {
     return (hours ? `${hours}:${String(minutes).padStart(2, "0")}` : String(minutes)) + ":" + String(seconds % 60).padStart(2, "0");
   }
   function syncPosition() {
-    if (native) drawNativeWaveform();
+    if (native && waveform) waveform.setTime(audio.currentTime);
     const duration = audio.duration;
     const position = audio.currentTime;
     player.querySelector(".start-time").textContent = formatTime(position);
@@ -188,64 +188,38 @@ function BAPlayer() {
     audio.currentTime = Math.max(0, Math.min(audio.duration, time));
     syncPosition();
   }
-  let nativeCanvas;
-  function drawNativeWaveform() {
-    if (!nativeCanvas || !waveforms || index < 0 || document.hidden) return;
-    const data = waveforms[tracks[index].src];
-    if (!data) return;
-    const width = Math.max(1, nativeCanvas.clientWidth);
-    nativeCanvas.width = width * (window.devicePixelRatio || 1);
-    nativeCanvas.height = 70 * (window.devicePixelRatio || 1);
-    const context = nativeCanvas.getContext("2d");
-    context.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
-    data.peaks.forEach((peak, i) => {
-      const x = i / data.peaks.length * width;
-      const height = Math.max(1, Math.abs(peak) * 70);
-      context.fillStyle = i / data.peaks.length < audio.currentTime / data.duration ? "#ffffff" : "#5f5f5f";
-      context.fillRect(x, (70 - height) / 2, Math.max(1, width / data.peaks.length), height);
-    });
-  }
   function renderWaveform() {
-    if (native) {
-      const container2 = player.querySelector("#waveform");
-      const data2 = index >= 0 && (waveforms == null ? void 0 : waveforms[tracks[index].src]);
-      container2.style.visibility = data2 ? "visible" : "hidden";
-      if (data2 && !nativeCanvas) {
-        nativeCanvas = document.createElement("canvas");
-        nativeCanvas.style.cssText = "width:100%;height:70px;display:block;cursor:pointer";
-        nativeCanvas.setAttribute("aria-hidden", "true");
-        nativeCanvas.addEventListener("click", (event) => {
-          const bounds = nativeCanvas.getBoundingClientRect();
-          seek((event.clientX - bounds.left) / bounds.width * audio.duration);
-          play();
-        });
-        container2.append(nativeCanvas);
-      }
-      drawNativeWaveform();
-      return;
-    }
     if (index < 0 || !WaveSurfer || !waveforms || document.hidden) return;
     const data = waveforms[tracks[index].src];
     const container = player.querySelector("#waveform");
     container.style.visibility = data ? "visible" : "hidden";
-    if (!data || waveformSource === audio.src) return;
-    waveformSource = audio.src;
+    if (!data || waveformSource === tracks[index].src) return;
+    waveformSource = tracks[index].src;
+    const media = native ? player.querySelector("audio") : audio;
+    const url = native ? "" : audio.src;
+    const peaks = [[...data.peaks]];
     if (!waveform) {
       waveform = WaveSurfer.create({
         container,
-        media: audio,
-        url: audio.src,
-        peaks: [data.peaks],
+        media,
+        url,
+        peaks,
         duration: data.duration,
         waveColor: "#5f5f5f",
         progressColor: "#ffffff",
         height: 70
       });
-      waveform.on("interaction", play);
+      waveform.on("interaction", (time) => {
+        if (native) seek(time);
+        play();
+      });
+      waveform.on("ready", () => {
+        if (native) waveform.setTime(audio.currentTime);
+      });
       waveform.on("error", () => {
       });
     } else {
-      waveform.load(audio.src, [data.peaks], data.duration).catch(() => {
+      waveform.load(url, peaks, data.duration).catch(() => {
       });
     }
   }
@@ -280,7 +254,7 @@ function BAPlayer() {
         } else syncNativeQueue(autoplay, false);
       }
     } else {
-      audio.src = new URL(track.src, location.href).href;
+      audio.src = window.BAMusicSource.media(track.src);
       audio.load();
     }
     if (session) {
@@ -598,7 +572,7 @@ function BAPlayer() {
   if (typeof ResizeObserver !== "function") return;
   function refreshWaveforms() {
     if (!waveformRequest) {
-      waveformRequest = fetch("./waveforms.json", { cache: "no-cache" }).then((response) => {
+      waveformRequest = fetch(window.BAMusicSource.catalog("waveforms.json"), { cache: "no-cache" }).then((response) => {
         if (!response.ok) throw new Error("Waveform data unavailable");
         return response.json();
       }).then((data) => {
