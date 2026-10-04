@@ -12,16 +12,15 @@
 .tv-layout body>div{flex:1;min-height:0;}
 .tv-layout .app-header{padding:12px 28px;font-size:22px;flex-shrink:0;}
 .tv-layout .app-brand img{margin-right:12px;}
-.tv-layout .app-home,.tv-layout .app-install{display:none;}
-.tv-layout #simp{height:100%;font-size:20px;border-radius:0;grid-template-columns:320px minmax(0,1fr);grid-template-rows:minmax(0,1fr);}
+.tv-layout .app-install{display:none;}
+.tv-layout #simp{height:100%;font-size:20px;border-radius:0;grid-template-columns:320px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);}
 .tv-layout #simp.albums-collapsed{grid-template-columns:minmax(0,1fr);}
-.tv-layout #simp .simp-footer,.tv-layout #simp .album-hint,.tv-layout #simp .library-eyebrow{display:none;}
-.tv-layout #simp .album-toolbar{display:none;}
-.tv-layout #simp .album-toolbar-summary{font-size:16px;}
-.tv-layout #simp .album-toggle,.tv-layout #simp .album-actions button,.tv-layout #simp .library-retry{font-size:18px;min-height:44px;}
-.tv-layout #simp .simp-albums{padding:16px 20px;}
+.tv-layout #simp .simp-footer,.tv-layout #simp .album-hint,.tv-layout #simp .album-toggle{display:none;}
+.tv-layout #simp .album-actions button,.tv-layout #simp .library-retry{font-size:18px;min-height:44px;}
+.tv-layout #simp .album-heading-row{padding:16px 20px 10px;}
+.tv-layout #simp .simp-albums{padding:0 20px 16px;}
 .tv-layout #simp #album-heading{font-size:26px;}
-.tv-layout #simp .album-selection-summary{font-size:16px;margin:10px 0;}
+.tv-layout #simp .album-selection-summary{font-size:16px;}
 .tv-layout #simp .album-actions{gap:0;margin-bottom:12px;}
 .tv-layout #simp .album-actions button+button{margin-left:10px;}
 .tv-layout #simp .album-grid{display:block;}
@@ -52,7 +51,8 @@
 @media (min-width:1700px){
  .tv-layout .app-header{padding:18px 40px;font-size:28px;}
  .tv-layout #simp{font-size:25px;grid-template-columns:400px minmax(0,1fr);}
- .tv-layout #simp .simp-albums{padding:24px;}
+ .tv-layout #simp .album-heading-row{padding:24px 24px 14px;}
+ .tv-layout #simp .simp-albums{padding:0 24px 24px;}
  .tv-layout #simp .album-card{grid-template-columns:86px minmax(0,1fr);min-height:106px;margin-bottom:18px;padding:10px;}
  .tv-layout #simp .album-cover{width:86px;height:86px;}
  .tv-layout #simp .album-card input{left:74px;top:10px;}
