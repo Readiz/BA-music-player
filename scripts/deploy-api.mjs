@@ -26,9 +26,21 @@ const env = { MUSIC_AUTH_CONFIG: authPath, MUSIC_DATA_ROOT: join(root, 'data'), 
 const plist = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>Label</key><string>com.readiz.music.api</string><key>ProgramArguments</key><array><string>${xml(process.execPath)}</string><string>${xml(join(current, 'server/start.mjs'))}</string></array><key>EnvironmentVariables</key><dict>${Object.entries(env).map(([key,value]) => `<key>${key}</key><string>${xml(value)}</string>`).join('')}</dict><key>RunAtLoad</key><true/><key>KeepAlive</key><true/><key>ThrottleInterval</key><integer>5</integer><key>StandardOutPath</key><string>${xml(join(root, 'logs/api.log'))}</string><key>StandardErrorPath</key><string>${xml(join(root, 'logs/api.err.log'))}</string></dict></plist>`;
 function link(target) { const next = `${current}.next`; rmSync(next, { force: true }); symlinkSync(target, next); renameSync(next, current); }
 function stop() { try { execFileSync('launchctl', ['bootout', label], { stdio: 'ignore' }); } catch { /* First install. */ } }
-function start() { execFileSync('launchctl', ['bootstrap', `gui/${process.getuid()}`, plistPath]); }
+async function start() {
+  // bootout can return before launchd finishes unregistering the old job.
+  // A bounded retry also protects rollback from the same transient error 5.
+  let failure;
+  for (let attempt = 0; attempt < 10; attempt++) {
+    try {
+      execFileSync('launchctl', ['bootstrap', `gui/${process.getuid()}`, plistPath], { stdio: 'pipe' });
+      return;
+    } catch (error) { failure = error; }
+    await new Promise(resolve => setTimeout(resolve, 300));
+  }
+  throw failure;
+}
 try {
-  stop(); link(release); writeFileSync(plistPath, plist, { mode: 0o600 }); start();
+  stop(); link(release); writeFileSync(plistPath, plist, { mode: 0o600 }); await start();
   let healthy = false;
   for (let attempt = 0; attempt < 30; attempt++) {
     try { const health = await fetch('http://127.0.0.1:4525/api/health').then(r => r.json()); if (health.revision === revision && health.auth) { healthy = true; break; } } catch { /* Starting. */ }
@@ -39,7 +51,7 @@ try {
 } catch (error) {
   stop();
   if (previous) link(previous); else rmSync(current, { force: true });
-  if (previousPlist) { writeFileSync(plistPath, previousPlist, { mode: 0o600 }); start(); }
+  if (previousPlist) { writeFileSync(plistPath, previousPlist, { mode: 0o600 }); await start(); }
   else rmSync(plistPath, { force: true });
   throw error;
 }
