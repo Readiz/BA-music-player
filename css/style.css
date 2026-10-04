@@ -1,5 +1,11 @@
-@import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 
+.app-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 18px;background:#0e1621;color:#ddd;font:14px system-ui,sans-serif;padding-top:max(12px,env(safe-area-inset-top));}
+.app-brand{display:flex;align-items:center;gap:9px;font-weight:700;}
+.app-header>div{display:flex;align-items:center;gap:16px;}
+.app-install{font:inherit;background:#4082bc;color:white;border:0;border-radius:6px;padding:8px 12px;cursor:pointer;}
+.app-install[hidden]{display:none;}
+.app-home{font-size:13px;}
+body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);padding-bottom:env(safe-area-inset-bottom);}
 *,*:before,*:after{outline:0;-webkit-box-sizing:border-box;box-sizing:border-box;}
 input,button{outline:none;}
 a,a:hover,a:visited{color:#ddd;text-decoration:none;}
@@ -136,4 +142,11 @@ a,a:hover,a:visited{color:#ddd;text-decoration:none;}
   #simp .simp-controls {gap:8px;}
   #simp .simp-controls .simp-tracker {flex-basis:100%;order:3;margin-left:0;}
   #simp .simp-controls .simp-others {margin-left:auto;}
+}
+
+.app-header a:focus-visible,.app-install:focus-visible{outline:2px solid #89cfff;outline-offset:4px;}
+@media (min-width:641px){
+  body{display:flex;flex-direction:column;height:100vh;height:100dvh;}
+  body>div{flex:1;min-height:0;}
+  #simp{height:100%;}
 }

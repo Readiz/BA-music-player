@@ -1,0 +1,21 @@
+const install = document.querySelector('.app-install');
+let installPrompt;
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  installPrompt = event;
+  install.hidden = false;
+});
+install.addEventListener('click', async () => {
+  if (!installPrompt) return;
+  const prompt = installPrompt;
+  installPrompt = undefined;
+  install.hidden = true;
+  await prompt.prompt();
+});
+window.addEventListener('appinstalled', () => { install.hidden = true; });
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  // Updates take effect on the next launch; never reload an actively playing page.
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(error => console.warn('앱 오프라인 안내를 준비하지 못했습니다.', error));
+  });
+}

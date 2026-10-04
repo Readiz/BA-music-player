@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "appId": "com.readiz.music",
+  "name": "Readiz Music",
+  "version": "1.1.0",
+  "origin": "https://music.readiz.com",
+  "catalog": "./musicList.json",
+  "titles": "./blue-archive-ost.json",
+  "waveforms": "./waveforms.json",
+  "mediaBase": "./",
+  "trackCount": 338,
+  "revision": "0f2e642b6e3049d23911510e9d310fc6bd113f62",
+  "dirty": true
+}
