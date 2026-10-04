@@ -12,12 +12,6 @@ body{
   background: #eee;
    overflow: hidden; /* Hide scrollbars */
 }
-/* This will make your loading-overlay UI transition out all fancy like */
-.hide-loading {
-    visibility: hidden;
-    opacity: 0;
-    transition: visibility 1s, opacity 1s linear;
-}
 .intro{
    background: #fff;
    padding: 60px 30px;

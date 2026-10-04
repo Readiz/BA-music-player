@@ -25,7 +25,6 @@ async (page) => {
   await page.evaluate(() => { localStorage.removeItem('ba-player-folder'); localStorage.removeItem('ba-player-albums'); });
   await page.reload();
   await page.waitForFunction(() => document.querySelector('#audio'));
-  await page.getByText('Click here to use', {exact:true}).click();
   const album = name => page.getByRole('checkbox', {name,exact:true});
   const visible = page.locator('#ulist li:not([hidden])');
   const source = () => page.locator('#audio').evaluate(audio => audio.src);
@@ -93,7 +92,6 @@ async (page) => {
   await page.reload();
   await page.waitForFunction(()=>document.querySelector('#audio'));
   if (await visible.count() || await page.locator('.album-card input:checked').count()) throw new Error('Empty choice was not restored');
-  await page.getByText('Click here to use',{exact:true}).click();
   await album('Girls Band Cry').check();
   await album('Kessoku Band').check();
   await page.reload();
@@ -111,7 +109,6 @@ async (page) => {
     await page.waitForFunction(()=>document.querySelector('#audio'));
     if (await visible.count()!==paths.length) throw new Error('Invalid selection did not fall back to all');
   }
-  await page.getByText('Click here to use',{exact:true}).click();
   await page.getByRole('button',{name:'전체 해제',exact:true}).click();
   await page.getByRole('button',{name:'전체 선택',exact:true}).click();
   if (await visible.count()!==paths.length || !(await page.evaluate(()=>JSON.parse(localStorage.getItem('ba-player-albums')).all))) throw new Error('Select all did not save all mode');
@@ -120,26 +117,21 @@ async (page) => {
   const layouts=[];
   for (const [width,height] of [[1280,900],[700,600],[390,589],[263,520]]) {
     await page.setViewportSize({width,height});
-    if (width<=640) {
-      await page.getByRole('button',{name:'앨범 선택',exact:true}).click();
-      await album('Blue Archive').uncheck();
-      await album('Blue Archive').check();
-      const done = await page.getByRole('button',{name:'선택 완료',exact:true}).boundingBox();
-      if (!done || done.y < 0 || done.y + done.height > height) throw new Error('Drawer confirmation is outside the viewport');
-      if (!(await page.locator('.simp-main').evaluate(el=>el.inert))) throw new Error('Drawer did not isolate background controls');
-      await page.getByRole('button',{name:'선택 완료',exact:true}).focus();
-      await page.keyboard.press('Tab');
-      if (!(await page.getByRole('button',{name:'앨범 패널 닫기',exact:true}).first().evaluate(el=>el===document.activeElement))) throw new Error('Drawer focus escaped');
-      await page.keyboard.press('Escape');
-      if (await page.locator('.simp-main').evaluate(el=>el.inert) || await page.getByRole('button',{name:'앨범 선택',exact:true}).getAttribute('aria-expanded')!=='false') throw new Error('Drawer did not close on Escape');
-      await page.getByRole('button',{name:'앨범 선택',exact:true}).click();
-      await page.getByRole('button',{name:'선택 완료',exact:true}).click();
-    }
-    const layout=await page.evaluate(()=>({width:innerWidth,height:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth,footer:document.querySelector('.simp-footer').getBoundingClientRect().bottom,list:document.querySelector('.simp-playlist').getBoundingClientRect().height,sidebarRight:document.querySelector('.simp-albums').getBoundingClientRect().right,mainLeft:document.querySelector('.simp-main').getBoundingClientRect().left}));
-    if (layout.overflow || layout.footer>height+1 || layout.list<70 || (width>640 && layout.sidebarRight>layout.mainLeft+1)) throw new Error(JSON.stringify(layout));
+    await page.evaluate(()=>scrollTo(0,0));
+    const layout=await page.evaluate(()=>({width:innerWidth,height:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth,footer:document.querySelector('.simp-footer').getBoundingClientRect().bottom,list:document.querySelector('.simp-playlist').getBoundingClientRect().height,sidebarRight:document.querySelector('.simp-albums').getBoundingClientRect().right,albumBottom:document.querySelector('.simp-albums').getBoundingClientRect().bottom,mainTop:document.querySelector('.simp-main').getBoundingClientRect().top,mainLeft:document.querySelector('.simp-main').getBoundingClientRect().left,mainWidth:document.querySelector('.simp-main').getBoundingClientRect().width}));
+    if (layout.overflow || layout.list<70 || (width>640 && (layout.sidebarRight>layout.mainLeft+1 || layout.footer>height+1)) || (width<=640 && layout.albumBottom>layout.mainTop+1)) throw new Error(JSON.stringify(layout));
+    const before=await source();
+    await page.getByRole('button',{name:'앨범 접기',exact:true}).click();
+    if (await page.locator('.simp-albums').isVisible() || await source()!==before) throw new Error('Panel did not collapse or changed audio');
+    if (width>640 && await page.locator('.simp-main').evaluate(el=>el.getBoundingClientRect().width)<=layout.mainWidth) throw new Error('Collapsing did not expand the player');
+    await page.getByRole('button',{name:'앨범 펼치기',exact:true}).click();
+    await album('Blue Archive').focus();
+    await page.keyboard.press('Escape');
+    if (await page.locator('.simp-albums').isVisible() || !(await page.getByRole('button',{name:'앨범 펼치기',exact:true}).evaluate(el=>el===document.activeElement))) throw new Error('Escape did not close the panel and restore focus');
+    await page.getByRole('button',{name:'앨범 펼치기',exact:true}).click();
     layouts.push(layout);
   }
-  report.push({desktopSplitAndMobileDrawer:layouts});
+  report.push({collapsibleDesktopAndStackedMobile:layouts});
 
   const fallback=await page.context().newPage();
   try {
@@ -147,7 +139,6 @@ async (page) => {
     await fallback.addInitScript(()=>Object.defineProperty(window,'localStorage',{get(){throw new DOMException('Storage blocked','SecurityError');}}));
     await fallback.goto(page.url());
     await fallback.waitForFunction(()=>document.querySelector('#audio'));
-    await fallback.getByText('Click here to use',{exact:true}).click();
     await fallback.getByRole('button',{name:'전체 해제',exact:true}).click();
     await fallback.getByRole('checkbox',{name:'Kessoku Band',exact:true}).check();
     await fallback.getByRole('button',{name:'재생',exact:true}).click();
