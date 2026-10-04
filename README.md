@@ -1,5 +1,15 @@
 # Readiz Music
 
+## Android 알림 재생과 업데이트 (웹 1.3.0 / APK 0.3.0)
+
+[Android APK 설치](https://music.readiz.com/app.apk). 앱 실행·복귀 때 새 버전을 확인하고,
+재생 중에는 안내를 미룬다. 업데이트를 선택하면 Android 설치 화면으로 이어진다.
+알림창·잠금화면에서 이전 곡, 재생/일시정지, 다음 곡과 위치를 제어하며 화면을 꺼도
+네이티브 서비스가 재생 목록을 이어간다. 앱을 다시 열어도 현재 곡과 위치를 유지한다.
+기존 0.2.0 디버그 앱은 삭제 후 이번 정식 APK를 직접 설치해야 하며, 앨범 선택 설정이
+초기화된다. 이후부터 동일 서명의 앱 내 업데이트를 사용한다. [빌드·배포·서명 안내](android/README.md).
+
+
 ## TV 리모컨과 앱 준비 (1.2.4)
 
 [음악 서비스](https://music.readiz.com/) · [TV 화면 미리보기](https://music.readiz.com/?tv=1) · [삼성 TV WGT](https://music.readiz.com/app.wgt)
