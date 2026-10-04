@@ -67,3 +67,9 @@ a,a:hover,a:visited{color:#ddd;text-decoration:none;}
 #simp .simp-time .simp-slash,#simp .simp-time .end-time{display:none;}
 }
 #simp .simp-cover {display:none;}
+#simp {display:flex;flex-direction:column;height:100vh;height:100dvh;}
+#simp .simp-player,#simp .simp-footer {flex-shrink:0;}
+#simp .simp-playlist {flex:1;min-height:0;}
+#simp ul {height:100%;max-height:none;margin-top:0;}
+#simp .simp-status {margin:0;padding:0 20px 12px;color:#f4d49a;line-height:1.5;}
+#simp button:focus-visible,#simp li:focus-visible,#simp input:focus-visible {outline:2px solid #8ccaff;outline-offset:-2px;}

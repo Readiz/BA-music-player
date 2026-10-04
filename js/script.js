@@ -1,410 +1,250 @@
+/* UI adapted from the original CodeHim simple audio player.
+ * One native audio element owns playback for the lifetime of the page.
+ * WaveSurfer is optional presentation; no playback action awaits it.
+ */
 function BAPlayer() {
-  let wavesurfer = null;
-/*
-Example: https://www.codehim.com/demo/javascript-audio-player-with-playlist/
-*/
-// Multiple events to a listener
-function addEventListener_multi(element, eventNames, handler) {
-  var events = eventNames.split(' ');
-  events.forEach(e => element.addEventListener(e, handler, false));
-}
+  const root = document.querySelector('#simp');
+  const rows = [...root.querySelectorAll('.simp-playlist li')];
+  if (!rows.length) throw new Error('재생할 음악이 없습니다.');
+  const tracks = rows.map(row => ({
+    src: row.querySelector('.simp-source').dataset.src,
+    title: row.querySelector('.simp-source').textContent,
+    artist: row.querySelector('.simp-desc')?.textContent || '',
+  }));
+  const player = document.createElement('div');
+  player.className = 'simp-player';
+  player.innerHTML = `
+    <audio id="audio" preload="auto" playsinline></audio>
+    <div class="simp-display"><div class="simp-album w-full flex-wrap">
+      <div class="simp-info"><div class="simp-title"></div><div class="simp-artist"></div></div>
+    </div></div>
+    <div id="waveform" style="height:70px;margin:20px"></div>
+    <div class="simp-controls flex-wrap flex-align">
+      <div class="simp-plauseward flex flex-align">
+        <button type="button" class="simp-prev fa fa-backward" aria-label="이전 곡"></button>
+        <button type="button" class="simp-plause fa fa-play" aria-label="재생"></button>
+        <button type="button" class="simp-next fa fa-forward" aria-label="다음 곡"></button>
+      </div>
+      <div class="simp-tracker"><input class="simp-progress" aria-label="재생 위치" type="range" min="0" max="100" step="0.1" value="0" disabled><div class="simp-buffer"></div></div>
+      <div class="simp-time flex flex-align"><span class="start-time">0:00</span><span class="simp-slash">&nbsp;/&nbsp;</span><span class="end-time">0:00</span></div>
+      <div class="simp-others flex flex-align">
+        <button type="button" class="simp-repeat fa fa-repeat" aria-label="한 곡 반복" aria-pressed="false" title="한 곡 반복"></button>
+        <button type="button" class="simp-plext simp-active fa fa-play-circle" aria-label="자동으로 다음 곡 재생" aria-pressed="true" title="자동으로 다음 곡 재생"></button>
+        <button type="button" class="simp-random fa fa-random" aria-label="무작위 재생" aria-pressed="false" title="무작위 재생"></button>
+      </div>
+    </div>
+    <p class="simp-status" role="status" hidden></p>`;
+  root.insertBefore(player, root.querySelector('.simp-playlist'));
+  const audio = player.querySelector('audio');
+  const playButton = player.querySelector('.simp-plause');
+  const progress = player.querySelector('.simp-progress');
+  const tracker = player.querySelector('.simp-tracker');
+  const status = player.querySelector('.simp-status');
+  const session = navigator.mediaSession;
+  let index = 0;
+  let autoNext = true;
+  let random = false;
+  let playAttempt = 0;
+  let WaveSurfer;
+  let waveforms;
+  let waveform;
+  let waveformSource = '';
 
-// Random numbers in a specific range
-function getRandom(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-// Position element inside element
-function getRelativePos(elm) {
-  var pPos = elm.parentNode.getBoundingClientRect(); // parent pos
-  var cPos = elm.getBoundingClientRect(); // target pos
-  var pos = {};
-
-  pos.top    = cPos.top    - pPos.top + elm.parentNode.scrollTop,
-  pos.right  = cPos.right  - pPos.right,
-  pos.bottom = cPos.bottom - pPos.bottom,
-  pos.left   = cPos.left   - pPos.left;
-
-  return pos;
-}
-
-function formatTime(val) {
-  var h = 0, m = 0, s;
-  val = parseInt(val, 10);
-  if (val > 60 * 60) {
-   h = parseInt(val / (60 * 60), 10);
-   val -= h * 60 * 60;
+  function showStatus(message = '') {
+    status.textContent = message;
+    status.hidden = !message;
   }
-  if (val > 60) {
-   m = parseInt(val / 60, 10);
-   val -= m * 60;
+
+  function formatTime(value) {
+    const seconds = Math.max(0, Math.floor(Number.isFinite(value) ? value : 0));
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor(seconds / 60) % 60;
+    return (hours ? `${hours}:${String(minutes).padStart(2, '0')}` : String(minutes)) + ':' + String(seconds % 60).padStart(2, '0');
   }
-  s = val;
-  val = (h > 0)? h + ':' : '';
-  val += (m > 0)? ((m < 10 && h > 0)? '0' : '') + m + ':' : '0:';
-  val += ((s < 10)? '0' : '') + s;
-  return val;
-}
 
-function simp_initTime(curTime) {
-  let duration = wavesurfer.getDuration();
-
-  simp_controls.querySelector('.start-time').innerHTML = formatTime(curTime); //calculate current value time
-  if (!simp_isStream) {
-    simp_controls.querySelector('.end-time').innerHTML = formatTime(duration); //calculate total value time
-    simp_progress.value = curTime / duration * 100; //progress bar
-  }
-}
-
-function simp_initAudio(isFirst = false) {
-  console.log('init', isFirst);
-  // if readyState more than 2, audio file has loaded
-	// simp_isLoaded = simp_audio.readyState == 4 ? true : false;
-  simp_isLoaded = true;
-  // simp_isStream = simp_audio.duration == 'Infinity' ? true : false;
-  simp_isStream = false;
-  simp_controls.querySelector('.simp-plause').disabled = false;
-  // simp_progress.disabled = simp_isStream ? true : false;
-  //if (!simp_isStream) {
-  simp_progress.parentNode.classList.remove('simp-load','simp-loading');
-  //simp_controls.querySelector('.end-time').innerHTML = formatTime(wavesurfer.duration);
-  //}
-  // simp_audio.addEventListener('timeupdate', simp_initTime); //tracking load progress
-  if (isFirst != true && simp_isLoaded) {
-    togglePlayPause(null, true);
-  }
-  
-  // progress bar click event
-  addEventListener_multi(simp_progress, 'touchstart mousedown', function(e) {
-    // if (simp_isStream) {
-    //   e.stopPropagation();
-    //   return false;
-    // }
-    // if (simp_audio.readyState == 4) {
-    //   simp_audio.removeEventListener('timeupdate', simp_initTime);
-    //   simp_audio.pause();
-    // }
-    wavesurfer.pause();
-  });
-  
-  addEventListener_multi(simp_progress, 'touchend mouseup', function(e) {
-    // if (simp_isStream) {
-    //   e.stopPropagation();
-    //   return false;
-    // }
-    //if (simp_audio.readyState == 4) {
-      //simp_audio.currentTime = simp_progress.value * simp_audio.duration / 100;
-      //simp_audio.addEventListener('timeupdate', simp_initTime);
-      wavesurfer.seekTo(simp_progress.value / 100);
-      if (simp_isPlaying) wavesurfer.play(); //simp_audio.play();
-    //}
-  });
-}
-
-function simp_loadAudio(elem) {
-  console.log('load');
-  simp_progress.parentNode.classList.add('simp-loading');
-  simp_controls.querySelector('.simp-plause').disabled = true;
-  //simp_audio.querySelector('source').src = elem.dataset.src;
-  //simp_audio.load();
-  
-  //simp_audio.volume = parseFloat(simp_v_num / 100); //based on valume input value
-  //simp_audio.addEventListener('canplaythrough', simp_initAudio); //play audio without stop for buffering
-  
-  // if audio fails to load, only IE/Edge 9.0 or above
-  // simp_audio.addEventListener('error', function() {
-  //   alert('Please reload the page.');
-  // });
-
-  
-  navigator.mediaSession.setActionHandler("previoustrack", prevHandler);
-  navigator.mediaSession.setActionHandler("nexttrack", nextHandler);
-  navigator.mediaSession.setActionHandler("seekbackward", prevHandler);
-  navigator.mediaSession.setActionHandler("seekforward", nextHandler);
-}
-
-function simp_setAlbum(index) {
-  simp_cover.innerHTML = simp_a_url[index].dataset.cover ? '<div style="background:url(' + simp_a_url[index].dataset.cover + ') no-repeat;background-size:cover;width:80px;height:80px;"></div>' : '<i class="fa fa-music fa-5x"></i>';
-  simp_title.innerHTML = simp_source[index].querySelector('.simp-source').innerHTML;
-  simp_artist.innerHTML = simp_source[index].querySelector('.simp-desc') ? simp_source[index].querySelector('.simp-desc').innerHTML : '';
-}
-
-function simp_changeAudio(elem, isFirst = false) {
-	simp_isLoaded = false;
-  simp_controls.querySelector('.simp-prev').disabled = simp_a_index == 0 ? true : false;
-  simp_controls.querySelector('.simp-plause').disabled = simp_auto_load ? true : false;
-  simp_controls.querySelector('.simp-next').disabled = simp_a_index == simp_a_url.length-1 ? true : false;
-  simp_progress.parentNode.classList.add('simp-load');
-  simp_progress.disabled = true;
-  simp_progress.value = 0;
-  simp_controls.querySelector('.start-time').innerHTML = '0:00';
-  simp_controls.querySelector('.end-time').innerHTML = '0:00';
-  elem = simp_isRandom && simp_isNext ? simp_a_url[getRandom(0, simp_a_url.length-1)] : elem;
-
-  // playlist, audio is running
-  for (var i = 0; i < simp_a_url.length; i++) {
-    simp_a_url[i].parentNode.classList.remove('simp-active');
-    if (simp_a_url[i] == elem) {
-      simp_a_index = i;
-      simp_a_url[i].parentNode.classList.add('simp-active');
+  function syncPosition() {
+    const duration = audio.duration;
+    const position = audio.currentTime;
+    player.querySelector('.start-time').textContent = formatTime(position);
+    player.querySelector('.end-time').textContent = formatTime(duration);
+    const seekable = Number.isFinite(duration) && duration > 0;
+    progress.disabled = !seekable;
+    progress.value = seekable ? position / duration * 100 : 0;
+    if (session?.setPositionState && seekable) {
+      try {
+        session.setPositionState({ duration, position: Math.min(duration, Math.max(0, position)), playbackRate: audio.playbackRate });
+      } catch { /* A browser may expose only part of Media Session. */ }
     }
   }
-  
-  // scrolling to element inside element
-  var simp_active = getRelativePos(simp_source[simp_a_index]);
-  simp_source[simp_a_index].parentNode.scrollTop = simp_active.top;
 
-  if (simp_auto_load || simp_isPlaying) simp_loadAudio(elem);
-  
-  if (simp_isPlaying) {
-    simp_controls.querySelector('.simp-plause').classList.remove('fa-play');
-    simp_controls.querySelector('.simp-plause').classList.add('fa-pause');
+  function syncPlayback() {
+    const playing = !audio.paused && !audio.ended;
+    playButton.classList.toggle('fa-play', !playing);
+    playButton.classList.toggle('fa-pause', playing);
+    playButton.setAttribute('aria-label', playing ? '일시정지' : '재생');
+    if (session) session.playbackState = playing ? 'playing' : 'paused';
+    syncPosition();
   }
 
-  if (wavesurfer) wavesurfer.destroy();
-  wavesurfer = WaveSurfer.create({
-    container: '#waveform',
-    waveColor: '#5f5f5f',
-    progressColor: '#ffffff',
-    height: 70,
-    url: elem.dataset.src,
-  })
+  function play() {
+    const attempt = ++playAttempt;
+    showStatus();
+    if (audio.error) audio.load();
+    // Call synchronously in the user gesture / media-session / ended handler.
+    // Neither a network fetch nor waveform decoding may gate this call.
+    const result = audio.play();
+    result?.catch(error => {
+      if (attempt !== playAttempt || error.name === 'AbortError') return;
+      syncPlayback();
+      showStatus(error.name === 'NotAllowedError'
+        ? '재생 버튼을 눌러 음악을 계속 들어 주세요.'
+        : '음악을 재생하지 못했습니다. 다시 재생하거나 다음 곡을 선택해 주세요.');
+    });
+  }
 
-  wavesurfer.on('interaction', () => {
-    togglePlayPause(null, true);
-  })
-  wavesurfer.on('timeupdate', (currentTime) => {
-    //console.log('Time', currentTime + 's')
-    simp_initTime(currentTime);
-  })
-  wavesurfer.on('ready', () =>{
-    console.log('song ready!');
-    simp_initAudio(isFirst);
-    simp_progress.disabled = false;
-  })
-  wavesurfer.on('finish', () => {
-    console.log('Song End!!');
-    if (simp_isRepeat) {
-      wavesurfer.seekTo(0);
-      wavesurfer.play();
-      return;
-    }
+  function pause() {
+    ++playAttempt;
+    audio.pause();
+    syncPlayback();
+  }
 
-    simp_controls.querySelector('.simp-plause').classList.remove('fa-pause');
-    simp_controls.querySelector('.simp-plause').classList.add('fa-play');
-    // simp_audio.removeEventListener('timeupdate', simp_initTime);
-    
-    if (simp_isNext) { //auto load next audio
-      var elem;
-      simp_a_index++;
-      if (simp_a_index == simp_a_url.length) { //repeat all audio
-        simp_a_index = 0;
-        elem = simp_a_url[0];
-      } else {
-        elem = simp_a_url[simp_a_index];  
-      }
-      simp_changeAudio(elem);
-      simp_setAlbum(simp_a_index);
+  function seek(time) {
+    if (!Number.isFinite(time) || !Number.isFinite(audio.duration)) return;
+    audio.currentTime = Math.max(0, Math.min(audio.duration, time));
+    syncPosition();
+  }
+
+  function renderWaveform() {
+    if (!WaveSurfer || !waveforms || document.hidden) return;
+    const data = waveforms[tracks[index].src];
+    const container = player.querySelector('#waveform');
+    container.style.visibility = data ? 'visible' : 'hidden';
+    if (!data || waveformSource === audio.src) return;
+    waveformSource = audio.src;
+    if (!waveform) {
+      waveform = WaveSurfer.create({
+        container, media: audio, url: audio.src, peaks: [data.peaks], duration: data.duration,
+        waveColor: '#5f5f5f', progressColor: '#ffffff', height: 70,
+      });
+      waveform.on('interaction', play);
+      // A display error must not stop the native audio stream.
+      waveform.on('error', () => {});
     } else {
-      simp_isPlaying = false;
+      waveform.load(audio.src, [data.peaks], data.duration).catch(() => {});
     }
+  }
+
+  function selectTrack(nextIndex, autoplay = true) {
+    ++playAttempt;
+    index = (nextIndex + tracks.length) % tracks.length;
+    const track = tracks[index];
+    rows.forEach((row, i) => row.classList.toggle('simp-active', i === index));
+    const list = rows[index].parentElement;
+    list.scrollTop += rows[index].getBoundingClientRect().top - list.getBoundingClientRect().top;
+    player.querySelector('.simp-title').textContent = track.title;
+    player.querySelector('.simp-artist').textContent = track.artist;
+    showStatus();
+    audio.src = new URL(track.src, location.href).href;
+    audio.load();
+    if (session) {
+      if (typeof MediaMetadata !== 'undefined') {
+        session.metadata = new MediaMetadata({
+          title: track.title.replace(/^theme_\d+-/, ''), artist: track.artist, album: 'Readiz’s Player',
+        });
+      }
+      try { session.setPositionState?.(); } catch { /* Optional. */ }
+    }
+    syncPlayback();
+    renderWaveform();
+    if (autoplay) play();
+  }
+
+  function nextTrack() {
+    const next = random && tracks.length > 1
+      ? (index + 1 + Math.floor(Math.random() * (tracks.length - 1))) % tracks.length
+      : index + 1;
+    selectTrack(next);
+  }
+
+  function toggleOption(selector, enabled) {
+    const button = player.querySelector(selector);
+    button.classList.toggle('simp-active', enabled);
+    button.setAttribute('aria-pressed', String(enabled));
+  }
+
+  playButton.addEventListener('click', () => audio.paused ? play() : pause());
+  player.querySelector('.simp-prev').addEventListener('click', () => selectTrack(index - 1));
+  player.querySelector('.simp-next').addEventListener('click', nextTrack);
+  progress.addEventListener('input', () => seek(Number(progress.value) / 100 * audio.duration));
+  player.querySelector('.simp-repeat').addEventListener('click', () => {
+    // Native looping does not depend on a JavaScript callback in a hidden tab.
+    audio.loop = !audio.loop;
+    toggleOption('.simp-repeat', audio.loop);
   });
-}
-
-function togglePlayPause(eles, forcePlay = false) {
-  console.log('toggle', forcePlay);
-  if (!eles) {
-    eles = document.querySelector('.simp-plause').classList;
-  }
-  if (simp_isPlaying == false || forcePlay) {
-    if (!simp_isLoaded) simp_loadAudio(simp_a_url[simp_a_index]);
-    // simp_audio.play();
-    wavesurfer.play();
-    simp_isPlaying = true;
-    eles.remove('fa-play');
-    eles.add('fa-pause')
-    console.log('play!');
-  } else {
-    //simp_audio.pause();
-    console.log('pause!');
-    wavesurfer.pause();
-    simp_isPlaying = false;
-    eles.remove('fa-pause');
-    eles.add('fa-play');
-  }
-}
-
-function simp_startScript() {
-  ap_simp = document.querySelector('#simp');
-  simp_audio = ap_simp.querySelector('#audio');
-  simp_album = ap_simp.querySelector('.simp-album');
-  simp_cover = simp_album.querySelector('.simp-cover');
-  simp_title = simp_album.querySelector('.simp-title');
-  simp_artist = simp_album.querySelector('.simp-artist');
-  simp_controls = ap_simp.querySelector('.simp-controls');
-  simp_progress = simp_controls.querySelector('.simp-progress');
-  simp_volume = simp_controls.querySelector('.simp-volume');
-  simp_v_slider = simp_volume.querySelector('.simp-v-slider');
-  simp_v_num = simp_v_slider.value; //default volume
-  simp_others = simp_controls.querySelector('.simp-others');
-  simp_auto_load = simp_config.auto_load; //auto load audio file
-  
-  if (simp_config.shide_top) simp_album.parentNode.classList.toggle('simp-hide');
-  if (simp_config.shide_btm) {
-    simp_playlist.classList.add('simp-display');
-    simp_playlist.classList.toggle('simp-hide');
-  }
-  
-  if (simp_a_url.length <= 1) {
-    simp_controls.querySelector('.simp-prev').style.display = 'none';
-    simp_controls.querySelector('.simp-next').style.display = 'none';
-    simp_others.querySelector('.simp-plext').style.display = 'none';
-    simp_others.querySelector('.simp-random').style.display = 'none';
-  }
-
-  // Playlist listeners
-  simp_source.forEach(function(item, index) {
-    if (item.classList.contains('simp-active')) simp_a_index = index; //playlist contains '.simp-active'
-    item.addEventListener('click', function() {
-      //simp_audio.removeEventListener('timeupdate', simp_initTime);
-      simp_a_index = index;
-      simp_changeAudio(this.querySelector('.simp-source'));
-      simp_setAlbum(simp_a_index);
+  player.querySelector('.simp-plext').addEventListener('click', () => {
+    autoNext = !autoNext;
+    toggleOption('.simp-plext', autoNext);
+  });
+  player.querySelector('.simp-random').addEventListener('click', () => {
+    random = !random;
+    toggleOption('.simp-random', random);
+  });
+  rows.forEach((row, i) => {
+    row.tabIndex = 0;
+    row.setAttribute('role', 'button');
+    row.addEventListener('click', () => selectTrack(i));
+    row.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        selectTrack(i);
+      }
     });
   });
-  
-  // FIRST AUDIO LOAD =======
-  simp_changeAudio(simp_a_url[simp_a_index], true);
-  simp_setAlbum(simp_a_index);
-  // FIRST AUDIO LOAD =======
-  
-  // Controls listeners
-  simp_controls.querySelector('.simp-plauseward').addEventListener('click', function(e) {
-    var eles = e.target.classList;
-    if (eles.contains('simp-plause')) {
-      togglePlayPause(eles);
-    } else {
-      if (eles.contains('simp-prev') && simp_a_index != 0) {
-        simp_a_index = simp_a_index-1;
-        e.target.disabled = simp_a_index == 0 ? true : false;
-      } else if (eles.contains('simp-next') && simp_a_index != simp_a_url.length-1) {
-        simp_a_index = simp_a_index+1;
-        e.target.disabled = simp_a_index == simp_a_url.length-1 ? true : false;
-      }
-      //simp_audio.removeEventListener('timeupdate', simp_initTime);
-      simp_changeAudio(simp_a_url[simp_a_index]);
-      simp_setAlbum(simp_a_index);
-    }
+
+  for (const event of ['play', 'pause', 'playing', 'ended']) audio.addEventListener(event, syncPlayback);
+  for (const event of ['timeupdate', 'loadedmetadata', 'durationchange', 'seeked', 'ratechange']) audio.addEventListener(event, syncPosition);
+  for (const event of ['loadstart', 'waiting']) audio.addEventListener(event, () => tracker.classList.add('simp-loading'));
+  for (const event of ['canplay', 'playing', 'pause', 'error']) audio.addEventListener(event, () => tracker.classList.remove('simp-loading'));
+  audio.addEventListener('playing', () => showStatus());
+  audio.addEventListener('ended', () => {
+    if (autoNext && !audio.loop) nextTrack();
   });
-  
-  // Audio volume
-  // simp_volume.addEventListener('click', function(e) {
-  //   var eles = e.target.classList;
-  //   if (eles.contains('simp-mute')) {
-  //     if (eles.contains('fa-volume-up')) {
-  //       eles.remove('fa-volume-up');
-  //       eles.add('fa-volume-off');
-  //       simp_v_slider.value = 0;
-  //     } else {
-  //       eles.remove('fa-volume-off');
-  //       eles.add('fa-volume-up');
-  //       simp_v_slider.value = simp_v_num;
-  //     }
-  //   } else {
-  //     simp_v_num = simp_v_slider.value;
-  //     if (simp_v_num != 0) {
-  //       simp_controls.querySelector('.simp-mute').classList.remove('fa-volume-off');
-  //       simp_controls.querySelector('.simp-mute').classList.add('fa-volume-up');
-  //     }
-  //   }
-  //   simp_audio.volume = parseFloat(simp_v_slider.value / 100);
-  // });
-  
-  // Others
-  simp_others.addEventListener('click', function(e) {
-    var eles = e.target.classList;
-    if (eles.contains('simp-repeat')) {
-      simp_isRepeat = !simp_isRepeat;
-      // simp_audio.loop = simp_isRepeat;
-      eles.contains('simp-active') && !simp_isRepeat ? eles.remove('simp-active') : eles.add('simp-active');
-    } else if (eles.contains('simp-plext')) {
-      simp_isNext = simp_isNext && !simp_isRandom ? false : true;
-      if (!simp_isRandom) simp_isRanext = simp_isRanext ? false : true;
-      eles.contains('simp-active') && !simp_isRandom ? eles.remove('simp-active') : eles.add('simp-active');
-    } else if (eles.contains('simp-random')) {
-      simp_isRandom = simp_isRandom ? false : true;
-      if (simp_isNext && !simp_isRanext) {
-        simp_isNext = false;
-        simp_others.querySelector('.simp-plext').classList.remove('simp-active');
-      } else {
-        simp_isNext = true;
-        simp_others.querySelector('.simp-plext').classList.add('simp-active');
-      }
-      eles.contains('simp-active') ? eles.remove('simp-active') : eles.add('simp-active');
-    } else if (eles.contains('simp-shide-top')) {
-      simp_album.parentNode.classList.toggle('simp-hide');
-    } else if (eles.contains('simp-shide-bottom')) {
-      simp_playlist.classList.add('simp-display');
-      simp_playlist.classList.toggle('simp-hide');
-    }
+  audio.addEventListener('error', () => {
+    syncPlayback();
+    showStatus('음악을 불러오지 못했습니다. 연결을 확인하고 다시 재생하거나 다음 곡을 선택해 주세요.');
   });
-}
 
-// Start simple player
-if (document.querySelector('#simp')) {
-  var simp_auto_load, simp_audio, simp_album, simp_cover, simp_title, simp_artist, simp_controls, simp_progress, simp_volume, simp_v_slider, simp_v_num, simp_others;
-  var ap_simp = document.querySelector('#simp');
-  var simp_playlist = ap_simp.querySelector('.simp-playlist');
-  var simp_source = simp_playlist.querySelectorAll('li');
-  var simp_a_url = simp_playlist.querySelectorAll('[data-src]');
-  var simp_a_index = 0;
-  var simp_isPlaying = false;
-  var simp_isRepeat = false;
-  var simp_isNext = true; //auto play
-  var simp_isRandom = false; //play random
-  var simp_isRanext = true; //check if before random starts, simp_isNext value is true
-  var simp_isStream = false; //radio streaming
-  var simp_isLoaded = false; //audio file has loaded
-  var simp_config = ap_simp.dataset.config ? JSON.parse(ap_simp.dataset.config) : {
-    shide_top: false, //show/hide album
-    shide_btm: false, //show/hide playlist
-    auto_load: true //auto load audio file
-  };
-  
-  var simp_elem = '';
-  simp_elem += '<audio id="audio" preload><source src="" type="audio/mpeg"></audio>';
-  simp_elem += '<div class="simp-display"><div class="simp-album w-full flex-wrap"><div class="simp-cover"><i class="fa fa-music fa-5x"></i></div><div class="simp-info"><div class="simp-title">Title</div><div class="simp-artist">Artist</div></div></div></div>';
-  simp_elem += '<div id="waveform" style="width:calc(100%-40px);height:50px;margin:20px;"></div>'
-  simp_elem += '<div class="simp-controls flex-wrap flex-align">';
-  simp_elem += '<div class="simp-plauseward flex flex-align"><button type="button" class="simp-prev fa fa-backward" disabled></button><button type="button" class="simp-plause fa fa-play" disabled></button><button type="button" class="simp-next fa fa-forward" disabled></button></div>';
-  simp_elem += '<div class="simp-tracker simp-load"><input class="simp-progress" type="range" min="0" max="100" value="0" disabled/><div class="simp-buffer"></div></div>';
-  simp_elem += '<div class="simp-time flex flex-align"><span class="start-time">0:00</span><span class="simp-slash">&#160;/&#160;</span><span class="end-time">0:00</span></div>';
-  simp_elem += '<div class="simp-volume flex flex-align"><button type="button" class="simp-mute fa fa-volume-up"></button><input class="simp-v-slider" type="range" min="0" max="100" value="100"/></div>';
-  simp_elem += '<div class="simp-others flex flex-align"><button type="button" class="simp-repeat fa fa-repeat" title="Repeat"></button><button type="button" class="simp-plext simp-active fa fa-play-circle" title="Auto Play"></button><button type="button" class="simp-random fa fa-random" title="Random"></button><div class="simp-shide"><button type="button" class="simp-shide-top fa fa-caret-up" title="Show/Hide Album"></button><button type="button" class="simp-shide-bottom fa fa-caret-down" title="Show/Hide Playlist"></button></div></div>';
-  simp_elem += '</div>'; //simp-controls
-  
-  var simp_player = document.createElement('div');
-  simp_player.classList.add('simp-player');
-  simp_player.innerHTML = simp_elem;
-  ap_simp.insertBefore(simp_player, simp_playlist);
-  simp_startScript();
+  if (session?.setActionHandler) {
+    const actions = {
+      play, pause,
+      stop: () => { pause(); seek(0); },
+      previoustrack: () => selectTrack(index - 1),
+      nexttrack: nextTrack,
+      seekbackward: details => seek(audio.currentTime - (details.seekOffset ?? 10)),
+      seekforward: details => seek(audio.currentTime + (details.seekOffset ?? 10)),
+      seekto: details => seek(details.seekTime),
+    };
+    for (const [action, handler] of Object.entries(actions)) {
+      try { session.setActionHandler(action, handler); } catch { /* Unsupported actions are independent. */ }
+    }
+  }
 
-  // Below is impossible due to the browser policy
-  // document.querySelector('.simp-plause').click();
-}
-
-function prevHandler() {
-    var simp_prev = document.querySelector('.simp-prev');
-    simp_prev.click();
-}
-function nextHandler() {
-    var simp_next = document.querySelector('.simp-next');
-    simp_next.click();
-}
-
-
+  // Returning to the tab refreshes the display without restarting a paused track.
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) { syncPlayback(); renderWaveform(); }
+  });
+  selectTrack(0, false);
+  Promise.all([
+    import('./wavesurfer.esm.js'),
+    fetch('./waveforms.json', { cache: 'no-cache' }).then(response => {
+      if (!response.ok) throw new Error('Waveform data unavailable');
+      return response.json();
+    }),
+  ]).then(([module, data]) => {
+    WaveSurfer = module.default;
+    waveforms = data;
+    renderWaveform();
+  }).catch(() => { /* Playback remains available without the visualizer. */ });
 }
 
 window.BAPlayer = BAPlayer;
