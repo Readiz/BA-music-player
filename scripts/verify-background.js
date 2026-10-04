@@ -4,6 +4,8 @@
 // not a physical phone's screen lock, app suspension, or battery policy.
 async (page) => {
   const url = page.url();
+  const catalogResponse = await page.request.get(new URL('./musicList.json', url).href);
+  const expectedTracks = (await catalogResponse.json()).length;
   const report = [];
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
@@ -19,7 +21,7 @@ async (page) => {
   });
   await page.route('**/wavesurfer.esm.js', route => route.abort());
   await page.reload();
-  await page.waitForFunction(() => document.querySelectorAll('#ulist li').length === 223);
+  await page.waitForFunction(count => document.querySelectorAll('#ulist li').length === count, expectedTracks);
   if (!(await page.locator('#audio').evaluate(audio => audio.paused))) throw new Error('Unexpected autoplay');
   await page.getByText('Click here to use').click();
   await page.getByText("theme_103-Poppin' Memories", {exact:true}).click();
@@ -104,7 +106,7 @@ async (page) => {
   try {
     await fallback.addInitScript(() => Object.defineProperty(navigator, 'mediaSession', {value:undefined, configurable:true}));
     await fallback.goto(url);
-    await fallback.waitForFunction(() => document.querySelectorAll('#ulist li').length === 223);
+    await fallback.waitForFunction(count => document.querySelectorAll('#ulist li').length === count, expectedTracks);
     await fallback.getByText('Click here to use').click();
     await fallback.getByRole('button', {name:'재생', exact:true}).click();
     await fallback.waitForFunction(() => document.querySelector('#audio').currentTime > 0.3);

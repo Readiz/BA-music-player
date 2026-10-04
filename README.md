@@ -2,17 +2,38 @@
 
 ## 곡명 보완
 
-`blue-archive-ost.json`은 [BA OST Index](https://ba.cnfast.top/en/track/ost/)의
-곡명 목록을 2026-10-04에 확인한 스냅샷입니다. 이름이 있는 164곡을 OST 번호로
-저장하며, 원문에서 `[UNNAMED]`인 항목은 제외합니다.
+`blue-archive-ost.json`은 [BA OST Index](https://ba.cnfast.top/en/track/ost/)와
+[Blue Archive Wiki](https://bluearchive.fandom.com/wiki/Soundtrack)를
+2026-10-04에 확인한 곡명 목록입니다. 최초 목록의 164개 제목에 추가 음원의
+확인된 제목 60개를 보완했으며, 제목이 확인되지 않은 항목은 제외합니다.
 
 플레이어는 `Blue Archive/theme_번호.ogg`처럼 이름이 없는 파일에만 이 목록의
-제목을 표시합니다. 현재 28곡의 이름을 보완합니다. 이미 이름이 있는 곡, 다른
-음악과 전체 223개 음원의 경로·순서는 유지합니다. 참고 목록의 199곡은 모두
-기존 음원에 포함되어 있어 이번 갱신에서 음원을 추가하지 않았습니다.
+제목을 표시합니다. 이미 이름이 있는 파일은 그대로 표시하며, 미확인 제목을
+추측해서 붙이지 않습니다. 기존 음원 223개의 파일과 경로를 보존합니다.
 
 곡명은 `decodeURIComponent`와 `textContent`로 표시해 일본어·특수문자를
 보존합니다. 메타데이터를 읽을 수 없으면 기존 파일 이름으로 재생 목록을 엽니다.
+
+## 2026-10-04 음원 추가
+
+공개 팬 자료에서 빠져 있던 OGG 115곡(약 137MB)을 추가해 총 338곡을 제공합니다.
+처음 확인한 메모리얼 로비 음악 25곡에 다른 자료에서 확인한 90곡을 더했습니다.
+추가곡 중 60곡은 제목을 확인했고, 55곡은 `theme_번호`로 표시합니다.
+Vol.8에서 누락됐던 16곡도 모두 포함됩니다. 번호가 같은 기존 곡, 짧은 버전과
+파트별 분할 음원은 중복 추가하지 않았습니다.
+
+- [메모리얼 로비 OST 자료](https://github.com/CelestialDomeStarPole/BlueArchive-CharacterMemorialLobbyOST-ReferenceTable): 25곡
+- [BA OST Ranker 자료](https://github.com/alonzojp/BA-OST-Ranker): 9곡
+- [NCW BlueArchiveMusic 자료](https://github.com/NoneColdWind/NCW-MC-BlueArchiveMusic): 81곡
+
+`music-sources.json`에 곡 번호, 확인된 제목, 원본 저장소·커밋·경로, 파일 크기,
+SHA-256, 길이와 코덱을 기록했습니다. 외부 저장소의 임의 제목은 사용하지 않았습니다.
+공개 팬 업로드를 확인한 것이며, 미공개 유출 여부를 주장하지 않습니다.
+음악 저작권은 원 권리자에게 있습니다.
+
+추가 파일 전체의 OGG/Vorbis 형식, 길이, 전체 디코딩, 파일 중복을 확인한 후
+목록과 파형을 생성합니다. `musicList.json`과 `lastUpdated.txt`는 배포 작업이
+다시 생성하며, `waveforms.json`은 아래 명령으로 갱신해 커밋합니다.
 
 ## 백그라운드 재생
 
@@ -39,7 +60,7 @@ Playwright CLI로 접속하고 다음을 실행합니다.
 playwright-cli run-code "$(cat scripts/verify-background.js)"
 ```
 
-223곡 보존, 파형 로딩 실패, 실제 오디오 시간 진행, 포커스가 빠진 탭에서 다음 곡과 반복,
+현재 목록의 곡 수, 파형 로딩 실패, 실제 오디오 시간 진행, 포커스가 빠진 탭에서 다음 곡과 반복,
 자동 다음 곡 해제, Media Session 핸들러, 재생 거부와 미지원 브라우저 대응을
 검사합니다. Playwright가 페이지 가시성을 강제하므로 `document.hidden` 상태의
 증명과는 구분합니다. 휴대폰의 실제 화면 잠금·다른 앱 전환·배터리 제한은 별도의 실기기
