@@ -1,4 +1,16 @@
 {
   "schemaVersion": 1,
-  "tracks": []
+  "tracks": [
+    {
+      "src": "./music/ETC/yt-mqjYP2Kjpg4.mp3",
+      "title": "고스타그램 (GHOSTagram)",
+      "folder": "ETC",
+      "artist": "ETC",
+      "sourceUrl": "https://www.youtube.com/watch?v=mqjYP2Kjpg4",
+      "duration": 210.187,
+      "bytes": 5045860,
+      "sha256": "b4177f44808b834999284a5c959c44e7dc55164b3d53faf7c50bea885709eeba",
+      "sourceRevision": "f40d56024401548a0950a3d6dce640f4394e7072"
+    }
+  ]
 }
