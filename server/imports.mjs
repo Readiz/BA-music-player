@@ -122,13 +122,13 @@ export function createImports({ dataRoot, downloader = createDownloader(), conve
       created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL
     );`);
   const columns = new Set(db.prepare('PRAGMA table_info(imports)').all().map(column => column.name));
-  for (const column of ['sync_state', 'sync_revision']) if (!columns.has(column)) db.exec(`ALTER TABLE imports ADD COLUMN ${column} TEXT`);
+  for (const column of ['sync_state', 'sync_revision', 'sync_stage']) if (!columns.has(column)) db.exec(`ALTER TABLE imports ADD COLUMN ${column} TEXT`);
   // Resume interrupted synchronization, and migrate audio from the old local-only library.
   db.exec("UPDATE imports SET status='queued',error=NULL WHERE status IN ('checking','downloading','converting','syncing') OR (status='ready' AND sync_revision IS NULL)");
   let running = null, closed = false;
   const receiving = new Set();
   const publicTrack = row => ({ src: `./music/ETC/${mediaIdentity(row.video_id).filename}`, title: row.title, folder: 'ETC', artist: 'ETC' });
-  const view = row => row && ({ id: row.id, status: row.status, title: row.title, error: row.error, createdAt: row.created_at,
+  const view = row => row && ({ id: row.id, status: row.status, title: row.title, error: row.error, createdAt: row.created_at, updatedAt: row.updated_at, syncStage: row.status === 'syncing' ? row.sync_stage : null,
     ...(row.status === 'ready' && row.sync_revision ? { track: publicTrack(row) } : {}) });
   const update = (id, status) => db.prepare('UPDATE imports SET status=?, updated_at=? WHERE id=?').run(status, now(), id);
   const get = id => db.prepare('SELECT * FROM imports WHERE id=?').get(id);
@@ -158,7 +158,11 @@ export function createImports({ dataRoot, downloader = createDownloader(), conve
         if (identity.kind === 'upload') rmSync(join(uploads, row.video_id), { force: true });
         update(row.id, 'syncing');
         const synced = await synchronize({ video, result, signal: controller.signal, checkpoint: JSON.parse(row.sync_state || '{}'),
-          saveCheckpoint: state => db.prepare('UPDATE imports SET sync_state=? WHERE id=?').run(JSON.stringify(state), row.id) });
+          saveCheckpoint: state => db.prepare('UPDATE imports SET sync_state=? WHERE id=?').run(JSON.stringify(state), row.id),
+          onProgress: stage => {
+            if (!['uploading', 'waiting', 'preparing', 'waveform', 'testing', 'publishing', 'verifying'].includes(stage)) return;
+            db.prepare('UPDATE imports SET sync_stage=?,updated_at=? WHERE id=? AND (sync_stage IS NULL OR sync_stage!=?)').run(stage, now(), row.id, stage);
+          } });
         controller.signal.throwIfAborted();
         if (!/^[a-f0-9]{40}$/.test(synced.revision || '')) throw new Error('Missing synchronization proof');
         db.prepare("UPDATE imports SET status='ready',title=?,sync_revision=?,error=NULL,updated_at=? WHERE id=?").run(synced.track?.title || result.title, synced.revision, now(), row.id);
@@ -204,7 +208,7 @@ export function createImports({ dataRoot, downloader = createDownloader(), conve
     if (source) renameSync(source, join(uploads, video.id));
     const id = existing?.id || randomUUID();
     db.prepare(`INSERT INTO imports (id,video_id,owner,status,title,created_at,updated_at) VALUES (?,?,?,'queued',?,?,?)
-      ON CONFLICT(video_id) DO UPDATE SET owner=excluded.owner,status='queued',error=NULL,sync_state=NULL,updated_at=excluded.updated_at`).run(id, video.id, owner, title, now(), now());
+      ON CONFLICT(video_id) DO UPDATE SET owner=excluded.owner,status='queued',error=NULL,sync_state=NULL,sync_stage=NULL,updated_at=excluded.updated_at`).run(id, video.id, owner, title, now(), now());
     const result = view(get(id));
     queueMicrotask(pump);
     return result;

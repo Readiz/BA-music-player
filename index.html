@@ -25,6 +25,7 @@
   </head>
   <body>
 <header class="app-header"><a class="app-brand" href="./"><img src="./assets/icons/music.svg" width="28" height="28" alt="">Readiz Music</a><div class="app-header-actions"><button class="app-install music-add-open" type="button" hidden>음악 추가</button><button class="app-install" type="button" data-install hidden>앱 설치</button></div></header>
+<div class="music-import-notice" role="status" hidden><span></span><button type="button">진행 확인</button></div>
 <div>
  <div class="simple-audio-player" id="simp" data-config='{"shide_top":false,"shide_btm":false,"auto_load":true}'>
   <div class="album-heading-row">
@@ -76,7 +77,7 @@
         <progress class="music-upload-progress" max="100" value="0" aria-label="파일 업로드 진행률" hidden></progress>
         <button type="submit" class="music-add-submit">파일을 ETC에 추가</button>
       </form>
-      <ul class="music-add-jobs" aria-label="최근 음악 추가" aria-live="polite"></ul>
+      <ul class="music-add-jobs" aria-label="최근 음악 추가"></ul>
       <button type="button" class="music-logout">로그아웃</button>
     </div>
     <p class="music-add-status" role="status"></p>
