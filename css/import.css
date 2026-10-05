@@ -29,3 +29,14 @@
 .music-file-form label:not(:first-child){margin-top:14px;}
 .music-file-form input[type=file]{font-size:13px;}
 .music-upload-progress{width:100%;height:10px;accent-color:#89cfff;margin-bottom:12px;}
+
+.music-import-notice[hidden]{display:none!important;}
+.music-import-notice{display:flex;align-items:center;gap:12px;max-width:1100px;margin:0 auto 12px;padding:12px 16px;box-sizing:border-box;border:1px solid #486881;border-radius:10px;background:#172534;color:#cce7fc;font:14px/1.5 system-ui,sans-serif;}
+.music-import-notice span{flex:1;min-width:0;overflow-wrap:anywhere;}
+.music-import-notice button{flex-shrink:0;border:1px solid #486881;border-radius:8px;background:#29445a;color:#e5f3ff;padding:7px 10px;font:inherit;cursor:pointer;}
+.music-import-notice button:focus-visible{outline:2px solid #89cfff;outline-offset:3px;}
+.music-import-notice[data-state=ready]{border-color:#538a70;}
+.music-import-notice[data-state=failed]{border-color:#bc746b;}
+.music-add-jobs small{grid-column:1/-1;color:#a9bdcf;font-size:12px;}
+.music-add-jobs li[data-state=active] strong::before{content:'●';color:#89cfff;font-size:10px;margin-right:7px;}
+@media(max-width:480px){.music-import-notice{margin:0 12px 12px;padding:10px 12px;font-size:13px;}}

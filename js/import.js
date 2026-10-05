@@ -17,9 +17,32 @@
   let uploading = false;
   const status = modal.querySelector(".music-add-status");
   const jobs = modal.querySelector(".music-add-jobs");
+  const notice = document.querySelector(".music-import-notice");
+  const noticeText = notice.querySelector("span");
+  const noticeButton = notice.querySelector("button");
+  let latestJobs = [], acknowledged = null;
+  const observed = /* @__PURE__ */ new Set();
   const logout = modal.querySelector(".music-logout");
-  let authenticated = false, timer, priorFocus, refreshing = false, duplicate;
+  let authenticated = false, timer, priorFocus, refreshing = false, refreshAgain = false, pollError = "", duplicate;
   const labels = { queued: "대기 중", checking: "음악 확인 중", downloading: "다운로드 중", converting: "음악 준비 중", syncing: "동기화 중 · 완료 후 ETC에 추가됩니다", ready: "동기화 완료 · ETC에 추가됨", failed: "추가 실패" };
+  const syncLabels = { uploading: "음원 전송 중", waiting: "공개 작업 대기 중", preparing: "공개 준비 중", waveform: "파형 생성 중", testing: "음원 검사 중", publishing: "목록에 반영 중", verifying: "공개된 음원 확인 중" };
+  const active = (job) => !["ready", "failed"].includes(job.status);
+  const label = (job) => job.status === "syncing" ? syncLabels[job.syncStage] || "음원 공개 처리 중" : labels[job.status];
+  const elapsed = (job) => {
+    const minutes = Math.max(0, Math.floor((Date.now() - job.createdAt) / 6e4));
+    return minutes ? minutes + "분 경과" : "방금 접수";
+  };
+  function renderNotice() {
+    const pending = latestJobs.filter(active);
+    const completed = latestJobs.find((job2) => !active(job2) && (observed.has(job2.id) || Date.now() - (job2.updatedAt || job2.createdAt) < 15 * 6e4));
+    const job = pending[0] || completed;
+    notice.hidden = !job || !pending.length && acknowledged === job.id;
+    if (notice.hidden) return;
+    const text = (job.title || "요청한 음악") + " · " + (active(job) ? label(job) + " · " + elapsed(job) : job.status === "ready" ? "추가 완료 · ETC에서 들을 수 있습니다" : "추가 실패 · 자세한 내용을 확인해 주세요");
+    if (noticeText.textContent !== text) noticeText.textContent = text;
+    notice.dataset.state = active(job) ? "active" : job.status;
+    noticeButton.textContent = pending.length ? "진행 확인" : job.status === "ready" ? "완료 확인" : "오류 확인";
+  }
   open.hidden = false;
   const message = (text) => {
     status.textContent = text;
@@ -30,6 +53,9 @@
     if (!response.ok) {
       if (response.status === 401) {
         authenticated = false;
+        latestJobs = [];
+        notice.hidden = true;
+        clearTimeout(timer);
         guest.hidden = false;
         account.hidden = true;
       }
@@ -40,14 +66,23 @@
   function renderJobs(items) {
     var _a;
     if (duplicate && !items.some((job) => job.id === duplicate.id)) items = [duplicate, ...items];
+    latestJobs = items;
+    for (const job of items) if (active(job)) observed.add(job.id);
+    renderNotice();
     jobs.textContent = "";
     for (const job of items) {
       const row = document.createElement("li");
       const title = document.createElement("strong");
       title.textContent = job.title || "음악";
       const state = document.createElement("span");
-      state.textContent = job.error || labels[job.status];
+      state.textContent = job.error || label(job) + (active(job) ? " · " + elapsed(job) : "");
+      row.dataset.state = active(job) ? "active" : job.status;
       row.append(title, state);
+      if (active(job)) {
+        const detail = document.createElement("small");
+        detail.textContent = Date.now() - job.createdAt >= 5 * 6e4 ? "예상보다 오래 걸리고 있습니다. 다시 요청할 필요 없이 여기서 결과를 확인할 수 있습니다." : "자동으로 진행 상태를 확인합니다. 이 창을 닫아도 작업은 계속됩니다.";
+        row.append(detail);
+      }
       if (job.track) {
         (_a = window.BAMusicLibrary) == null ? void 0 : _a.add(job.track);
         const listen = document.createElement("button");
@@ -64,18 +99,41 @@
     }
   }
   async function refreshJobs() {
-    if (!authenticated || refreshing || modal.hidden) return;
+    if (!authenticated) return;
+    if (refreshing) {
+      refreshAgain = true;
+      return;
+    }
+    clearTimeout(timer);
     refreshing = true;
     try {
       const result = await api("/api/imports");
+      if (!authenticated) return;
+      if (pollError && status.textContent === pollError) message("");
+      pollError = "";
       renderJobs(result.jobs);
       clearTimeout(timer);
-      if (result.jobs.some((job) => !["ready", "failed"].includes(job.status))) timer = setTimeout(refreshJobs, 2e3);
+      if (result.jobs.some(active)) timer = setTimeout(refreshJobs, 2e3);
     } catch (error) {
-      message(error.message);
-      if (authenticated) timer = setTimeout(refreshJobs, 5e3);
+      pollError = error.message;
+      message(pollError);
+      if (authenticated) {
+        if (latestJobs.some(active)) {
+          notice.hidden = false;
+          noticeText.textContent = "진행 상태를 확인하지 못했습니다. 연결을 다시 확인하는 중…";
+        }
+        timer = setTimeout(refreshJobs, 5e3);
+      } else {
+        latestJobs = [];
+        notice.hidden = true;
+        clearTimeout(timer);
+      }
     } finally {
       refreshing = false;
+      if (refreshAgain) {
+        refreshAgain = false;
+        refreshJobs();
+      }
     }
   }
   async function show() {
@@ -86,6 +144,11 @@
     try {
       const result = await api("/api/auth/me");
       authenticated = result.authenticated;
+      if (!authenticated) {
+        latestJobs = [];
+        notice.hidden = true;
+        clearTimeout(timer);
+      }
       guest.hidden = authenticated;
       account.hidden = !authenticated;
       guest.querySelector("a").hidden = !result.enabled;
@@ -100,10 +163,13 @@
   }
   function hide() {
     modal.hidden = true;
-    clearTimeout(timer);
+    const completed = latestJobs.find((job) => !active(job));
+    if (!latestJobs.some(active)) acknowledged = completed == null ? void 0 : completed.id;
+    renderNotice();
     priorFocus == null ? void 0 : priorFocus.focus();
   }
   open.addEventListener("click", show);
+  noticeButton.addEventListener("click", show);
   close.addEventListener("click", hide);
   modal.addEventListener("click", (event) => {
     if (event.target === modal) hide();
@@ -134,6 +200,8 @@
       const { job } = await api("/api/imports", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: input.value }) });
       message(job.status === "ready" ? "이미 ETC에 있는 곡입니다. 바로 들을 수 있습니다." : "동기화가 끝나면 ETC에 추가됩니다. 몇 분 걸릴 수 있으며, 창을 닫아도 계속 진행됩니다.");
       duplicate = job.status === "ready" ? job : null;
+      observed.add(job.id);
+      renderJobs([job, ...latestJobs.filter((item) => item.id !== job.id)]);
       input.value = "";
       await refreshJobs();
     } catch (error) {
@@ -209,6 +277,8 @@
       const { job } = await upload(file);
       duplicate = job.status === "ready" ? job : null;
       message(job.status === "ready" ? "이미 ETC에 있는 곡입니다. 바로 들을 수 있습니다." : "파일 전송이 완료되었습니다. 변환·동기화가 끝나면 ETC에 추가됩니다. 이제 창을 닫아도 됩니다.");
+      observed.add(job.id);
+      renderJobs([job, ...latestJobs.filter((item) => item.id !== job.id)]);
       fileForm.reset();
       await refreshJobs();
     } catch (error) {
@@ -225,6 +295,9 @@
       if (!response.ok) throw new Error();
       authenticated = false;
       duplicate = null;
+      latestJobs = [];
+      observed.clear();
+      notice.hidden = true;
       clearTimeout(timer);
       jobs.textContent = "";
       guest.hidden = false;
@@ -235,6 +308,9 @@
     }
   });
   window.addEventListener("music-library-ready", refreshJobs);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) refreshJobs();
+  });
   const authError = new URL(location.href).searchParams.get("authError");
   if (authError || location.hash === "#add-music") {
     const clean = new URL(location.href);
@@ -243,6 +319,12 @@
     history.replaceState(null, "", clean.pathname + clean.search);
     show().then(() => {
       if (authError) message(authError === "forbidden" ? "음악 추가 권한이 있는 디스코드 계정으로 로그인해 주세요." : "디스코드 로그인에 실패했습니다. 다시 시도해 주세요.");
+    });
+  } else {
+    api("/api/auth/me").then((result) => {
+      authenticated = result.authenticated;
+      if (authenticated) refreshJobs();
+    }).catch(() => {
     });
   }
 })();
