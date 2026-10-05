@@ -139,9 +139,9 @@ function BAPlayer() {
   }
 
   function syncPosition() {
-    if (native && waveform) waveform.setTime(audio.currentTime);
     const duration = audio.duration;
     const position = audio.currentTime;
+    if (native && waveform) waveform.setTime(position);
     player.querySelector('.start-time').textContent = formatTime(position);
     player.querySelector('.end-time').textContent = formatTime(duration);
     const seekable = queue.length > 0 && Number.isFinite(duration) && duration > 0;
