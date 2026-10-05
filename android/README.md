@@ -1,4 +1,4 @@
-# Readiz Music Android 0.3.2
+# Readiz Music Android 0.3.3
 
 휴대전화와 Android TV에서 같은 `com.readiz.music` APK를 사용한다. 웹 화면은 `https://music.readiz.com/`에서 받고, Android 재생은 Media3 `PlaybackService`가 담당한다.
 
@@ -19,6 +19,10 @@
 브리지는 AndroidX WebKit 메시지 포트를 사용하며 HTTPS 음악 원점의 메인 프레임만 접근한다. 재생 URL도 `/music/` 아래로 제한한다. 외부 링크는 외부 브라우저에서 열고 인증서 오류는 차단한다. 오래된 WebView에 메시지 포트 기능이 없으면 기존 웹 플레이어로 동작하므로 Android System WebView를 갱신해야 네이티브 알림을 쓸 수 있다.
 
 ## 빌드와 배포
+
+0.3.3부터 Android TV의 현재 출력이 FHD 미만이면 지원 모드 중 1920×1080을 우선 요청한다. FHD가 없으면 그 이상의 가장 작은 해상도를 고르고, 같은 해상도에서는 현재 주사율에 가장 가까운 모드를 선택한다. 이미 FHD/4K로 출력 중이거나 FHD 이상을 지원하지 않으면 기존 모드를 유지한다. 출력 모드 요청은 기기 정책에 따라 무시될 수 있다.
+
+TV 프로젝트와 같은 `ReadizTVViewport/1920` 표시와 WebView wide viewport/overview 설정으로 화면을 1920px 기준으로 구성한 뒤 패널 너비에 맞춘다. 실제 출력 변경을 지원하지 않는 HD TV에서도 큰 UI로 목록이 잘리는 문제를 줄인다. 이 처리는 새 APK의 Android TV에만 적용하며 휴대전화·이전 APK·Tizen·일반 브라우저는 기존 뷰포트를 사용한다. 웹 변경과 APK 업데이트가 모두 필요하며 실제 TV의 출력 전환은 설치 후 확인해야 한다.
 
 JDK 17, Android SDK 36, build-tools 35.0.0, Gradle 8.13이 필요하다. 로컬에서는 TV 프로젝트가 설치한 **Gradle 실행기만** 재사용한다. 다른 환경에서는 `MUSIC_GRADLE_BIN`, `JAVA_HOME`, `ANDROID_HOME`을 지정한다.
 

@@ -4,11 +4,14 @@ import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.app.UiModeManager;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.KeyEvent;
+import android.view.WindowManager;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -36,7 +39,10 @@ public final class MainActivity extends ComponentActivity {
     @SuppressLint("SetJavaScriptEnabled") // Required by the trusted same-origin player.
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tvMode = ((UiModeManager) getSystemService(UI_MODE_SERVICE)).getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
+        tvMode = ((UiModeManager) getSystemService(UI_MODE_SERVICE)).getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION
+                || getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+                || getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEVISION);
+        requestFullHdMode();
         startUrl = ORIGIN + (tvMode ? "?tv=1" : "");
         root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
@@ -60,7 +66,11 @@ public final class MainActivity extends ComponentActivity {
         settings.setAllowFileAccess(false);
         settings.setAllowContentAccess(true); // User-selected document URIs for music uploads.
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
-        settings.setUserAgentString(settings.getUserAgentString() + (tvMode ? " ReadizMusicTV/" : " ReadizMusic/") + BuildConfig.VERSION_NAME);
+        // Match the TV project's 1920px viewport and fit its full width to the panel.
+        settings.setUseWideViewPort(tvMode);
+        settings.setLoadWithOverviewMode(tvMode);
+        settings.setUserAgentString(settings.getUserAgentString() + (tvMode ? " ReadizMusicTV/" : " ReadizMusic/") + BuildConfig.VERSION_NAME
+                + (tvMode ? " ReadizTVViewport/1920" : ""));
         webView.setWebViewClient(new WebViewClient() {
             @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 if (!request.isForMainFrame()) return true;
@@ -98,6 +108,33 @@ public final class MainActivity extends ComponentActivity {
                 else moveTaskToBack(true);
             }
         });
+    }
+
+    private void requestFullHdMode() {
+        if (!tvMode) return;
+        Display display = getWindowManager().getDefaultDisplay();
+        int preferred = preferredTvModeId(display.getMode(), display.getSupportedModes());
+        if (preferred == 0) return;
+        WindowManager.LayoutParams attributes = getWindow().getAttributes();
+        attributes.preferredDisplayModeId = preferred;
+        getWindow().setAttributes(attributes);
+    }
+
+    static int preferredTvModeId(Display.Mode current, Display.Mode[] supported) {
+        if (current.getPhysicalWidth() >= 1920 && current.getPhysicalHeight() >= 1080) return 0;
+        Display.Mode preferred = null;
+        for (Display.Mode mode : supported) {
+            if (mode.getPhysicalWidth() < 1920 || mode.getPhysicalHeight() < 1080) continue;
+            long pixels = (long) mode.getPhysicalWidth() * mode.getPhysicalHeight();
+            long preferredPixels = preferred == null ? Long.MAX_VALUE
+                    : (long) preferred.getPhysicalWidth() * preferred.getPhysicalHeight();
+            // Prefer FHD; if absent, use the smallest supported higher resolution.
+            // At the same resolution, stay as close as possible to the current refresh rate.
+            if (pixels < preferredPixels || (pixels == preferredPixels
+                    && Math.abs(mode.getRefreshRate() - current.getRefreshRate())
+                    < Math.abs(preferred.getRefreshRate() - current.getRefreshRate()))) preferred = mode;
+        }
+        return preferred == null ? 0 : preferred.getModeId();
     }
 
     private boolean trusted(Uri uri) {
