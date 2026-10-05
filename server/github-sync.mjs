@@ -90,11 +90,12 @@ export async function waitForPages({ client, revision, videoId, signal, fetcher 
 }
 
 export function createGithubSync({ client = githubClient(), pause = delay, publish = waitForPages } = {}) {
-  return async ({ video, result, checkpoint = {}, saveCheckpoint, signal }) => {
+  return async ({ video, result, checkpoint = {}, saveCheckpoint, signal, onProgress = () => {} }) => {
     mediaIdentity(video.id);
     const call = (method, path, body) => client.api(method, path, body, signal);
     let source = checkpoint.source;
     if (!source) {
+      onProgress('uploading');
       const head = await call('GET', 'git/ref/heads/master');
       const commit = await call('GET', `git/commits/${head.object.sha}`);
       const blob = await call('POST', 'git/blobs', { encoding: 'base64', content: readFileSync(result.path).toString('base64') });
@@ -121,6 +122,7 @@ export function createGithubSync({ client = githubClient(), pause = delay, publi
       }
       if (runId) { checkpoint = { source, runId }; saveCheckpoint(checkpoint); }
     }
+    onProgress('waiting');
     let complete = false;
     for (let attempt = 0; attempt < 180; attempt++) {
       signal?.throwIfAborted();
@@ -131,6 +133,20 @@ export function createGithubSync({ client = githubClient(), pause = delay, publi
       }
       if (runId) {
         const run = await call('GET', `actions/runs/${runId}`);
+        if (run.status !== 'completed') {
+          let stage = run.status === 'in_progress' ? 'preparing' : 'waiting';
+          if (run.status === 'in_progress') {
+            // Optional detail must never interrupt a durable publication.
+            try {
+              const jobs = await call('GET', `actions/runs/${runId}/jobs`);
+              const step = jobs.jobs?.flatMap(job => job.steps || []).find(step => step.status === 'in_progress')?.name || '';
+              if (/Prepare audio/.test(step)) stage = 'waveform';
+              else if (/npm test/.test(step)) stage = 'testing';
+              else if (/Commit only|npm run build|github-pages-deploy/.test(step)) stage = 'publishing';
+            } catch { signal?.throwIfAborted(); }
+          }
+          onProgress(stage);
+        }
         if (run.status === 'completed') {
           if (run.conclusion !== 'success') throw new Error('GitHub synchronization failed');
           complete = true; break;
@@ -140,6 +156,7 @@ export function createGithubSync({ client = githubClient(), pause = delay, publi
     }
     if (!complete) throw new Error('GitHub synchronization timed out');
     const head = await call('GET', 'git/ref/heads/master');
+    onProgress('verifying');
     const published = await publish({ client, revision: head.object.sha, videoId: video.id, signal });
     // The immutable candidate is only a transfer branch; master now owns the final audio.
     try { await call('DELETE', `git/refs/heads/music-imports/${source}`); } catch { /* Safe to retry cleanup separately. */ }
