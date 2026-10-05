@@ -74,11 +74,10 @@
     return group(target) === "controls" && focus(target);
   }
   function syncTrackFocus() {
-    if (initialPending) return;
     const row = document.querySelector("#ulist li.simp-active:not([hidden])");
     if (!usable(row)) return;
     memory.queue = row;
-    if (!remote) return;
+    if (!remote || initialPending) return;
     const current = document.activeElement;
     if (!dialog.hidden && group(priorFocus) === "queue") priorFocus = row;
     if (group(current) === "queue" || current === document.body && lastFocus && group(lastFocus) === "queue") focus(row);
@@ -234,7 +233,7 @@
     }
     if (zone === "controls") {
       if (direction === "ArrowDown") {
-        focus(usable(memory.queue) ? memory.queue : !window.BAMusicTV && document.querySelector("#ulist li.simp-active:not([hidden])") || document.querySelector("#ulist li:not([hidden])"));
+        focus(usable(memory.queue) ? memory.queue : document.querySelector("#ulist li.simp-active:not([hidden])") || document.querySelector("#ulist li:not([hidden])"));
         return;
       }
       if (direction === "ArrowUp") {
@@ -328,6 +327,7 @@
       if (initialPending && (window.BAMusicPlayback || usable(document.querySelector(".library-retry")))) {
         initialPending = false;
         focus(initial());
+        syncTrackFocus();
         return;
       }
       if (editing && (!usable(document.activeElement) || !document.activeElement.matches(".simp-progress"))) setEditing(false);
