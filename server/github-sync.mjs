@@ -1,3 +1,4 @@
+import { mediaIdentity, importedSource } from './media-identity.mjs';
 import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -43,7 +44,7 @@ export function validateCatalog(manifest, catalog, waveforms) {
   const sources = new Set();
   for (const track of manifest.tracks) {
     const peaks = waveforms[track.src];
-    if (!/^\.\/music\/ETC\/yt-[\w-]{11}\.mp3$/.test(track.src) || sources.has(track.src)
+    if (!importedSource.test(track.src) || sources.has(track.src)
       || !/^[a-f0-9]{64}$/.test(track.sha256) || typeof track.title !== 'string' || !track.title.trim()
       || !Number.isInteger(track.bytes) || track.bytes < 1 || track.bytes > 100 * 1024 * 1024
       || !catalog.includes(track.src) || !(peaks?.duration > 0 && peaks.duration <= 1801)
@@ -57,7 +58,7 @@ export async function waitForPages({ client, revision, videoId, signal, fetcher 
   const json = async file => JSON.parse((await client.raw(file, revision, signal)).toString('utf8'));
   const [manifest, catalog, waveforms] = await Promise.all(['imported-tracks.json', 'musicList.json', 'waveforms.json'].map(json));
   validateCatalog(manifest, catalog, waveforms);
-  const track = manifest.tracks.find(item => item.src === `./music/ETC/yt-${videoId}.mp3`);
+  const track = manifest.tracks.find(item => item.src === `./music/ETC/${mediaIdentity(videoId).filename}`);
   if (!track) throw new Error('Track missing from committed catalog');
   const published = async (file, limit = 8 * 1024 * 1024) => {
     const url = new URL(file, MUSIC_PAGES);
@@ -90,6 +91,7 @@ export async function waitForPages({ client, revision, videoId, signal, fetcher 
 
 export function createGithubSync({ client = githubClient(), pause = delay, publish = waitForPages } = {}) {
   return async ({ video, result, checkpoint = {}, saveCheckpoint, signal }) => {
+    mediaIdentity(video.id);
     const call = (method, path, body) => client.api(method, path, body, signal);
     let source = checkpoint.source;
     if (!source) {

@@ -27,6 +27,7 @@ public final class MainActivity extends ComponentActivity {
     private PlaybackBridge playback;
     private AndroidUpdates updates;
     private AndroidLogin login;
+    private AndroidUploads uploads;
     private boolean tvMode;
     private String startUrl;
     private LinearLayout root;
@@ -57,7 +58,7 @@ public final class MainActivity extends ComponentActivity {
         // still starts paused; WebView must allow playback from that native callback.
         settings.setMediaPlaybackRequiresUserGesture(!tvMode);
         settings.setAllowFileAccess(false);
-        settings.setAllowContentAccess(false);
+        settings.setAllowContentAccess(true); // User-selected document URIs for music uploads.
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         settings.setUserAgentString(settings.getUserAgentString() + (tvMode ? " ReadizMusicTV/" : " ReadizMusic/") + BuildConfig.VERSION_NAME);
         webView.setWebViewClient(new WebViewClient() {
@@ -77,6 +78,8 @@ public final class MainActivity extends ComponentActivity {
             }
             // Default SSL handling cancels invalid certificates. Never override it with proceed().
         });
+        uploads = new AndroidUploads(this, webView);
+        webView.setWebChromeClient(uploads);
         root.addView(webView, new LinearLayout.LayoutParams(-1, -1));
         try { playback = new PlaybackBridge(this, webView); }
         catch (IllegalStateException unsupported) { /* Older WebViews retain the web player. */ }
@@ -186,6 +189,7 @@ public final class MainActivity extends ComponentActivity {
         super.onPause();
     }
     @Override public void onDestroy() {
+        if (uploads != null) uploads.close();
         if (login != null) login.close();
         if (updates != null) updates.close();
         if (playback != null) playback.close();

@@ -22,3 +22,10 @@
 .music-add-jobs button{grid-column:2;grid-row:1/3;align-self:center;}
 .music-add-dialog .music-logout{margin-top:16px;background:transparent;font-size:13px;}
 @media(max-width:480px){.music-add-dialog{padding:12px;}.music-add-card{padding:18px;max-height:88vh;}.app-header-actions{gap:5px;}}
+
+.music-add-methods{display:flex;gap:8px;margin-bottom:18px;}
+.music-add-methods button{flex:1;}
+.music-add-methods button[aria-pressed=true]{background:#396d94;border-color:#9cc9eb;color:#fff;}
+.music-file-form label:not(:first-child){margin-top:14px;}
+.music-file-form input[type=file]{font-size:13px;}
+.music-upload-progress{width:100%;height:10px;accent-color:#89cfff;margin-bottom:12px;}

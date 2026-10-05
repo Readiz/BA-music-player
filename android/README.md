@@ -1,4 +1,4 @@
-# Readiz Music Android 0.3.1
+# Readiz Music Android 0.3.2
 
 휴대전화와 Android TV에서 같은 `com.readiz.music` APK를 사용한다. 웹 화면은 `https://music.readiz.com/`에서 받고, Android 재생은 Media3 `PlaybackService`가 담당한다.
 
@@ -34,6 +34,8 @@ npm run deploy:local
 TV의 리모컨, Leanback 실행기·배너, TV 화면 진입과 폴드·회전 시 Activity 유지 정책은 유지한다. 삼성 TV WGT는 [별도 Tizen 안내](../tizen/README.md)를 따른다. 단위 테스트·브라우저·에뮬레이터 결과와 실제 휴대전화/TV의 절전·블루투스·설치 확인은 구분한다.
 
 ## 앱 로그인
+
+0.3.2부터 음악 추가 → 파일 업로드에서 시스템 문서 선택창으로 음악 파일을 고를 수 있다. 저장소 전체 권한 없이 선택한 파일만 전달한다. 전송 중에는 앱을 열어 두고, 전송 완료 후에는 서버가 변환·Pages 동기화를 이어간다.
 
 0.3.1부터 Discord 로그인은 시작 주소부터 외부 브라우저에서 연다. 이전 버전은 WebView에 state 쿠키를 만든 후 Discord만 브라우저로 넘겨 콜백에서 쿠키 검증에 실패할 수 있었다. 로그인 완료 화면의 **뮤직앱으로 돌아가기**를 누르면 앱 내부 세션을 저장하고 음악 추가 화면을 연다.
 

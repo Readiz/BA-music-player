@@ -11,6 +11,16 @@ export function createHandler({ auth, imports, staticRoot, revision = 'developme
       const file = path === '/api/library' ? 'imported-tracks.json' : path.slice(1);
       return new Response(null, { status: 307, headers: { Location: new URL(file, MUSIC_PAGES).href, 'Cache-Control': 'no-cache' } });
     }
+    if (path === '/api/uploads') {
+      const user = auth?.user(request);
+      if (!user) return authJson({ error: '음악을 추가하려면 디스코드로 로그인해 주세요.' }, 401);
+      if (request.method !== 'POST') return authJson({ error: 'method-not-allowed' }, 405);
+      if (request.headers.get('origin') !== auth.origin) return authJson({ error: 'invalid-origin' }, 403);
+      if (request.headers.get('content-type') !== 'application/octet-stream') return authJson({ error: 'invalid-content-type' }, 415);
+      if (auth.limited(`import:${user.id}`, 5)) return authJson({ error: '요청이 많습니다. 1분 후 다시 시도해 주세요.' }, 429);
+      try { return authJson({ job: await imports.upload(request, user.id) }, 202); }
+      catch (error) { if (error instanceof ImportError) return authJson({ error: error.message }, error.status); throw error; }
+    }
     if (path === '/api/imports') {
       const user = auth?.user(request);
       if (!user) return authJson({ error: '음악을 추가하려면 디스코드로 로그인해 주세요.' }, 401);

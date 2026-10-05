@@ -46,6 +46,15 @@ curl -f https://music.readiz.com/app-config.json
 배포 후 `/?tv=1`에서 방향키·확인·뒤로와 실제 재생을 확인하고, `/app.wgt`의 SHA-256이 빌드 산출물과 같은지 확인한다. TV 설치는 [Tizen 안내](../tizen/README.md)를 따른다. 이번 화면·패키지 배포는 Caddy나 DNS 변경이 필요 없다.
 
 
+## 음악 파일 업로드 (1.5.0)
+
+- 음악 추가에서 유튜브 링크와 파일 업로드를 선택한다. `POST /api/uploads?name=...&title=...`는 동일한 Discord 세션·Origin 검사 후 `application/octet-stream` 본문을 디스크로 스트리밍한다. 최대 100MiB, 전송 시간 10분, 계정당 동시 전송 1개이며 수신 중 작업도 전체 대기열 5개에 포함한다.
+- MP3/M4A/MP4/WAV/FLAC/OGG/OPUS/AAC/WebM 파일을 지원한다. 확장자 외에 ffprobe로 오디오·30분 제한을 검사한다. 로컬 단일 미디어 형식만 허용하고 첫 오디오 스트림을 192kbps MP3로 변환한 뒤 기존 Pages 파형·공개 검증 절차를 따른다.
+- 원본 SHA-256을 `upload-<64hex>` ID로 사용해 파일명을 바꿔도 중복을 막는다. 공개 파일은 `music/ETC/upload-<64hex>.mp3`이며 제목은 편집할 수 있다. 원본 경로·계정 정보는 GitHub에 보내지 않는다. 공개 메타데이터에는 `sourceType: upload`를 기록한다.
+- 수신 중 파일은 `data/incoming/`, 수신 완료 원본은 `data/uploads/`에 비공개로 둔다. 수신 실패는 즉시 정리하고 재시작 시 미완료 수신 파일을 제거한다. queued 원본은 재시작 후 변환하며 변환 완료 시 원본을 삭제한다. 동기화 실패 시 변환 MP3를 남기고 같은 파일을 다시 보내면 재변환 없이 재시도한다.
+- 웹은 전송률을 표시하고 페이지 이탈을 안내한다. 서버 수신이 끝나면 앱을 닫아도 동기화는 계속된다. Android 파일 선택에는 APK 0.3.2 이상이 필요하며 기존 앱 로그인을 사용한다.
+- 검증: `npm test`의 HTTP/인증·Origin/용량·중단·중복·재시도/실제 ffmpeg 변환 테스트, `scripts/verify-upload.js`의 격리 브라우저 파일 전송, Android chooser 단위 테스트와 release lint/build. 테스트 계정과 음원은 운영 라이브러리에 발행하지 않는다.
+
 ## 유튜브 추가와 GitHub 동기화 (1.4.0)
 
 - `com.readiz.music.api` launchd → `127.0.0.1:4525`. Node 24.13.1 이상. API 릴리스는 `~/.local/share/readiz-music/api-releases/`, 실행 링크는 `api-current`다.

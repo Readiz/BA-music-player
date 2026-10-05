@@ -1,19 +1,21 @@
+import { mediaIdentity } from '../server/media-identity.mjs';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdirSync, readFileSync, writeFileSync, rmSync, statSync, renameSync } from 'node:fs';
+import { appendFileSync, mkdirSync, readFileSync, writeFileSync, rmSync, statSync, renameSync } from 'node:fs';
 import { join } from 'node:path';
 import { createWaveform } from '../server/waveforms.mjs';
 
 const id = process.env.IMPORT_VIDEO_ID;
 const source = process.env.IMPORT_SOURCE_SHA;
-if (!/^[\w-]{11}$/.test(id || '') || !/^[a-f0-9]{40}$/.test(source || '')) throw new Error('Invalid import identity');
+const identity = mediaIdentity(id);
+if (!/^[a-f0-9]{40}$/.test(source || '')) throw new Error('Invalid import identity');
 const gitFile = path => execFileSync('git', ['show', `${source}:${path}`], { maxBuffer: 101 * 1024 * 1024 });
 const request = JSON.parse(gitFile(`music-inbox/${id}.json`).toString('utf8'));
 if (request.videoId !== id || typeof request.title !== 'string') throw new Error('Import metadata mismatch');
 const title = request.title.normalize('NFC').replace(/[\x00-\x1f\x7f]/g, '').replace(/\s+/g, ' ').trim().slice(0, 200);
 if (!title) throw new Error('Missing title');
 const folder = 'music/ETC';
-const path = `${folder}/yt-${id}.mp3`;
+const path = `${folder}/${identity.filename}`;
 const src = `./${path}`;
 mkdirSync(folder, { recursive: true });
 mkdirSync('output/import', { recursive: true });
@@ -28,7 +30,7 @@ execFileSync(join(ffmpeg, 'ffmpeg'), ['-nostdin', '-v', 'error', '-y', '-i', tem
 rmSync(temporary);
 const peaks = await createWaveform(path, { ffmpeg });
 const track = {
-  src, title, folder: 'ETC', artist: 'ETC', sourceUrl: `https://www.youtube.com/watch?v=${id}`,
+  src, title, folder: 'ETC', artist: 'ETC', ...(identity.kind === 'youtube' ? { sourceUrl: `https://www.youtube.com/watch?v=${id}` } : { sourceType: 'upload' }),
   duration: peaks.duration, bytes: statSync(path).size,
   sha256: createHash('sha256').update(readFileSync(path)).digest('hex'), sourceRevision: source,
 };
@@ -43,3 +45,5 @@ for (const [file, data] of [['imported-tracks.json', manifest], ['musicList.json
   renameSync(`${file}.next`, file);
 }
 console.log(`Prepared ${id}: ${track.bytes} bytes, ${peaks.peaks.length} peaks`);
+
+if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `path=${path}\n`);

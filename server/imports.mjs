@@ -1,7 +1,9 @@
 import { spawn } from 'node:child_process';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { chmodSync, existsSync, mkdirSync, readdirSync, renameSync, rmSync, statSync, statfsSync } from 'node:fs';
 import { join } from 'node:path';
+import { open } from 'node:fs/promises';
+import { mediaIdentity } from './media-identity.mjs';
 import { DatabaseSync } from 'node:sqlite';
 
 export class ImportError extends Error {
@@ -21,7 +23,7 @@ export function youtubeVideo(value) {
   if (!id || !/^[\w-]{11}$/.test(id)) throw new ImportError('재생목록 대신 유튜브 영상 한 곡의 링크를 입력해 주세요.');
   return { id, url: `https://www.youtube.com/watch?v=${id}` };
 }
-const MAX_BYTES = 100 * 1024 * 1024;
+export const MAX_BYTES = 100 * 1024 * 1024;
 const MAX_SECONDS = 30 * 60;
 function run(command, args, { signal, cwd, onLine = () => {} } = {}) {
   return new Promise((resolve, reject) => {
@@ -76,11 +78,37 @@ export function createDownloader({ command = process.env.MUSIC_YTDLP || 'yt-dlp'
     return { path, title, duration: metadata.duration, bytes: size };
   };
 }
-export function createImports({ dataRoot, downloader = createDownloader(), synchronize, now = Date.now }) {
+export function createFileConverter({ ffmpeg = process.env.MUSIC_FFMPEG || '/opt/homebrew/bin', execute = run } = {}) {
+  return async ({ source, title, directory, signal, stage }) => {
+    try {
+      // Treat uploads as untrusted media: no playlists, network protocols, or auxiliary files.
+      const local = ['-protocol_whitelist', 'file', '-format_whitelist', 'mp3,wav,flac,ogg,mov,aac,matroska,webm'];
+      const probe = JSON.parse(await execute(join(ffmpeg, 'ffprobe'), ['-v', 'error', ...local, '-show_entries', 'format=duration:stream=codec_type', '-of', 'json', source], { signal, cwd: directory }));
+      const duration = Number(probe.format?.duration);
+      if (!(duration > 0 && duration <= MAX_SECONDS) || !probe.streams?.some(stream => stream.codec_type === 'audio')) throw new ImportError('오디오가 있는 30분 이내 파일만 추가할 수 있습니다.');
+      stage('converting');
+      const path = join(directory, 'audio.mp3');
+      await execute(join(ffmpeg, 'ffmpeg'), ['-nostdin', '-v', 'error', '-y', ...local, '-i', source, '-map', '0:a:0', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-b:a', '192k', '-t', String(MAX_SECONDS), path], { signal, cwd: directory });
+      const bytes = statSync(path).size;
+      if (!bytes || bytes > MAX_BYTES) throw new ImportError('변환한 음악이 비어 있거나 100MB를 초과했습니다.');
+      return { path, title, duration, bytes };
+    } catch (error) {
+      if (signal?.aborted) throw error;
+      if (error instanceof ImportError && !/영상|도구/.test(error.message)) throw error;
+      throw new ImportError('음악 파일을 읽지 못했습니다. 지원 형식과 파일 손상 여부를 확인해 주세요.');
+    }
+  };
+}
+export function createImports({ dataRoot, downloader = createDownloader(), converter = createFileConverter(), synchronize, now = Date.now }) {
   if (typeof synchronize !== 'function') throw new Error('A durable music synchronizer is required');
   mkdirSync(dataRoot, { recursive: true, mode: 0o700 });
   const staging = join(dataRoot, 'staging');
   const media = join(dataRoot, 'media', 'ETC');
+  const uploads = join(dataRoot, 'uploads');
+  const incoming = join(dataRoot, 'incoming');
+  mkdirSync(uploads, { recursive: true, mode: 0o700 });
+  rmSync(incoming, { recursive: true, force: true });
+  mkdirSync(incoming, { recursive: true, mode: 0o700 });
   mkdirSync(media, { recursive: true });
   rmSync(staging, { recursive: true, force: true });
   mkdirSync(staging, { recursive: true, mode: 0o700 });
@@ -98,7 +126,8 @@ export function createImports({ dataRoot, downloader = createDownloader(), synch
   // Resume interrupted synchronization, and migrate audio from the old local-only library.
   db.exec("UPDATE imports SET status='queued',error=NULL WHERE status IN ('checking','downloading','converting','syncing') OR (status='ready' AND sync_revision IS NULL)");
   let running = null, closed = false;
-  const publicTrack = row => ({ src: `./music/ETC/yt-${row.video_id}.mp3`, title: row.title, folder: 'ETC', artist: 'ETC' });
+  const receiving = new Set();
+  const publicTrack = row => ({ src: `./music/ETC/${mediaIdentity(row.video_id).filename}`, title: row.title, folder: 'ETC', artist: 'ETC' });
   const view = row => row && ({ id: row.id, status: row.status, title: row.title, error: row.error, createdAt: row.created_at,
     ...(row.status === 'ready' && row.sync_revision ? { track: publicTrack(row) } : {}) });
   const update = (id, status) => db.prepare('UPDATE imports SET status=?, updated_at=? WHERE id=?').run(status, now(), id);
@@ -106,22 +135,27 @@ export function createImports({ dataRoot, downloader = createDownloader(), synch
   async function work(row) {
     const controller = new AbortController();
     const directory = join(staging, row.id);
-    const path = join(media, `yt-${row.video_id}.mp3`);
+    const path = join(media, mediaIdentity(row.video_id).filename);
     mkdirSync(directory, { mode: 0o700 });
     const promise = (async () => {
       try {
-        const video = youtubeVideo(`https://youtu.be/${row.video_id}`);
+        const identity = mediaIdentity(row.video_id);
+        const video = identity.kind === 'upload' ? { id: row.video_id } : youtubeVideo(`https://youtu.be/${row.video_id}`);
         let result;
         if (existsSync(path) && row.title && row.bytes) {
           result = { path, title: row.title, duration: row.duration, bytes: statSync(path).size };
         } else {
           update(row.id, 'checking');
-          result = await downloader({ video, directory, signal: controller.signal, stage: status => update(row.id, status) });
+          const options = { video, directory, signal: controller.signal, stage: status => update(row.id, status) };
+          result = identity.kind === 'upload'
+            ? await converter({ ...options, source: join(uploads, row.video_id), title: row.title })
+            : await downloader(options);
           controller.signal.throwIfAborted();
           renameSync(result.path, path);
           result.path = path;
           db.prepare('UPDATE imports SET title=?,duration=?,bytes=? WHERE id=?').run(result.title, result.duration, result.bytes, row.id);
         }
+        if (identity.kind === 'upload') rmSync(join(uploads, row.video_id), { force: true });
         update(row.id, 'syncing');
         const synced = await synchronize({ video, result, signal: controller.signal, checkpoint: JSON.parse(row.sync_state || '{}'),
           saveCheckpoint: state => db.prepare('UPDATE imports SET sync_state=? WHERE id=?').run(JSON.stringify(state), row.id) });
@@ -133,8 +167,9 @@ export function createImports({ dataRoot, downloader = createDownloader(), synch
       } catch (error) {
         if (controller.signal.aborted) update(row.id, 'queued');
         else {
+          if (row.video_id.startsWith('upload-')) rmSync(join(uploads, row.video_id), { force: true });
           const message = get(row.id).status === 'syncing'
-            ? '음악 동기화에 실패했습니다. 같은 링크로 다시 요청해 주세요. 다운로드한 파일은 보관됩니다.'
+            ? '음악 동기화에 실패했습니다. 같은 링크나 파일로 다시 요청해 주세요. 준비된 음악은 보관됩니다.'
             : error instanceof ImportError ? error.message : '음악 추가에 실패했습니다. 잠시 후 다시 시도해 주세요.';
           db.prepare("UPDATE imports SET status='failed',error=?,updated_at=? WHERE id=?").run(message, now(), row.id);
         }
@@ -151,25 +186,65 @@ export function createImports({ dataRoot, downloader = createDownloader(), synch
     if (row) void work(row);
   }
   queueMicrotask(pump);
+  function checkCapacity(owner) {
+    if (closed) throw new ImportError('서비스를 다시 시작하고 있습니다. 잠시 후 다시 시도해 주세요.', 503);
+    if (db.prepare("SELECT count(*) AS n FROM imports WHERE status IN ('queued','checking','downloading','converting','syncing')").get().n + receiving.size >= 5) throw new ImportError('추가 대기열이 가득 찼습니다. 잠시 후 다시 시도해 주세요.', 429);
+    if (db.prepare('SELECT count(*) AS n FROM imports WHERE owner=? AND updated_at>?').get(owner, now() - 3600_000).n >= 20) throw new ImportError('한 시간에 최대 20곡까지 추가할 수 있습니다. 잠시 후 다시 시도해 주세요.', 429);
+    const disk = statfsSync(dataRoot);
+    const used = db.prepare('SELECT coalesce(sum(bytes),0) AS bytes FROM imports').get().bytes;
+    if (disk.bavail * disk.bsize < 500 * 1024 * 1024 || used >= 10 * 1024 ** 3) throw new ImportError('음악 저장 공간이 부족합니다.', 507);
+  }
+  function enqueueIdentity(video, owner, title = null, source = null) {
+    const existing = db.prepare('SELECT * FROM imports WHERE video_id=?').get(video.id);
+    if (existing && existing.status !== 'failed') {
+      if (existing.status !== 'ready' && existing.owner !== owner) throw new ImportError('다른 사용자가 이 곡을 추가하고 있습니다. 동기화 후 ETC에서 확인해 주세요.', 409);
+      return view(existing);
+    }
+    checkCapacity(owner);
+    if (source) renameSync(source, join(uploads, video.id));
+    const id = existing?.id || randomUUID();
+    db.prepare(`INSERT INTO imports (id,video_id,owner,status,title,created_at,updated_at) VALUES (?,?,?,'queued',?,?,?)
+      ON CONFLICT(video_id) DO UPDATE SET owner=excluded.owner,status='queued',error=NULL,sync_state=NULL,updated_at=excluded.updated_at`).run(id, video.id, owner, title, now(), now());
+    const result = view(get(id));
+    queueMicrotask(pump);
+    return result;
+  }
   return {
-    enqueue(value, owner) {
-      const video = youtubeVideo(value);
-      const existing = db.prepare('SELECT * FROM imports WHERE video_id=?').get(video.id);
-      if (existing && existing.status !== 'failed') {
-        if (existing.status !== 'ready' && existing.owner !== owner) throw new ImportError('다른 사용자가 이 곡을 추가하고 있습니다. 동기화 후 ETC에서 확인해 주세요.', 409);
-        return view(existing);
+    enqueue: (value, owner) => enqueueIdentity(youtubeVideo(value), owner),
+    async upload(request, owner) {
+      const name = new URL(request.url).searchParams.get('name') || '';
+      if (name.length > 255 || /[\/\\\x00-\x1f\x7f]/.test(name) || !/\.(mp3|m4a|mp4|wav|flac|ogg|opus|aac|webm)$/i.test(name)) throw new ImportError('MP3, M4A, MP4, WAV, FLAC, OGG, OPUS, AAC, WebM 파일을 선택해 주세요.');
+      const title = (new URL(request.url).searchParams.get('title') || name.replace(/\.[^.]+$/, '')).normalize('NFC').replace(/[\x00-\x1f\x7f]/g, '').trim().slice(0, 200);
+      if (!title) throw new ImportError('곡 제목을 입력해 주세요.');
+      const length = request.headers.get('content-length');
+      if (length !== null && (!/^\d+$/.test(length) || Number(length) > MAX_BYTES)) throw new ImportError('파일은 최대 100MB까지 업로드할 수 있습니다.', 413);
+      checkCapacity(owner);
+      if (receiving.has(owner)) throw new ImportError('진행 중인 업로드가 끝난 뒤 다시 시도해 주세요.', 429);
+      receiving.add(owner);
+      const temporary = join(incoming, randomUUID());
+      let file;
+      try {
+        file = await open(temporary, 'wx', 0o600);
+        const hash = createHash('sha256');
+        let bytes = 0;
+        if (!request.body) throw new ImportError('빈 파일은 업로드할 수 없습니다.');
+        // Leave the socket open long enough to return a useful 413 on overflow.
+        for await (const chunk of request.body.values({ preventCancel: true })) {
+          request.signal.throwIfAborted();
+          bytes += chunk.length;
+          if (bytes > MAX_BYTES) throw new ImportError('파일은 최대 100MB까지 업로드할 수 있습니다.', 413);
+          hash.update(chunk);
+          await file.writeFile(chunk);
+        }
+        if (!bytes || (length !== null && bytes !== Number(length))) throw new ImportError('파일 전송이 완료되지 않았습니다. 다시 선택해 주세요.');
+        await file.sync(); await file.close(); file = null;
+        receiving.delete(owner);
+        return enqueueIdentity({ id: `upload-${hash.digest('hex')}` }, owner, title, temporary);
+      } finally {
+        await file?.close();
+        rmSync(temporary, { force: true });
+        receiving.delete(owner);
       }
-      if (db.prepare("SELECT count(*) AS n FROM imports WHERE status IN ('queued','checking','downloading','converting','syncing')").get().n >= 5) throw new ImportError('추가 대기열이 가득 찼습니다. 잠시 후 다시 시도해 주세요.', 429);
-      if (db.prepare('SELECT count(*) AS n FROM imports WHERE owner=? AND updated_at>?').get(owner, now() - 3600_000).n >= 20) throw new ImportError('한 시간에 최대 20곡까지 추가할 수 있습니다. 잠시 후 다시 시도해 주세요.', 429);
-      const disk = statfsSync(dataRoot);
-      const used = db.prepare('SELECT coalesce(sum(bytes),0) AS bytes FROM imports').get().bytes;
-      if (disk.bavail * disk.bsize < 500 * 1024 * 1024 || used >= 10 * 1024 ** 3) throw new ImportError('음악 저장 공간이 부족합니다.', 507);
-      const id = existing?.id || randomUUID();
-      db.prepare(`INSERT INTO imports (id,video_id,owner,status,created_at,updated_at) VALUES (?,?,?,'queued',?,?)
-        ON CONFLICT(video_id) DO UPDATE SET owner=excluded.owner,status='queued',error=NULL,sync_state=NULL,updated_at=excluded.updated_at`).run(id, video.id, owner, now(), now());
-      const result = view(get(id));
-      queueMicrotask(pump);
-      return result;
     },
     list: owner => db.prepare('SELECT * FROM imports WHERE owner=? ORDER BY updated_at DESC LIMIT 20').all(owner).map(view),
     async close() { closed = true; running?.controller.abort(); if (running) await running.promise; db.close(); },

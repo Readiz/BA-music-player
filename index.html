@@ -64,10 +64,18 @@
 </section>
 <section class="music-add-dialog" role="dialog" aria-modal="true" aria-labelledby="music-add-title" hidden>
   <div class="music-add-card">
-    <div class="music-add-heading"><h2 id="music-add-title">유튜브 음악 추가</h2><button type="button" class="music-add-close" aria-label="음악 추가 닫기">닫기</button></div>
-    <div class="music-add-guest" hidden><p>디스코드로 로그인하면 유튜브 음악을 ETC에 추가할 수 있습니다. 음악 감상은 로그인 없이 이용할 수 있습니다.</p><a href="/api/auth/discord/start">디스코드로 로그인</a></div>
+    <div class="music-add-heading"><h2 id="music-add-title">음악 추가</h2><button type="button" class="music-add-close" aria-label="음악 추가 닫기">닫기</button></div>
+    <div class="music-add-guest" hidden><p>디스코드로 로그인하면 유튜브 링크나 음악 파일을 ETC에 추가할 수 있습니다. 음악 감상은 로그인 없이 이용할 수 있습니다.</p><a href="/api/auth/discord/start">디스코드로 로그인</a></div>
     <div class="music-add-account" hidden>
-      <form><label for="youtube-url">유튜브 영상 링크</label><input id="youtube-url" type="url" name="url" placeholder="https://www.youtube.com/watch?v=…" required maxlength="2048" autocomplete="off" inputmode="url" aria-describedby="music-add-help"><p class="music-add-help" id="music-add-help">한 번에 한 곡 · 최대 30분 / 100MB<br>동기화가 끝나면 ETC에 추가됩니다. 몇 분 걸릴 수 있습니다.</p><button type="submit" class="music-add-submit">ETC에 추가</button></form>
+      <div class="music-add-methods" role="group" aria-label="음악 추가 방법"><button type="button" data-method="youtube" aria-pressed="true">유튜브 링크</button><button type="button" data-method="file" aria-pressed="false">파일 업로드</button></div>
+      <form class="music-youtube-form"><label for="youtube-url">유튜브 영상 링크</label><input id="youtube-url" type="url" name="url" placeholder="https://www.youtube.com/watch?v=…" required maxlength="2048" autocomplete="off" inputmode="url" aria-describedby="music-add-help"><p class="music-add-help" id="music-add-help">한 번에 한 곡 · 최대 30분 / 100MB<br>동기화가 끝나면 ETC에 추가됩니다. 몇 분 걸릴 수 있습니다.</p><button type="submit" class="music-add-submit">ETC에 추가</button></form>
+      <form class="music-file-form" hidden>
+        <label for="music-file">음악 파일</label><input id="music-file" type="file" accept=".mp3,.m4a,.mp4,.wav,.flac,.ogg,.opus,.aac,.webm,audio/*,video/mp4,video/webm" required aria-describedby="music-file-help">
+        <label for="music-file-title">곡 제목</label><input id="music-file-title" type="text" maxlength="200" required autocomplete="off">
+        <p class="music-add-help" id="music-file-help">MP3 · M4A · MP4 · WAV · FLAC · OGG · OPUS · AAC · WebM<br>한 번에 한 곡 · 최대 30분 / 100MB<br>업로드한 곡과 제목은 ETC에 공개됩니다. 전송 후 변환·동기화에 몇 분 걸릴 수 있습니다.</p>
+        <progress class="music-upload-progress" max="100" value="0" aria-label="파일 업로드 진행률" hidden></progress>
+        <button type="submit" class="music-add-submit">파일을 ETC에 추가</button>
+      </form>
       <ul class="music-add-jobs" aria-label="최근 음악 추가" aria-live="polite"></ul>
       <button type="button" class="music-logout">로그아웃</button>
     </div>
