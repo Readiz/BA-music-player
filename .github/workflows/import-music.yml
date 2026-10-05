@@ -31,7 +31,15 @@ jobs:
           cache: npm
       - run: npm ci
       - run: git restore --worktree -- node_modules
-      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+      - name: Ensure audio tools are available
+        timeout-minutes: 3
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update -qq
+            sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install -y --no-install-recommends ffmpeg
+          fi
+          ffmpeg -version
+          ffprobe -version
       - name: Prepare audio, title, catalog and waveform
         id: prepare
         env:
