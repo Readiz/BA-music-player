@@ -530,7 +530,7 @@ function BAPlayer() {
   window.BAMusicLibrary = {
     add(track) {
       var _a;
-      if (!track || !/^\.\/music\/ETC\/yt-[\w-]{11}\.mp3$/.test(track.src)) return;
+      if (!track || !/^\.\/music\/ETC\/(?:yt-[\w-]{11}|upload-[a-f0-9]{64})\.mp3$/.test(track.src)) return;
       if (!(waveforms == null ? void 0 : waveforms[track.src])) {
         Promise.resolve(waveformRequest).catch(() => {
         }).then(() => {
