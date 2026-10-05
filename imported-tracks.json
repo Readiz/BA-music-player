@@ -11,6 +11,17 @@
       "bytes": 5045860,
       "sha256": "b4177f44808b834999284a5c959c44e7dc55164b3d53faf7c50bea885709eeba",
       "sourceRevision": "f40d56024401548a0950a3d6dce640f4394e7072"
+    },
+    {
+      "src": "./music/ETC/yt-rhcwhX6QmWA.mp3",
+      "title": "Love Unseen Beneath the Clear Night Sky「Opening」-『Hitohira』by Motohiro Hata",
+      "folder": "ETC",
+      "artist": "ETC",
+      "sourceUrl": "https://www.youtube.com/watch?v=rhcwhX6QmWA",
+      "duration": 235.288,
+      "bytes": 5648411,
+      "sha256": "1905514967bb9eabdc4156ae64bd90619fb3d8feb2472b8db3f97d8c24d18dc3",
+      "sourceRevision": "baf1502fa522147233c63761f0262f689e0b4830"
     }
   ]
 }
