@@ -1,9 +1,9 @@
 http://music.readiz.com {
-	import /Users/readiz/.local/share/readiz-auth/current/ops/caddy/sso-routes.Caddyfile
 	redir https://music.readiz.com{uri} 308
 }
 
 music.readiz.com {
+	import /Users/readiz/.local/share/readiz-auth/current/ops/caddy/sso-routes.Caddyfile
 	root * /opt/homebrew/var/www/readiz-music/current
 	encode zstd gzip
 	header {
