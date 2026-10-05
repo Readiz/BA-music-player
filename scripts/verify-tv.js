@@ -9,7 +9,8 @@ async (sourcePage) => {
     const currentQueueVisible = () => page.evaluate(() => {
       const row = document.querySelector('#ulist li.simp-active:not([hidden])').getBoundingClientRect();
       const list = document.querySelector('#ulist').getBoundingClientRect();
-      return row.top >= list.top && row.bottom <= list.bottom;
+      // scrollTop is rounded at the last row when the viewport has a fractional height.
+      return row.top >= list.top - 1 && row.bottom <= list.bottom + 1;
     });
     const state = () => page.evaluate(() => ({
       focus: document.activeElement.className,
@@ -22,7 +23,7 @@ async (sourcePage) => {
     }));
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
-    // A last-track startup used to scroll the queue away from its controls.
+    // Force the initial random track outside the first screen of the queue.
     await page.addInitScript(() => { Math.random = () => .999999; localStorage.removeItem('ba-player-albums'); });
     for (const [width,height] of [[1280,720],[1920,1080]]) {
       await page.setViewportSize({width,height});
@@ -35,6 +36,7 @@ async (sourcePage) => {
           host && host.shadowRoot && host.shadowRoot.querySelector('canvas')?.width > 0;
       });
       check((await state()).paused, 'TV startup autoplayed');
+      check(await currentQueueVisible(), 'Initial random track is outside the queue viewport');
       check(await page.locator('.album-toggle').isHidden(), 'TV album toggle remains visible');
       check(await page.locator('.app-header button:visible').count() === 0, 'TV header still has buttons');
       for(let i=0;i<8;i++) await page.keyboard.press('ArrowUp');
@@ -54,8 +56,8 @@ async (sourcePage) => {
       await page.keyboard.press('Escape');
       check(!(await state()).seeking && await active('.simp-progress') && await page.locator('.tv-exit-dialog').isHidden(), 'Seek Back did not finish editing');
       await page.keyboard.press('ArrowDown');
-      check(await page.evaluate(() => document.activeElement===document.querySelector('#ulist li:not([hidden])')), 'First queue entry jumped to random playing track');
-      for(let i=0;i<12;i++) await page.keyboard.press('ArrowDown');
+      check(await currentQueueFocused() && await currentQueueVisible(), 'First queue entry missed the initial random track');
+      for(let i=0;i<12;i++) await page.keyboard.press('ArrowUp');
       const remembered=(await state()).text;
       check(await page.evaluate(() => {const r=document.activeElement.getBoundingClientRect(),v=document.querySelector('#ulist').getBoundingClientRect();return r.top>=v.top && r.bottom<=v.bottom;}), 'Focused row left viewport');
       await page.keyboard.press('ArrowRight');
@@ -71,6 +73,7 @@ async (sourcePage) => {
       check(await active('.simp-progress'), 'Album Right did not return to the last playback controller');
       await page.keyboard.press('ArrowDown');
       check((await state()).text===remembered, 'Returning through controls lost the browsed queue position');
+      await page.locator('#ulist li:not([hidden])').nth(12).focus();
       for(let i=0;i<20;i++) await page.keyboard.press('ArrowUp');
       check(await active('.simp-progress'), 'Repeated queue Up did not stop at last controller');
       await page.keyboard.press('ArrowDown');
@@ -137,7 +140,7 @@ async (sourcePage) => {
     check(await page.locator('.album-toggle').isVisible(), 'Mobile lost album toggle');
     check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth), 'Mobile overflow');
     let failCatalog=true;
-    await page.route('**/musicList.json',route=>failCatalog?route.fulfill({status:503,body:'unavailable'}):route.continue());
+    await page.route(url=>url.pathname.endsWith('/musicList.json'),route=>failCatalog?route.fulfill({status:503,body:'unavailable'}):route.continue());
     await page.setViewportSize({width:1280,height:720});
     await page.goto(base+'/?tv=1');
     await page.waitForFunction(()=>document.activeElement.matches('.library-retry'));
@@ -145,7 +148,10 @@ async (sourcePage) => {
     await page.keyboard.press('Enter');
     await page.waitForFunction(()=>window.BAMusicPlayback && document.activeElement.matches('.simp-plause'));
     check((await state()).paused, 'Retry autoplayed');
+    check(await currentQueueVisible(), 'Retry left the initial random track outside the queue viewport');
+    await page.keyboard.press('ArrowDown');
+    check(await currentQueueFocused(), 'Retry queue entry missed the initial random track');
     check(errors.length===0, 'Page errors: '+errors.join('; '));
-    return {passed:true,checks:'720p/1080p album return to controls, media/button/natural-ended queue correction, preserved album/controller/dialog focus, top boundary, real playback, seek, clear/retry and mobile toggle',errors};
+    return {passed:true,checks:'720p/1080p initial random track visibility and queue focus, album return to controls, media/button/natural-ended queue correction, preserved album/controller/dialog focus, top boundary, real playback, seek, clear/retry and mobile toggle',errors};
   } finally { await context.close(); }
 }
