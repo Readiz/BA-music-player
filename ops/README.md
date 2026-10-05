@@ -77,3 +77,7 @@ curl -f https://music.readiz.com/app-config.json
 API 로그는 `~/.local/share/readiz-music/logs/`에 있다. 인증 로그에는 auth_start/auth_success/auth_failure와 redacted flow 정보만 기록하며 OAuth 코드·state·쿠키·토큰은 출력하지 않는다. 브라우저 모의 로그인은 실제 계정 인증 완료를 뜻하지 않는다.
 
 Android 0.3.1의 `/api/auth/android/redeem`은 짧은 수명의 ticket과 앱 verifier를 검증한 뒤 쿠키로만 세션을 전달한다. `auth_android_success`/`auth_android_failure` 로그로 앱 내부 세션 전달 단계를 확인한다. `handoff_unknown_or_proof_mismatch`는 잘못된 증명 또는 이미 사용한 ticket, `handoff_expired`는 유효시간 초과다. 앱 브라우저 로그인 완료 화면은 캐시·참조자 전달·프레임 삽입을 금지한다. `android_oauth`/`android_handoffs`는 기존 인증 DB 안의 별도 테이블이므로 기존 브라우저 세션과 롤백용 oauth_states 스키마를 유지한다.
+
+## 2026-10-05 개인 서비스 통합 인증
+
+운영 인증은 `auth.readiz.com`의 단일 소유자 계정으로 통합한다. `h.readiz.com`은 별도 다중 사용자 인증을 유지한다. 기존 독립 세션/PIN 설명은 SSO 설정이 없는 로컬·복구 환경에만 적용된다. 중앙 로그인 14일, 호스트별 세션, 일회용 복귀 코드, 같은 로그인으로 연결된 서비스의 일괄 로그아웃을 적용한다. TV와 AOA 앱은 중앙 로그인으로 접속 코드를 승인한다. Music 공개 재생과 홈페이지 공개 글은 그대로다. 구현·검사·배포·원복 계약은 [통합 인증 운영 문서](/Users/readiz/workspace/openclaw/newblog/ops/SSO.md)를 따른다.

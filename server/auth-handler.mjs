@@ -45,6 +45,7 @@ export async function handleAuth(
     return authJson({ enabled: !!auth, authenticated: !!user, user });
   }
   if (!auth) return authJson({ error: 'auth-not-configured' }, 503);
+  if (auth.sso) return authJson({ error: 'use-readiz-login', login: '/_auth/start' }, 410);
   if (path === '/api/auth/android/redeem') {
     if (request.method !== 'POST') return new Response(null, { status: 405, headers: { ...privateHeaders, Allow: 'POST' } });
     if ((request.headers.has('origin') && request.headers.get('origin') !== auth.origin) ||

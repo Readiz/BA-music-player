@@ -1,3 +1,4 @@
+import { createRequire } from 'node:module';
 // Adapted from new-home Discord auth; music owns separate cookies, state and storage.
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { chmodSync, mkdirSync, readFileSync } from 'node:fs';
@@ -111,6 +112,7 @@ export function createAuth(
   options                                               = {},
 ) {
   validateConfig(config);
+  const sso = config.sso ? createRequire(import.meta.url)(config.sso.modulePath).createClient(config.sso) : null;
   const fetcher = options.fetch ?? fetch;
   const now = options.now ?? Date.now;
   const secure = config.origin.startsWith('https:');
@@ -179,6 +181,7 @@ export function createAuth(
   }
 
   function user(request         )                  {
+    if (sso) return sso.user(request);
     const token = cookieValue(request, sessionCookie);
     if (!cookiePattern.test(token)) return null;
     const row = db
@@ -311,6 +314,7 @@ export function createAuth(
   }
 
   return {
+    sso: Boolean(sso),
     origin: config.origin,
     storePath: config.storePath,
     sessionCookie,

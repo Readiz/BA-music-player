@@ -1,4 +1,5 @@
 http://music.readiz.com {
+	import /Users/readiz/.local/share/readiz-auth/current/ops/caddy/sso-routes.Caddyfile
 	redir https://music.readiz.com{uri} 308
 }
 
