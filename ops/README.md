@@ -41,6 +41,12 @@ curl -f https://music.readiz.com/app-config.json
 - 카탈로그 검증은 ETC와 동방 어레인지의 안정된 import ID만 허용한다. 새 manifest가 기존 ETC 추가를 방해하지 않도록 같은 커밋의 API도 배포한다. 준비 후 `npm test`, `MUSIC_BUILD_TARGET=pages npm test`, 의도한 파일만 커밋·push, `npm run deploy:local`을 실행한다.
 - GitHub Actions·Pages 배포 성공 뒤 공개 manifest/목록/파형과 각 MP3의 크기·SHA-256·Range 응답을 확인한다. 브라우저에서 동방만 선택했을 때 12곡, 아티스트 표시, 실제 재생, 다음 곡, 선택 복원, 모바일·TV 표시를 확인한 뒤 완료로 보고한다.
 
+### Pages 게시 단계
+
+2026-10-07부터 Pages의 `build_type`은 `workflow`다. 일반 배포와 음악 추가 모두 검사한 `dist`를 `actions/upload-pages-artifact@v4`로 전송하고, 같은 workflow의 후속 job에서 `actions/deploy-pages@v4`로 게시한다. `gh-pages` 브랜치에도 동일한 결과물을 보관하지만 별도 Jekyll 작업에서 전체 음원 저장소를 다시 clone하지 않는다. 실제 공개 URL·목록·음원·파형 확인은 그대로 완료 조건이다.
+
+`github-pages` 환경은 배포 job의 `master` 실행을 허용하며 `pages: write`와 `id-token: write`는 이 job에만 부여한다. checkout은 5분, 검사 job은 20분, 배포 job은 10분으로 제한한다. Pages 설정과 배포 workflow를 함께 바꾸며, 원복은 Pages `build_type: legacy` 및 기존 `gh-pages` 원본 설정으로 되돌리는 방식이다. [GitHub 공식 artifact 배포 계약](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
+
 ## 설치와 이전
 
 매니페스트·앱 아이콘·서비스 워커를 제공한다. 지원 브라우저에서는 설치 버튼 또는 브라우저 메뉴의 홈 화면 추가를 사용한다. 오프라인 상태에서는 연결 안내를 표시하며 음원 전체를 미리 내려받지 않는다. 서비스 워커 업데이트는 다음 실행에 적용되어 재생 중인 화면을 강제로 새로고침하지 않는다.

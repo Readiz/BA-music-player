@@ -62,14 +62,14 @@ test('GitHub pipeline uploads only public media metadata, checkpoints the Action
     if (endpoint === 'git/commits') return { sha: source };
     if (endpoint.includes('/runs?')) return { workflow_runs: [] };
     if (endpoint.endsWith('/dispatches')) return { workflow_run_id: 42 };
-    if (endpoint === 'actions/runs/42/jobs') return { jobs: [{ steps: [{ name: 'Prepare audio, title, catalog and waveform', status: 'in_progress' }] }] };
-    if (endpoint === 'actions/runs/42') { polls++; return polls < 2 ? { status: 'in_progress' } : { status: 'completed', conclusion: 'success' }; }
+    if (endpoint === 'actions/runs/42/jobs') return { jobs: [{ steps: [{ name: polls === 1 ? 'Prepare audio, title, catalog and waveform' : 'Publish GitHub Pages library', status: 'in_progress' }] }] };
+    if (endpoint === 'actions/runs/42') { polls++; return polls < 3 ? { status: 'in_progress' } : { status: 'completed', conclusion: 'success' }; }
     return {};
   } };
   const sync = createGithubSync({ client, pause: async () => { assert.equal(installed, false); }, publish: async args => { installed = true; assert.equal(args.revision, revision); return { revision, track }; } });
   await sync({ video: { id }, result: { path, title: track.title }, saveCheckpoint: state => checkpoints.push(state), onProgress: stage => progress.push(stage) });
   assert.equal(installed, true);
-  assert.deepEqual(progress, ['uploading', 'waiting', 'waveform', 'verifying']);
+  assert.deepEqual(progress, ['uploading', 'waiting', 'waveform', 'publishing', 'verifying']);
   assert.deepEqual(checkpoints, [{ source }, { source, runId: 42 }]);
   const tree = requests.find(request => request.endpoint === 'git/trees').body.tree;
   assert.equal(tree.length, 2); assert.deepEqual(JSON.parse(tree[1].content), { videoId: id, title: track.title });

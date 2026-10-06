@@ -142,7 +142,7 @@ export function createGithubSync({ client = githubClient(), pause = delay, publi
               const step = jobs.jobs?.flatMap(job => job.steps || []).find(step => step.status === 'in_progress')?.name || '';
               if (/Prepare audio/.test(step)) stage = 'waveform';
               else if (/npm test/.test(step)) stage = 'testing';
-              else if (/Commit only|npm run build|github-pages-deploy/.test(step)) stage = 'publishing';
+              else if (/Commit only|npm run build|github-pages-deploy|GitHub Pages/.test(step)) stage = 'publishing';
             } catch { signal?.throwIfAborted(); }
           }
           onProgress(stage);

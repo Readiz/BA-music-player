@@ -22,6 +22,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        timeout-minutes: 5
         with:
           ref: master
           fetch-depth: 0
@@ -65,3 +66,23 @@ jobs:
         with:
           branch: gh-pages
           folder: dist
+      - name: Upload GitHub Pages library
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: synchronize
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish GitHub Pages library
+        id: deployment
+        uses: actions/deploy-pages@v4
