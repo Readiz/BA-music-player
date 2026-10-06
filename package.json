@@ -1,6 +1,6 @@
 {
   "name": "BA-music-player",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "Readiz Music independent web player and Android app foundation",
   "main": "index.js",
   "scripts": {

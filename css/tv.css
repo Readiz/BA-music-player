@@ -9,7 +9,7 @@
 .exit-card p{margin-bottom:30px;line-height:1.6;}
 .exit-card button{font:inherit;background:#2e536e;color:#fff;border:0;border-radius:6px;padding:16px 24px;margin-right:16px;cursor:pointer;}
 .tv-layout body{height:100vh;overflow:hidden;display:flex;flex-direction:column;}
-.tv-layout body>div{flex:1;min-height:0;}
+.tv-layout body>.app-player{flex:1;min-height:0;}
 .tv-layout .app-header{padding:12px 28px;font-size:22px;flex-shrink:0;}
 .tv-layout .app-brand img{margin-right:12px;}
 .tv-layout .app-install{display:none;}

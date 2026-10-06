@@ -150,6 +150,6 @@ a,a:hover,a:visited{color:#ddd;text-decoration:none;}
 .app-header a:focus-visible,.app-install:focus-visible{outline:2px solid #89cfff;outline-offset:4px;}
 @media (min-width:641px){
   body{display:flex;flex-direction:column;height:100vh;height:100dvh;}
-  body>div{flex:1;min-height:0;}
+  body>.app-player{flex:1;min-height:0;}
   #simp{height:100%;}
 }
