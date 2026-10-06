@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "appId": "com.readiz.music",
   "name": "Readiz Music",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "origin": "https://music.readiz.com",
   "catalog": "https://blog.readiz.com/BA-music-player/musicList.json",
   "titles": "https://blog.readiz.com/BA-music-player/blue-archive-ost.json",
@@ -16,7 +16,7 @@
     "signed": false,
     "appId": "ReadizMU01.ReadizMusic"
   },
-  "trackCount": 352,
-  "revision": "6c8a5131c8dd8af022c8812c737510eb18dad30b",
+  "trackCount": 370,
+  "revision": "d2642cdfbf2c204026c753a75c13f3fa93a008ee",
   "dirty": false
 }
