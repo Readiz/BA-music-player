@@ -45,6 +45,7 @@ function BAPlayer() {
     ['ETC', 'etc'],
     ['Girls Band Cry', 'girls-band-cry'],
     ['Kessoku Band', 'kessoku-band'],
+    ['동방 어레인지', 'touhou-arrange'],
   ].map(([folder, slug]) => [folder, {
     src: new URL(`./assets/albums/${slug}.jpg`, location.href).href,
     sizes: '512x512', type: 'image/jpeg',

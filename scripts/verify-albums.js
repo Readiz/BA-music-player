@@ -54,9 +54,9 @@ async (page) => {
     if (await source() !== new URL(path, page.url()).href) throw new Error('Wrong track: ' + path);
   };
   if (await page.getByRole('checkbox').count() !== groups.size || await visible.count() !== groups.get('Blue Archive').length || await page.locator('.album-card input:checked').count() !== 1 || !(await album('Blue Archive').isChecked())) throw new Error('Default BA selection is wrong');
-  await page.waitForFunction(() => [...document.querySelectorAll('.album-cover img')].length === 4 && [...document.querySelectorAll('.album-cover img')].every(img => img.complete && img.naturalWidth === 512));
+  await page.waitForFunction(count => [...document.querySelectorAll('.album-cover img')].length === count && [...document.querySelectorAll('.album-cover img')].every(img => img.complete && img.naturalWidth === 512), groups.size);
   if (!(await page.evaluate(() => navigator.mediaSession.metadata.artwork[0]?.src.endsWith('/assets/albums/blue-archive.jpg')))) throw new Error('Media Session artwork is missing');
-  report.push('All four album covers load; Media Session receives the current cover');
+  report.push('All album covers load; Media Session receives the current cover');
   // Ordered boundary tests explicitly disable the default shuffle.
   await page.getByRole('button',{name:'무작위 재생',exact:true}).click();
   await page.evaluate(() => { window.__originalAudio = document.querySelector('#audio'); });

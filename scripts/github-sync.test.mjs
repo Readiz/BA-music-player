@@ -41,6 +41,15 @@ test('catalog validation rejects traversal, checksum metadata omissions, duplica
   assert.throws(() => validateCatalog(manifest, catalog, {}));
 });
 
+test('curated Touhou tracks coexist with ETC imports without accepting arbitrary folders', () => {
+  const touhou = { ...track, src: `./music/동방 어레인지/yt-${id}.mp3`, folder: '동방 어레인지', artist: 'IOSYS' };
+  validateCatalog({ schemaVersion: 1, tracks: [track, touhou] }, [...catalog, touhou.src], { ...peaks, [touhou.src]: peaks[track.src] });
+  for (const folder of ['../ETC', '동방 어레인지/../../ETC', 'unknown', '%2e%2e']) {
+    const invalid = { ...touhou, src: `./music/${folder}/yt-${id}.mp3` };
+    assert.throws(() => validateCatalog({ schemaVersion: 1, tracks: [invalid] }, [invalid.src], { [invalid.src]: peaks[track.src] }));
+  }
+});
+
 test('GitHub pipeline uploads only public media metadata, checkpoints the Action and installs only after success', async t => {
   const root = temp(t), path = join(root, 'audio.mp3'); writeFileSync(path, audio);
   const requests = [], checkpoints = [], progress = [];

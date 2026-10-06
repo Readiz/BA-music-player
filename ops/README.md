@@ -33,6 +33,14 @@ curl -f https://music.readiz.com/app-config.json
 
 `npm run build` 후 `npm run dev`로 `127.0.0.1:4523`에서 같은 공개 출력만 볼 수 있다. 기존 `scripts/verify-albums.js`, `verify-startup.js`, `verify-background.js`는 Playwright CLI `run-code`용이다.
 
+## 동방 어레인지 컬렉션 (1.5.2)
+
+- `touhou-arrange.json`은 2026-10-07에 확인한 공식 앨범 음원·풀 MV 12곡의 선곡 목록이다. `npm run import:touhou`는 영상 ID와 공식 채널 ID를 확인하고 기존 다운로드·192kbps MP3 변환·480개 피크 생성기를 사용한다. 이미 준비된 음원의 크기·SHA-256·제목·아티스트·파형이 일치하면 재다운로드하지 않는다.
+- 공개 결과는 `music/동방 어레인지/yt-<영상ID>.mp3`, `musicList.json`, `imported-tracks.json`, `waveforms.json`에 함께 보관한다. 곡명·보컬/서클명·원래 앨범·공식 출처 URL/채널/영상 제목을 기록한다. 임시 자료는 무시되는 `output/import/touhou/`에만 생성한다.
+- 카테고리는 폴더별로 자동 생성되며 `js/library.js`는 폴더와 별도로 manifest의 아티스트를 표시한다. 커버는 `assets/albums/touhou-arrange.jpg`, 생성 프롬프트는 `assets/albums/prompts.json`이다. 일반 웹 음악 추가는 기존 ETC를 사용한다.
+- 카탈로그 검증은 ETC와 동방 어레인지의 안정된 import ID만 허용한다. 새 manifest가 기존 ETC 추가를 방해하지 않도록 같은 커밋의 API도 배포한다. 준비 후 `npm test`, `MUSIC_BUILD_TARGET=pages npm test`, 의도한 파일만 커밋·push, `npm run deploy:local`을 실행한다.
+- GitHub Actions·Pages 배포 성공 뒤 공개 manifest/목록/파형과 각 MP3의 크기·SHA-256·Range 응답을 확인한다. 브라우저에서 동방만 선택했을 때 12곡, 아티스트 표시, 실제 재생, 다음 곡, 선택 복원, 모바일·TV 표시를 확인한 뒤 완료로 보고한다.
+
 ## 설치와 이전
 
 매니페스트·앱 아이콘·서비스 워커를 제공한다. 지원 브라우저에서는 설치 버튼 또는 브라우저 메뉴의 홈 화면 추가를 사용한다. 오프라인 상태에서는 연결 안내를 표시하며 음원 전체를 미리 내려받지 않는다. 서비스 워커 업데이트는 다음 실행에 적용되어 재생 중인 화면을 강제로 새로고침하지 않는다.

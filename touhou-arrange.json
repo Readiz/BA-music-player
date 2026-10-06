@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "folder": "동방 어레인지",
+  "checkedOn": "2026-10-07",
+  "description": "동방 대표 어레인지 12곡. 공식 서클 채널 또는 공식 배급 Topic의 앨범 음원과 풀 MV를 확인했습니다.",
+  "tracks": [
+    { "videoId": "zHbvww287jk", "title": "Bad Apple!! feat. nomico", "artist": "Alstroemeria Records / nomico", "channelId": "UCvZKRyvOGkZyC70ED_CNpBQ", "album": "10th ANNIVERSARY Bad Apple!! (from Lovelight)" },
+    { "videoId": "2TTuH9BPwjI", "title": "Night of Nights (ナイト・オブ・ナイツ)", "artist": "COOL&CREATE / ビートまりお", "channelId": "UCXE1ytLFTjxoIyLTVVBujcw", "album": "ビートまりお東方音ゲーBEST!!" },
+    { "videoId": "Wi_QXkB-kTY", "title": "최종귀축 여동생 플랑드르·S (最終鬼畜妹フランドール・S)", "artist": "COOL&CREATE / ビートまりお", "channelId": "UCXE1ytLFTjxoIyLTVVBujcw", "album": "東方ストライク" },
+    { "videoId": "dwJlshAuWdE", "title": "Help me, ERINNNNNN!!", "artist": "COOL&CREATE / ビートまりお", "channelId": "UCXE1ytLFTjxoIyLTVVBujcw", "album": "Help me, ERINNNNNN!! LOVE( ﾟ∀ﾟ)o彡゜" },
+    { "videoId": "5ETmrso3Dt8", "title": "치르노의 퍼펙트 산수교실 (チルノのパーフェクトさんすう教室)", "artist": "IOSYS / miko", "channelId": "UCKIF3YRmI_q7bM8CACE9FWg", "album": "東方氷雪歌集" },
+    { "videoId": "XyymOq1ZEJg", "title": "마리사는 엄청난 것을 훔쳐갔습니다 (魔理沙は大変なものを盗んでいきました)", "artist": "IOSYS / 藤咲かりん", "channelId": "UCKIF3YRmI_q7bM8CACE9FWg", "album": "東方乙女囃子" },
+    { "videoId": "spx_FOCO9ko", "title": "患部で止まってすぐ溶ける ～ 狂気の優曇華院 (Overdrive)", "artist": "IOSYS / miko", "channelId": "UCKIF3YRmI_q7bM8CACE9FWg", "album": "東方月燈籠セーフ!" },
+    { "videoId": "RaGQqCWNFe4", "title": "우사테이 (ウサテイ)", "artist": "IOSYS", "channelId": "UCNats-h_Vr0pEh5OtZo6eVw", "album": "IOSYS音ゲーBEST!!" },
+    { "videoId": "CmsENAjoXbs", "title": "お嫁にしなさいっ！", "artist": "IOSYS / miko・ゆか・まり", "channelId": "UCKIF3YRmI_q7bM8CACE9FWg", "album": "東方萃翠酒酔" },
+    { "videoId": "NpgaGhAW9So", "title": "색은 향기로워도 흩어질지니 (色は匂へど散りぬるを)", "artist": "幽閉サテライト / senya", "channelId": "UCmzieQGdu7fTXaPqi2AuXyg", "album": "色は匂へど散りぬるを" },
+    { "videoId": "skCiZ9IJmZY", "title": "달에는 구름, 꽃에는 바람 (月に叢雲華に風)", "artist": "幽閉サテライト / senya", "channelId": "UCmzieQGdu7fTXaPqi2AuXyg", "album": "月に叢雲華に風" },
+    { "videoId": "NfjTGFMMKL0", "title": "泡沫、哀のまほろば", "artist": "幽閉サテライト / senya", "channelId": "UCmzieQGdu7fTXaPqi2AuXyg", "album": "泡沫、哀のまほろば" }
+  ]
+}

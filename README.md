@@ -1,5 +1,22 @@
 # Readiz Music
 
+## 동방 어레인지 (1.5.2)
+
+앨범 목록의 **동방 어레인지**에서 대표 어레인지 12곡을 골라 듣습니다.
+Bad Apple!! feat. nomico, Night of Nights, 최종귀축 여동생 플랑드르·S,
+Help me, ERINNNNNN!!, 치르노의 퍼펙트 산수교실, 마리사는 엄청난 것을 훔쳐갔습니다,
+Overdrive, 우사테이, お嫁にしなさいっ！, 色は匂へど散りぬるを,
+月に叢雲華に風, 泡沫、哀のまほろば를 포함합니다.
+
+공식 서클 채널·공식 배급 Topic의 앨범 음원과 풀 MV를 사용했습니다.
+Bad Apple!!은 Lovelight 수록 버전이고, 幽閉サテライト 보컬곡은 senya 버전입니다.
+짧은 MV와 게임용 편집 대신 전체 곡을 선택했습니다. 곡별 제목·아티스트·출처·해시와
+480개 파형 피크를 보관하며, 다른 앨범과 함께 선택하거나 이 카테고리만 선택할 수 있습니다.
+전용 커버는 새로 생성한 그림입니다.
+
+선곡과 공식 채널 ID는 [touhou-arrange.json](touhou-arrange.json), 실제 음원·출처·해시는
+[imported-tracks.json](imported-tracks.json)에 있습니다. 추가·복구 방법은 [운영 안내](ops/README.md)를 따릅니다.
+
 ## Android 알림 재생과 업데이트 (웹 1.3.0 / APK 0.3.0)
 
 [Android APK 설치](https://music.readiz.com/app.apk). 앱 실행·복귀 때 새 버전을 확인하고,

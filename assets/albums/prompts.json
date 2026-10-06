@@ -24,6 +24,12 @@
     {
       "file": "kessoku-band.jpg",
       "prompt": "Use case: stylized-concept\nAsset type: square album cover thumbnail for a personal music player.\nPrimary request: Kessoku Band music collection: a guitar and bass on stands in an intimate band practice room, small drum kit in the background, soft violet stage lights and warm rehearsal atmosphere.\nStyle/medium: polished original anime background illustration, painterly light with crisp simple silhouettes, part of a cohesive four-cover collection.\nComposition: square 1:1 full bleed, strong single focal area, readable at 64 pixels, generous uncluttered shapes.\nConstraints: no people, no text, no lettering, no logo, no watermark, no border. Original illustration, not a replica of official album artwork."
+    },
+    {
+      "file": "touhou-arrange.jpg",
+      "generatedOn": "2026-10-07",
+      "method": "Built-in image_gen",
+      "prompt": "Use case: stylized-concept\nAsset type: square album cover thumbnail for the Touhou Arrange collection in a personal music player.\nPrimary request: an original anime background illustration of a quiet Japanese mountain shrine at night: a large crimson torii gate framing a luminous full moon, a few graceful cherry blossom branches, distant layered indigo mountains and a warmly lit shrine path. Evoke the magical nostalgic atmosphere of Touhou music without copying official artwork.\nStyle/medium: polished painterly anime background, atmospheric light with crisp simple silhouettes, cohesive with square illustrated album covers.\nComposition: square 1:1 full bleed, strong single focal area, clean large shapes readable at 64 pixels.\nConstraints: no people, no characters, no text, no lettering, no logo, no watermark, no border."
     }
   ]
 }
