@@ -30,6 +30,12 @@
       "generatedOn": "2026-10-07",
       "method": "Built-in image_gen",
       "prompt": "Use case: stylized-concept\nAsset type: square album cover thumbnail for the Touhou Arrange collection in a personal music player.\nPrimary request: an original anime background illustration of a quiet Japanese mountain shrine at night: a large crimson torii gate framing a luminous full moon, a few graceful cherry blossom branches, distant layered indigo mountains and a warmly lit shrine path. Evoke the magical nostalgic atmosphere of Touhou music without copying official artwork.\nStyle/medium: polished painterly anime background, atmospheric light with crisp simple silhouettes, cohesive with square illustrated album covers.\nComposition: square 1:1 full bleed, strong single focal area, clean large shapes readable at 64 pixels.\nConstraints: no people, no characters, no text, no lettering, no logo, no watermark, no border."
+    },
+    {
+      "file": "touhou-original.jpg",
+      "generatedOn": "2026-10-07",
+      "method": "Built-in image_gen",
+      "prompt": "Use case: stylized-concept\nAsset type: square album cover thumbnail for the th original collection of Touhou th06, th07 and th08 game soundtracks in a personal music player.\nPrimary request: an original anime background illustration of a magical bamboo grove and old Japanese shrine path under a very large luminous full moon, with delicate pale cherry petals drifting through indigo night mist and a subtle crimson glow at the horizon. Peaceful, nostalgic game soundtrack atmosphere.\nStyle/medium: polished painterly anime background, atmospheric light with crisp simple silhouettes, cohesive with square illustrated album covers.\nComposition: square 1:1 full bleed, a clear large moon and sweeping bamboo silhouettes readable as a small thumbnail, uncluttered focal area.\nConstraints: no people, no characters, no text, no lettering, no logo, no watermark, no border. Original artwork, not a replica of official artwork."
     }
   ]
 }

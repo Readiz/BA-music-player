@@ -4,4 +4,4 @@ export function mediaIdentity(id) {
   if (/^upload-[a-f0-9]{64}$/.test(id || '')) return { kind: 'upload', filename: `${id}.mp3` };
   throw new Error('Invalid music identity');
 }
-export const importedSource = /^\.\/music\/(?:ETC|동방 어레인지)\/(?:yt-[\w-]{11}|upload-[a-f0-9]{64})\.mp3$/;
+export const importedSource = /^\.\/music\/(?:ETC|동방 어레인지|th original)\/(?:yt-[\w-]{11}|upload-[a-f0-9]{64})\.mp3$/;

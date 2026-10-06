@@ -1,0 +1,841 @@
+{
+  "schemaVersion": 1,
+  "folder": "th original",
+  "name": "th original",
+  "description": "홍마향(th06) 17곡, 요요몽(th07) 20곡, 영야초(th08) 21곡의 원곡 OST 전체 58곡. 공식 Team Shanghai Alice Topic 배급 음원이며 작품별 원래 트랙 순서로 수록합니다.",
+  "checkedOn": "2026-10-07",
+  "sources": [
+    {
+      "originalWork": "th06",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "playlistUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4",
+      "trackCount": 17
+    },
+    {
+      "originalWork": "th07",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "playlistUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ",
+      "trackCount": 20
+    },
+    {
+      "originalWork": "th08",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "playlistUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0",
+      "trackCount": 21
+    }
+  ],
+  "tracks": [
+    {
+      "videoId": "aDKUCk99TNg",
+      "title": "[th06-01] 赤より紅い夢",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "赤より紅い夢",
+      "originalWork": "th06",
+      "originalTracks": [
+        "赤より紅い夢"
+      ],
+      "trackNumber": 1,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4"
+    },
+    {
+      "videoId": "Kri4pZwkcGw",
+      "title": "[th06-02] ほおずきみたいに紅い魂",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "ほおずきみたいに紅い魂",
+      "originalWork": "th06",
+      "originalTracks": [
+        "ほおずきみたいに紅い魂"
+      ],
+      "trackNumber": 2,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4"
+    },
+    {
+      "videoId": "16NSExzzIWA",
+      "title": "[th06-03] 妖魔夜行",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "妖魔夜行",
+      "originalWork": "th06",
+      "originalTracks": [
+        "妖魔夜行"
+      ],
+      "trackNumber": 3,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4"
+    },
+    {
+      "videoId": "_iRxw7-CiUA",
+      "title": "[th06-04] ルーネイトエルフ",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "ルーネイトエルフ",
+      "originalWork": "th06",
+      "originalTracks": [
+        "ルーネイトエルフ"
+      ],
+      "trackNumber": 4,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4"
+    },
+    {
+      "videoId": "hVNbUWAEvsI",
+      "title": "[th06-05] おてんば恋娘",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "おてんば恋娘",
+      "originalWork": "th06",
+      "originalTracks": [
+        "おてんば恋娘"
+      ],
+      "trackNumber": 5,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4"
+    },
+    {
+      "videoId": "YIy2S8MB8c8",
+      "title": "[th06-06] 上海紅茶館　～ Chinese Tea",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "上海紅茶館　～ Chinese Tea",
+      "originalWork": "th06",
+      "originalTracks": [
+        "上海紅茶館　～ Chinese Tea"
+      ],
+      "trackNumber": 6,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4"
+    },
+    {
+      "videoId": "IHRS-KIEAG4",
+      "title": "[th06-07] 明治十七年の上海アリス",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "明治十七年の上海アリス",
+      "originalWork": "th06",
+      "originalTracks": [
+        "明治十七年の上海アリス"
+      ],
+      "trackNumber": 7,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4"
+    },
+    {
+      "videoId": "ovlbvYRzskY",
+      "title": "[th06-08] ヴワル魔法図書館",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "ヴワル魔法図書館",
+      "originalWork": "th06",
+      "originalTracks": [
+        "ヴワル魔法図書館"
+      ],
+      "trackNumber": 8,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4"
+    },
+    {
+      "videoId": "WrfhILCgCmk",
+      "title": "[th06-09] ラクトガール　～ 少女密室",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "ラクトガール　～ 少女密室",
+      "originalWork": "th06",
+      "originalTracks": [
+        "ラクトガール　～ 少女密室"
+      ],
+      "trackNumber": 9,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4"
+    },
+    {
+      "videoId": "1YRrPl7elLE",
+      "title": "[th06-10] メイドと血の懐中時計",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "メイドと血の懐中時計",
+      "originalWork": "th06",
+      "originalTracks": [
+        "メイドと血の懐中時計"
+      ],
+      "trackNumber": 10,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4"
+    },
+    {
+      "videoId": "JYCvhA1LLg4",
+      "title": "[th06-11] 月時計　～ ルナ・ダイアル",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "月時計　～ ルナ・ダイアル",
+      "originalWork": "th06",
+      "originalTracks": [
+        "月時計　～ ルナ・ダイアル"
+      ],
+      "trackNumber": 11,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4"
+    },
+    {
+      "videoId": "b3V2YLs3qRw",
+      "title": "[th06-12] ツェペシュの幼き末裔",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "ツェペシュの幼き末裔",
+      "originalWork": "th06",
+      "originalTracks": [
+        "ツェペシュの幼き末裔"
+      ],
+      "trackNumber": 12,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4"
+    },
+    {
+      "videoId": "Kg0sXrz-zWQ",
+      "title": "[th06-13] 亡き王女の為のセプテット",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "亡き王女の為のセプテット",
+      "originalWork": "th06",
+      "originalTracks": [
+        "亡き王女の為のセプテット"
+      ],
+      "trackNumber": 13,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4"
+    },
+    {
+      "videoId": "zaEweVXHfHQ",
+      "title": "[th06-14] 魔法少女達の百年祭",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "魔法少女達の百年祭",
+      "originalWork": "th06",
+      "originalTracks": [
+        "魔法少女達の百年祭"
+      ],
+      "trackNumber": 14,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4"
+    },
+    {
+      "videoId": "zPDQu-_KZBw",
+      "title": "[th06-15] U.N.オーエンは彼女なのか？",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "U.N.オーエンは彼女なのか？",
+      "originalWork": "th06",
+      "originalTracks": [
+        "U.N.オーエンは彼女なのか？"
+      ],
+      "trackNumber": 15,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4"
+    },
+    {
+      "videoId": "9IB3ZXiB8dg",
+      "title": "[th06-16] 紅より儚い永遠",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "紅より儚い永遠",
+      "originalWork": "th06",
+      "originalTracks": [
+        "紅より儚い永遠"
+      ],
+      "trackNumber": 16,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4"
+    },
+    {
+      "videoId": "HFljf7-tk48",
+      "title": "[th06-17] 紅楼　～ Eastern Dream...",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方紅魔郷　～ the Embodiment of Scarlet Devil. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "紅楼　～ Eastern Dream...",
+      "originalWork": "th06",
+      "originalTracks": [
+        "紅楼　～ Eastern Dream..."
+      ],
+      "trackNumber": 17,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_nZVx8L3L4gkAccH7JMFgjYUMs3q9ONHf4"
+    },
+    {
+      "videoId": "5yEtzQGv7Y8",
+      "title": "[th07-01] 妖々夢　～ Snow or Cherry Petal",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "妖々夢　～ Snow or Cherry Petal",
+      "originalWork": "th07",
+      "originalTracks": [
+        "妖々夢　～ Snow or Cherry Petal"
+      ],
+      "trackNumber": 1,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "gqMjFLZ9SCs",
+      "title": "[th07-02] 無何有の郷　～ Deep Mountain",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "無何有の郷　～ Deep Mountain",
+      "originalWork": "th07",
+      "originalTracks": [
+        "無何有の郷　～ Deep Mountain"
+      ],
+      "trackNumber": 2,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "kku7EaKqktk",
+      "title": "[th07-03] クリスタライズシルバー",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "クリスタライズシルバー",
+      "originalWork": "th07",
+      "originalTracks": [
+        "クリスタライズシルバー"
+      ],
+      "trackNumber": 3,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "KjijPCpYL44",
+      "title": "[th07-04] 遠野幻想物語",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "遠野幻想物語",
+      "originalWork": "th07",
+      "originalTracks": [
+        "遠野幻想物語"
+      ],
+      "trackNumber": 4,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "poFy9-b-6RA",
+      "title": "[th07-05] ティアオイエツォン (withered leaf)",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "ティアオイエツォン (withered leaf)",
+      "originalWork": "th07",
+      "originalTracks": [
+        "ティアオイエツォン (withered leaf)"
+      ],
+      "trackNumber": 5,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "Qx8LmvVZ08E",
+      "title": "[th07-06] ブクレシュティの人形師",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "ブクレシュティの人形師",
+      "originalWork": "th07",
+      "originalTracks": [
+        "ブクレシュティの人形師"
+      ],
+      "trackNumber": 6,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "v2hNqDz-RMw",
+      "title": "[th07-07] 人形裁判　～ 人の形弄びし少女",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "人形裁判　～ 人の形弄びし少女",
+      "originalWork": "th07",
+      "originalTracks": [
+        "人形裁判　～ 人の形弄びし少女"
+      ],
+      "trackNumber": 7,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "qce6NSJxWnA",
+      "title": "[th07-08] 天空の花の都",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "天空の花の都",
+      "originalWork": "th07",
+      "originalTracks": [
+        "天空の花の都"
+      ],
+      "trackNumber": 8,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "ugFEFj0IO78",
+      "title": "[th07-09] 幽霊楽団　～ Phantom Ensemble",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "幽霊楽団　～ Phantom Ensemble",
+      "originalWork": "th07",
+      "originalTracks": [
+        "幽霊楽団　～ Phantom Ensemble"
+      ],
+      "trackNumber": 9,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "HUU8SM2xw9I",
+      "title": "[th07-10] 東方妖々夢　～ Ancient Temple",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "東方妖々夢　～ Ancient Temple",
+      "originalWork": "th07",
+      "originalTracks": [
+        "東方妖々夢　～ Ancient Temple"
+      ],
+      "trackNumber": 10,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "Mllh9m47rEQ",
+      "title": "[th07-11] 広有射怪鳥事　～ Till When?",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "広有射怪鳥事　～ Till When?",
+      "originalWork": "th07",
+      "originalTracks": [
+        "広有射怪鳥事　～ Till When?"
+      ],
+      "trackNumber": 11,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "1n7Z1DmNOJc",
+      "title": "[th07-12] アルティメットトゥルース",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "アルティメットトゥルース",
+      "originalWork": "th07",
+      "originalTracks": [
+        "アルティメットトゥルース"
+      ],
+      "trackNumber": 12,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "DAmMad9b7Ek",
+      "title": "[th07-13] 幽雅に咲かせ、墨染の桜 (Border of Life)",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "幽雅に咲かせ、墨染の桜 (Border of Life)",
+      "originalWork": "th07",
+      "originalTracks": [
+        "幽雅に咲かせ、墨染の桜 (Border of Life)"
+      ],
+      "trackNumber": 13,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "vfkktZ4p8Rw",
+      "title": "[th07-14] ボーダーオブライフ",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "ボーダーオブライフ",
+      "originalWork": "th07",
+      "originalTracks": [
+        "ボーダーオブライフ"
+      ],
+      "trackNumber": 14,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "nHvKb1sE9IQ",
+      "title": "[th07-15] 妖々跋扈",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "妖々跋扈",
+      "originalWork": "th07",
+      "originalTracks": [
+        "妖々跋扈"
+      ],
+      "trackNumber": 15,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "Lo2zGYnKk3k",
+      "title": "[th07-16] 少女幻葬　～ Necro-Fantasy",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "少女幻葬　～ Necro-Fantasy",
+      "originalWork": "th07",
+      "originalTracks": [
+        "少女幻葬　～ Necro-Fantasy"
+      ],
+      "trackNumber": 16,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "EvhbaRKH_BQ",
+      "title": "[th07-17] 妖々跋扈　～ Who done it!",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "妖々跋扈　～ Who done it!",
+      "originalWork": "th07",
+      "originalTracks": [
+        "妖々跋扈　～ Who done it!"
+      ],
+      "trackNumber": 17,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "UPLMawYBxsM",
+      "title": "[th07-18] ネクロファンタジア",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "ネクロファンタジア",
+      "originalWork": "th07",
+      "originalTracks": [
+        "ネクロファンタジア"
+      ],
+      "trackNumber": 18,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "kLM1iUmUDjQ",
+      "title": "[th07-19] 春風の夢",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "春風の夢",
+      "originalWork": "th07",
+      "originalTracks": [
+        "春風の夢"
+      ],
+      "trackNumber": 19,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "Nw26RNPPlwg",
+      "title": "[th07-20] さくらさくら　～ Japanize Dream...",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方妖々夢　～ Perfect Cherry Blossm. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "さくらさくら　～ Japanize Dream...",
+      "originalWork": "th07",
+      "originalTracks": [
+        "さくらさくら　～ Japanize Dream..."
+      ],
+      "trackNumber": 20,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lhJ7cyWnUAiWisc8rvvLb_LMQVryAd3XQ"
+    },
+    {
+      "videoId": "45B3J8JX_Cw",
+      "title": "[th08-01] 永夜抄　～ Eastern Night.",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "永夜抄　～ Eastern Night.",
+      "originalWork": "th08",
+      "originalTracks": [
+        "永夜抄　～ Eastern Night."
+      ],
+      "trackNumber": 1,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "wpuCXD67Y7A",
+      "title": "[th08-02] 幻視の夜　～ Ghostly Eyes",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "幻視の夜　～ Ghostly Eyes",
+      "originalWork": "th08",
+      "originalTracks": [
+        "幻視の夜　～ Ghostly Eyes"
+      ],
+      "trackNumber": 2,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "LjOb2MzZWGY",
+      "title": "[th08-03] 蠢々秋月　～ Mooned Insect",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "蠢々秋月　～ Mooned Insect",
+      "originalWork": "th08",
+      "originalTracks": [
+        "蠢々秋月　～ Mooned Insect"
+      ],
+      "trackNumber": 3,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "PupVQXN6Ol0",
+      "title": "[th08-04] 夜雀の歌声　～ Night Bird",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "夜雀の歌声　～ Night Bird",
+      "originalWork": "th08",
+      "originalTracks": [
+        "夜雀の歌声　～ Night Bird"
+      ],
+      "trackNumber": 4,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "l-X46SHhWx0",
+      "title": "[th08-05] もう歌しか聞こえない",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "もう歌しか聞こえない",
+      "originalWork": "th08",
+      "originalTracks": [
+        "もう歌しか聞こえない"
+      ],
+      "trackNumber": 5,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "orZas65EWB4",
+      "title": "[th08-06] 懐かしき東方の血　～ Old World",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "懐かしき東方の血　～ Old World",
+      "originalWork": "th08",
+      "originalTracks": [
+        "懐かしき東方の血　～ Old World"
+      ],
+      "trackNumber": 6,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "pHIWEx0zCX8",
+      "title": "[th08-07] プレインエイジア",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "プレインエイジア",
+      "originalWork": "th08",
+      "originalTracks": [
+        "プレインエイジア"
+      ],
+      "trackNumber": 7,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "KFbk7lWQh5M",
+      "title": "[th08-08] 永夜の報い　～ Imperishable Night.",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "永夜の報い　～ Imperishable Night.",
+      "originalWork": "th08",
+      "originalTracks": [
+        "永夜の報い　～ Imperishable Night."
+      ],
+      "trackNumber": 8,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "aZ7ToDR5Gw4",
+      "title": "[th08-09] 少女綺想曲　～ Dream Battle",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "少女綺想曲　～ Dream Battle",
+      "originalWork": "th08",
+      "originalTracks": [
+        "少女綺想曲　～ Dream Battle"
+      ],
+      "trackNumber": 9,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "PBm0m7O71Xk",
+      "title": "[th08-10] 恋色マスタースパーク",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "恋色マスタースパーク",
+      "originalWork": "th08",
+      "originalTracks": [
+        "恋色マスタースパーク"
+      ],
+      "trackNumber": 10,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "iundSHqwXEU",
+      "title": "[th08-11] シンデレラケージ　～ Kagome-Kagome",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "シンデレラケージ　～ Kagome-Kagome",
+      "originalWork": "th08",
+      "originalTracks": [
+        "シンデレラケージ　～ Kagome-Kagome"
+      ],
+      "trackNumber": 11,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "gQAy3uG0oYo",
+      "title": "[th08-12] 狂気の瞳　～ Invisible Full Moon",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "狂気の瞳　～ Invisible Full Moon",
+      "originalWork": "th08",
+      "originalTracks": [
+        "狂気の瞳　～ Invisible Full Moon"
+      ],
+      "trackNumber": 12,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "4BTVyY2qEXU",
+      "title": "[th08-13] ヴォヤージュ1969",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "ヴォヤージュ1969",
+      "originalWork": "th08",
+      "originalTracks": [
+        "ヴォヤージュ1969"
+      ],
+      "trackNumber": 13,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "-sSIeztzghk",
+      "title": "[th08-14] 千年幻想郷　～ History of the Moon",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "千年幻想郷　～ History of the Moon",
+      "originalWork": "th08",
+      "originalTracks": [
+        "千年幻想郷　～ History of the Moon"
+      ],
+      "trackNumber": 14,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "ZS2LJ_97bc0",
+      "title": "[th08-15] 竹取飛翔　～ Lunatic Princess",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "竹取飛翔　～ Lunatic Princess",
+      "originalWork": "th08",
+      "originalTracks": [
+        "竹取飛翔　～ Lunatic Princess"
+      ],
+      "trackNumber": 15,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "gmrbCOTpzas",
+      "title": "[th08-16] ヴォヤージュ1970",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "ヴォヤージュ1970",
+      "originalWork": "th08",
+      "originalTracks": [
+        "ヴォヤージュ1970"
+      ],
+      "trackNumber": 16,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "x1_bV9S_rCc",
+      "title": "[th08-17] エクステンドアッシュ　～ 蓬莱人",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "エクステンドアッシュ　～ 蓬莱人",
+      "originalWork": "th08",
+      "originalTracks": [
+        "エクステンドアッシュ　～ 蓬莱人"
+      ],
+      "trackNumber": 17,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "q4vwwJowyKg",
+      "title": "[th08-18] 月まで届け、不死の煙",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "月まで届け、不死の煙",
+      "originalWork": "th08",
+      "originalTracks": [
+        "月まで届け、不死の煙"
+      ],
+      "trackNumber": 18,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "M1Zwgxv8EpQ",
+      "title": "[th08-19] 月見草",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "月見草",
+      "originalWork": "th08",
+      "originalTracks": [
+        "月見草"
+      ],
+      "trackNumber": 19,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "CnTASN6-qFk",
+      "title": "[th08-20] Eternal Dream　～ 幽玄の槭樹",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "Eternal Dream　～ 幽玄の槭樹",
+      "originalWork": "th08",
+      "originalTracks": [
+        "Eternal Dream　～ 幽玄の槭樹"
+      ],
+      "trackNumber": 20,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "JsCek5_HpCQ",
+      "title": "[th08-21] 東方妖怪小町",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "東方妖怪小町",
+      "originalWork": "th08",
+      "originalTracks": [
+        "東方妖怪小町"
+      ],
+      "trackNumber": 21,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    }
+  ]
+}

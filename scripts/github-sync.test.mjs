@@ -43,8 +43,9 @@ test('catalog validation rejects traversal, checksum metadata omissions, duplica
 
 test('curated Touhou tracks coexist with ETC imports without accepting arbitrary folders', () => {
   const touhou = { ...track, src: `./music/동방 어레인지/yt-${id}.mp3`, folder: '동방 어레인지', artist: 'IOSYS' };
-  validateCatalog({ schemaVersion: 1, tracks: [track, touhou] }, [...catalog, touhou.src], { ...peaks, [touhou.src]: peaks[track.src] });
-  for (const folder of ['../ETC', '동방 어레인지/../../ETC', 'unknown', '%2e%2e']) {
+  const original = { ...track, src: `./music/th original/yt-${id}.mp3`, folder: 'th original', artist: 'ZUN / 上海アリス幻樂団' };
+  validateCatalog({ schemaVersion: 1, tracks: [track, touhou, original] }, [...catalog, touhou.src, original.src], { ...peaks, [touhou.src]: peaks[track.src], [original.src]: peaks[track.src] });
+  for (const folder of ['../ETC', '동방 어레인지/../../ETC', 'th original/../../ETC', 'th original/extra', 'unknown', '%2e%2e']) {
     const invalid = { ...touhou, src: `./music/${folder}/yt-${id}.mp3` };
     assert.throws(() => validateCatalog({ schemaVersion: 1, tracks: [invalid] }, [invalid.src], { [invalid.src]: peaks[track.src] }));
   }

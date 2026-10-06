@@ -1,6 +1,6 @@
 {
   "name": "BA-music-player",
-  "version": "1.5.4",
+  "version": "1.5.5",
   "description": "Readiz Music independent web player and Android app foundation",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,8 @@
     "start:api": "node server/start.mjs",
     "deploy:api": "node scripts/deploy-api.mjs",
     "build:apk": "bash scripts/build-android.sh release",
-    "import:touhou": "node scripts/import-touhou.mjs"
+    "import:touhou": "node scripts/import-touhou.mjs",
+    "import:touhou-original": "node scripts/import-touhou.mjs original"
   },
   "repository": {
     "type": "git",
