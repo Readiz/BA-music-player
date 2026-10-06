@@ -18,7 +18,7 @@ const collection = JSON.parse(readFileSync('touhou-arrange.json', 'utf8'));
 const manifest = JSON.parse(readFileSync('imported-tracks.json', 'utf8'));
 const catalog = JSON.parse(readFileSync('musicList.json', 'utf8'));
 const waveforms = JSON.parse(readFileSync('waveforms.json', 'utf8'));
-if (collection.schemaVersion !== 1 || collection.folder !== '동방 어레인지') throw new Error('Invalid collection');
+if (collection.schemaVersion !== 1 || collection.folder !== '동방 어레인지' || collection.name !== 'Touhou') throw new Error('Invalid collection');
 const seen = new Set();
 for (const entry of collection.tracks) {
   const source = `./music/${collection.folder}/${mediaIdentity(entry.videoId).filename}`;
@@ -47,10 +47,11 @@ for (const [index, entry] of collection.tracks.entries()) {
     const result = await download({ video, directory, stage: () => {} });
     mkdirSync(`music/${collection.folder}`, { recursive: true });
     const temporary = `${src}.next.mp3`;
-    await execute(join(ffmpeg, 'ffmpeg'), ['-nostdin', '-v', 'error', '-y', '-i', result.path, '-map', '0:a:0', '-c:a', 'copy', '-map_metadata', '-1', '-metadata', `title=${entry.title}`, '-metadata', `artist=${entry.artist}`, '-metadata', `album=${collection.folder}`, temporary]);
+    await execute(join(ffmpeg, 'ffmpeg'), ['-nostdin', '-v', 'error', '-y', '-i', result.path, '-map', '0:a:0', '-c:a', 'copy', '-map_metadata', '-1', '-metadata', `title=${entry.title}`, '-metadata', `artist=${entry.artist}`, '-metadata', `album=${collection.name}`, temporary]);
     const peaks = await createWaveform(temporary, { ffmpeg });
     const bytes = statSync(temporary).size;
     const track = { src, title: entry.title, folder: collection.folder, artist: entry.artist, album: entry.album,
+      originalWork: entry.originalWork, originalTracks: entry.originalTracks, referenceUrl: entry.referenceUrl,
       sourceUrl: video.url, sourceTitle: metadata.title, sourceChannel: metadata.channel, sourceChannelId: metadata.channel_id,
       collectedOn: collection.checkedOn, duration: peaks.duration, bytes, sha256: createHash('sha256').update(readFileSync(temporary)).digest('hex') };
     renameSync(temporary, src);

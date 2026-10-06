@@ -40,6 +40,7 @@ function BAPlayer() {
     folderCounts.set(track.folder, (folderCounts.get(track.folder) || 0) + 1);
   }
   const albumInputs = new Map();
+  const albumName = folder => folder === '동방 어레인지' ? 'Touhou' : folder;
   const albumArtwork = new Map([
     ['Blue Archive', 'blue-archive'],
     ['ETC', 'etc'],
@@ -51,13 +52,14 @@ function BAPlayer() {
     sizes: '512x512', type: 'image/jpeg',
   }]));
   for (const [folder, count] of folderCounts) {
+    const name = albumName(folder);
     const card = document.createElement('label');
     card.className = 'album-card';
     const cover = document.createElement('span');
     cover.className = 'album-cover';
     cover.setAttribute('aria-hidden', 'true');
-    const words = folder.split(/[\s/]+/);
-    cover.textContent = (words.length === 1 ? folder : words.map(word => word[0]).join('')).slice(0, 3).toUpperCase();
+    const words = name.split(/[\s/]+/);
+    cover.textContent = (words.length === 1 ? name : words.map(word => word[0]).join('')).slice(0, 3).toUpperCase();
     if (albumArtwork.has(folder)) {
       const image = document.createElement('img');
       image.alt = '';
@@ -71,11 +73,11 @@ function BAPlayer() {
     const input = document.createElement('input');
     input.type = 'checkbox';
     input.value = folder;
-    input.setAttribute('aria-label', folder);
+    input.setAttribute('aria-label', name);
     input.setAttribute('aria-controls', 'ulist');
     const title = document.createElement('strong');
     title.className = 'album-name';
-    title.textContent = folder;
+    title.textContent = name;
     const total = document.createElement('span');
     total.className = 'album-count';
     total.textContent = `${count}곡`;
@@ -228,6 +230,7 @@ function BAPlayer() {
     // audio bytes are delivered by Pages without a local copy or an APK update.
     native.configure(queue.map(i => ({
       ...tracks[i], id: tracks[i].src, src: new URL(tracks[i].src, location.href).href,
+      folder: albumName(tracks[i].folder),
       title: tracks[i].title.replace(/^theme_\d+-/, ''),
       artwork: albumArtwork.get(tracks[i].folder)?.src || '',
     })), Math.max(0, queue.indexOf(index)), autoplay, preserve);
@@ -256,7 +259,7 @@ function BAPlayer() {
     if (session) {
       if (typeof MediaMetadata !== 'undefined') {
         session.metadata = new MediaMetadata({
-          title: track.title.replace(/^theme_\d+-/, ''), artist: track.artist, album: track.folder,
+          title: track.title.replace(/^theme_\d+-/, ''), artist: track.artist, album: albumName(track.folder),
           artwork: albumArtwork.has(track.folder) ? [albumArtwork.get(track.folder)] : [],
         });
       }

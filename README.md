@@ -1,8 +1,17 @@
 # Readiz Music
 
-## 동방 어레인지 (1.5.2)
+## Touhou (1.5.3)
 
-앨범 목록의 **동방 어레인지**에서 대표 어레인지 12곡을 골라 듣습니다.
+앨범 목록의 **Touhou**에서 대표 어레인지 30곡을 골라 듣습니다.
+홍마향(th06)·요요몽(th07)·영야초(th08) 원곡 기반 어레인지를 각 6곡씩 추가했습니다.
+
+| 원작 | 이번에 추가한 6곡 |
+| --- | --- |
+| th06 홍마향 | Grip & Break down!!, No Life Queen, sweet little sister, 緋色月下、狂咲ノ絶, 孤独月, ヒトリシズカ |
+| th07 요요몽 | 零れ桜, Phantasm Brigade, Drive my Life, 東方妖々夢 ～the maximum moving about～, 蒼空に舞え、墨染の桜, 絡繰りドール |
+| th08 영야초 | つるぺったん, SACRIFICE, 月夜を二人で抜け出す程度の能力, 竹取飛翔, レプリカの恋, 手のひらピアニッシモ |
+
+기존 12곡도 함께 제공합니다.
 Bad Apple!! feat. nomico, Night of Nights, 최종귀축 여동생 플랑드르·S,
 Help me, ERINNNNNN!!, 치르노의 퍼펙트 산수교실, 마리사는 엄청난 것을 훔쳐갔습니다,
 Overdrive, 우사테이, お嫁にしなさいっ！, 色は匂へど散りぬるを,
@@ -14,7 +23,7 @@ Bad Apple!!은 Lovelight 수록 버전이고, 幽閉サテライト 보컬곡은
 480개 파형 피크를 보관하며, 다른 앨범과 함께 선택하거나 이 카테고리만 선택할 수 있습니다.
 전용 커버는 새로 생성한 그림입니다.
 
-선곡과 공식 채널 ID는 [touhou-arrange.json](touhou-arrange.json), 실제 음원·출처·해시는
+선곡·공식 채널 ID·추가곡의 원작/원곡과 확인 출처는 [touhou-arrange.json](touhou-arrange.json), 실제 음원·출처·해시는
 [imported-tracks.json](imported-tracks.json)에 있습니다. 추가·복구 방법은 [운영 안내](ops/README.md)를 따릅니다.
 
 ## Android 알림 재생과 업데이트 (웹 1.3.0 / APK 0.3.0)
@@ -99,8 +108,8 @@ SHA-256, 길이와 코덱을 기록했습니다. 외부 저장소의 임의 제�
 접고 토글 버튼으로 포커스를 돌려주며, 선택 화면이 플레이어를 덮거나 포커스를 가두지 않습니다.
 
 앨범과 곡 수는 `musicList.json`의 실제 경로에서 자동으로 구성합니다. 현재 Blue Archive,
-ETC, Girls Band Cry, Kessoku Band 네 앨범이 있으며 하위 폴더는 전체 경로로 구분합니다.
-네 앨범에는 직접 생성한 커버를 표시하고 Media Session 앨범아트로도 제공합니다.
+ETC, Girls Band Cry, Kessoku Band, Touhou 다섯 앨범이 있으며 하위 폴더는 전체 경로로 구분합니다.
+앨범에는 직접 생성한 커버를 표시하고 Media Session 앨범아트로도 제공합니다.
 `assets/albums/`의 512px JPEG를 사용하며, 이미지 로딩에 실패하거나 새 폴더가 생기면
 기존 색상·이니셜을 표시합니다. 공식 음반 표지는 아닙니다. 제작 프롬프트는
 [assets/albums/prompts.json](assets/albums/prompts.json)에 보관합니다.

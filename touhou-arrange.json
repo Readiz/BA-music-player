@@ -2,19 +2,309 @@
   "schemaVersion": 1,
   "folder": "동방 어레인지",
   "checkedOn": "2026-10-07",
-  "description": "동방 대표 어레인지 12곡. 공식 서클 채널 또는 공식 배급 Topic의 앨범 음원과 풀 MV를 확인했습니다.",
+  "description": "Touhou 어레인지 30곡. 기존 대표곡 12곡에 th06 홍마향·th07 요요몽·th08 영야초 원곡 기반 어레인지를 각 6곡씩 추가했습니다. 공식 서클 채널 또는 공식 배급 Topic의 앨범 음원과 풀 MV를 확인했습니다.",
   "tracks": [
-    { "videoId": "zHbvww287jk", "title": "Bad Apple!! feat. nomico", "artist": "Alstroemeria Records / nomico", "channelId": "UCvZKRyvOGkZyC70ED_CNpBQ", "album": "10th ANNIVERSARY Bad Apple!! (from Lovelight)" },
-    { "videoId": "2TTuH9BPwjI", "title": "Night of Nights (ナイト・オブ・ナイツ)", "artist": "COOL&CREATE / ビートまりお", "channelId": "UCXE1ytLFTjxoIyLTVVBujcw", "album": "ビートまりお東方音ゲーBEST!!" },
-    { "videoId": "Wi_QXkB-kTY", "title": "최종귀축 여동생 플랑드르·S (最終鬼畜妹フランドール・S)", "artist": "COOL&CREATE / ビートまりお", "channelId": "UCXE1ytLFTjxoIyLTVVBujcw", "album": "東方ストライク" },
-    { "videoId": "dwJlshAuWdE", "title": "Help me, ERINNNNNN!!", "artist": "COOL&CREATE / ビートまりお", "channelId": "UCXE1ytLFTjxoIyLTVVBujcw", "album": "Help me, ERINNNNNN!! LOVE( ﾟ∀ﾟ)o彡゜" },
-    { "videoId": "5ETmrso3Dt8", "title": "치르노의 퍼펙트 산수교실 (チルノのパーフェクトさんすう教室)", "artist": "IOSYS / miko", "channelId": "UCKIF3YRmI_q7bM8CACE9FWg", "album": "東方氷雪歌集" },
-    { "videoId": "XyymOq1ZEJg", "title": "마리사는 엄청난 것을 훔쳐갔습니다 (魔理沙は大変なものを盗んでいきました)", "artist": "IOSYS / 藤咲かりん", "channelId": "UCKIF3YRmI_q7bM8CACE9FWg", "album": "東方乙女囃子" },
-    { "videoId": "spx_FOCO9ko", "title": "患部で止まってすぐ溶ける ～ 狂気の優曇華院 (Overdrive)", "artist": "IOSYS / miko", "channelId": "UCKIF3YRmI_q7bM8CACE9FWg", "album": "東方月燈籠セーフ!" },
-    { "videoId": "RaGQqCWNFe4", "title": "우사테이 (ウサテイ)", "artist": "IOSYS", "channelId": "UCNats-h_Vr0pEh5OtZo6eVw", "album": "IOSYS音ゲーBEST!!" },
-    { "videoId": "CmsENAjoXbs", "title": "お嫁にしなさいっ！", "artist": "IOSYS / miko・ゆか・まり", "channelId": "UCKIF3YRmI_q7bM8CACE9FWg", "album": "東方萃翠酒酔" },
-    { "videoId": "NpgaGhAW9So", "title": "색은 향기로워도 흩어질지니 (色は匂へど散りぬるを)", "artist": "幽閉サテライト / senya", "channelId": "UCmzieQGdu7fTXaPqi2AuXyg", "album": "色は匂へど散りぬるを" },
-    { "videoId": "skCiZ9IJmZY", "title": "달에는 구름, 꽃에는 바람 (月に叢雲華に風)", "artist": "幽閉サテライト / senya", "channelId": "UCmzieQGdu7fTXaPqi2AuXyg", "album": "月に叢雲華に風" },
-    { "videoId": "NfjTGFMMKL0", "title": "泡沫、哀のまほろば", "artist": "幽閉サテライト / senya", "channelId": "UCmzieQGdu7fTXaPqi2AuXyg", "album": "泡沫、哀のまほろば" }
-  ]
+    {
+      "videoId": "zHbvww287jk",
+      "title": "Bad Apple!! feat. nomico",
+      "artist": "Alstroemeria Records / nomico",
+      "channelId": "UCvZKRyvOGkZyC70ED_CNpBQ",
+      "album": "10th ANNIVERSARY Bad Apple!! (from Lovelight)"
+    },
+    {
+      "videoId": "2TTuH9BPwjI",
+      "title": "Night of Nights (ナイト・オブ・ナイツ)",
+      "artist": "COOL&CREATE / ビートまりお",
+      "channelId": "UCXE1ytLFTjxoIyLTVVBujcw",
+      "album": "ビートまりお東方音ゲーBEST!!"
+    },
+    {
+      "videoId": "Wi_QXkB-kTY",
+      "title": "최종귀축 여동생 플랑드르·S (最終鬼畜妹フランドール・S)",
+      "artist": "COOL&CREATE / ビートまりお",
+      "channelId": "UCXE1ytLFTjxoIyLTVVBujcw",
+      "album": "東方ストライク"
+    },
+    {
+      "videoId": "dwJlshAuWdE",
+      "title": "Help me, ERINNNNNN!!",
+      "artist": "COOL&CREATE / ビートまりお",
+      "channelId": "UCXE1ytLFTjxoIyLTVVBujcw",
+      "album": "Help me, ERINNNNNN!! LOVE( ﾟ∀ﾟ)o彡゜"
+    },
+    {
+      "videoId": "5ETmrso3Dt8",
+      "title": "치르노의 퍼펙트 산수교실 (チルノのパーフェクトさんすう教室)",
+      "artist": "IOSYS / miko",
+      "channelId": "UCKIF3YRmI_q7bM8CACE9FWg",
+      "album": "東方氷雪歌集"
+    },
+    {
+      "videoId": "XyymOq1ZEJg",
+      "title": "마리사는 엄청난 것을 훔쳐갔습니다 (魔理沙は大変なものを盗んでいきました)",
+      "artist": "IOSYS / 藤咲かりん",
+      "channelId": "UCKIF3YRmI_q7bM8CACE9FWg",
+      "album": "東方乙女囃子"
+    },
+    {
+      "videoId": "spx_FOCO9ko",
+      "title": "患部で止まってすぐ溶ける ～ 狂気の優曇華院 (Overdrive)",
+      "artist": "IOSYS / miko",
+      "channelId": "UCKIF3YRmI_q7bM8CACE9FWg",
+      "album": "東方月燈籠セーフ!"
+    },
+    {
+      "videoId": "RaGQqCWNFe4",
+      "title": "우사테이 (ウサテイ)",
+      "artist": "IOSYS",
+      "channelId": "UCNats-h_Vr0pEh5OtZo6eVw",
+      "album": "IOSYS音ゲーBEST!!"
+    },
+    {
+      "videoId": "CmsENAjoXbs",
+      "title": "お嫁にしなさいっ！",
+      "artist": "IOSYS / miko・ゆか・まり",
+      "channelId": "UCKIF3YRmI_q7bM8CACE9FWg",
+      "album": "東方萃翠酒酔"
+    },
+    {
+      "videoId": "NpgaGhAW9So",
+      "title": "색은 향기로워도 흩어질지니 (色は匂へど散りぬるを)",
+      "artist": "幽閉サテライト / senya",
+      "channelId": "UCmzieQGdu7fTXaPqi2AuXyg",
+      "album": "色は匂へど散りぬるを"
+    },
+    {
+      "videoId": "skCiZ9IJmZY",
+      "title": "달에는 구름, 꽃에는 바람 (月に叢雲華に風)",
+      "artist": "幽閉サテライト / senya",
+      "channelId": "UCmzieQGdu7fTXaPqi2AuXyg",
+      "album": "月に叢雲華に風"
+    },
+    {
+      "videoId": "NfjTGFMMKL0",
+      "title": "泡沫、哀のまほろば",
+      "artist": "幽閉サテライト / senya",
+      "channelId": "UCmzieQGdu7fTXaPqi2AuXyg",
+      "album": "泡沫、哀のまほろば"
+    },
+    {
+      "videoId": "swhZODArvvs",
+      "title": "Grip & Break down!!",
+      "artist": "SOUND HOLIC / Nana Takahashi",
+      "channelId": "UCgkYQqW2b56-puP2j2yZx9A",
+      "album": "紅 -KURENAI-",
+      "originalWork": "th06",
+      "originalTracks": [
+        "U.N.オーエンは彼女なのか？"
+      ],
+      "referenceUrl": "https://sound-holic.booth.pm/items/3242615"
+    },
+    {
+      "videoId": "R4FddQecvJY",
+      "title": "No Life Queen",
+      "artist": "SOUND HOLIC / Nana Takahashi",
+      "channelId": "UCgkYQqW2b56-puP2j2yZx9A",
+      "album": "SOUND HOLIC MEETS TOHO ～東方的幽々舞踏劇～",
+      "originalWork": "th06",
+      "originalTracks": [
+        "亡き王女の為のセプテット"
+      ],
+      "referenceUrl": "https://sound-holic.booth.pm/items/3242615"
+    },
+    {
+      "videoId": "TQI085_r9cs",
+      "title": "sweet little sister",
+      "artist": "Silver Forest / さゆり",
+      "channelId": "UC8ZEvXtWOwkyw4a0JAZqjmw",
+      "album": "Silver Forest 2006-2016 BESTⅢ",
+      "originalWork": "th06",
+      "originalTracks": [
+        "U.N.オーエンは彼女なのか？"
+      ],
+      "referenceUrl": "https://www.youtube.com/watch?v=TQI085_r9cs"
+    },
+    {
+      "videoId": "CkEhvfhSd7E",
+      "title": "緋色月下、狂咲ノ絶",
+      "artist": "EastNewSound",
+      "channelId": "UCrUgB4Tn-5QQmyzeWE_8hYw",
+      "album": "EastNewSoundBest Vol.1",
+      "originalWork": "th06",
+      "originalTracks": [
+        "U.N.オーエンは彼女なのか？"
+      ],
+      "referenceUrl": "https://e-ns.net/ens-0001/"
+    },
+    {
+      "videoId": "sxcvxv5COOI",
+      "title": "孤独月",
+      "artist": "幽閉サテライト / senya",
+      "channelId": "UCmzieQGdu7fTXaPqi2AuXyg",
+      "album": "3in1CD 色は匂へど散りぬるを",
+      "originalWork": "th06",
+      "originalTracks": [
+        "U.N.オーエンは彼女なのか？"
+      ],
+      "referenceUrl": "https://www.yuuhei-satellite.jp/2717"
+    },
+    {
+      "videoId": "BJuIdACnVno",
+      "title": "ヒトリシズカ",
+      "artist": "幽閉サテライト / senya",
+      "channelId": "UCD7e7Ts65QLyEkuQVkNhaHQ",
+      "album": "紅-KURENAI- Singles Best vol.3 ～ヒトリシズカ～",
+      "originalWork": "th06",
+      "originalTracks": [
+        "妖魔夜行"
+      ],
+      "referenceUrl": "https://www.youtube.com/watch?v=WWutwVsypKE"
+    },
+    {
+      "videoId": "mrcoA3P_WW4",
+      "title": "零れ桜",
+      "artist": "幽閉サテライト / senya",
+      "channelId": "UCmzieQGdu7fTXaPqi2AuXyg",
+      "album": "感情ケミストリー",
+      "originalWork": "th07",
+      "originalTracks": [
+        "幽雅に咲かせ、墨染の桜 ～ Border of Life"
+      ],
+      "referenceUrl": "https://www.yuuhei-satellite.jp/416"
+    },
+    {
+      "videoId": "AdfwNozhH7Q",
+      "title": "Phantasm Brigade",
+      "artist": "Silver Forest",
+      "channelId": "UCpsojwvhOw09HbI77mV_BkA",
+      "album": "Phantasm Brigade",
+      "originalWork": "th07",
+      "originalTracks": [
+        "ネクロファンタジア"
+      ],
+      "referenceUrl": "https://touhou.arrangement-chronicle.com/circle/Silver%20Forest/album/Phantasm%20Brigade"
+    },
+    {
+      "videoId": "G8KObVAb-WU",
+      "title": "Drive my Life",
+      "artist": "SOUND HOLIC / Nana Takahashi",
+      "channelId": "UCgkYQqW2b56-puP2j2yZx9A",
+      "album": "SOUND HOLIC MEETS TOHO ～東方的紅蓮烈火弾～",
+      "originalWork": "th07",
+      "originalTracks": [
+        "幽雅に咲かせ、墨染の桜 ～ Border of Life"
+      ],
+      "referenceUrl": "https://sound-holic.booth.pm/items/6858832"
+    },
+    {
+      "videoId": "NEYuIsCqYCU",
+      "title": "東方妖々夢 ～the maximum moving about～",
+      "artist": "石鹸屋",
+      "channelId": "UCJAvBMUqYpCpcuXjdUu2U3w",
+      "album": "東方不可拘束 ～the maximum moving about!～",
+      "originalWork": "th07",
+      "originalTracks": [
+        "東方妖々夢 ～ Ancient Temple"
+      ],
+      "referenceUrl": "https://phantasia-lostwiki.com/dk/東方妖々夢_the_maximum_moving_about"
+    },
+    {
+      "videoId": "O8fqNIU2BLc",
+      "title": "蒼空に舞え、墨染の桜",
+      "artist": "Silver Forest",
+      "channelId": "UCpsojwvhOw09HbI77mV_BkA",
+      "album": "GRAZE",
+      "originalWork": "th07",
+      "originalTracks": [
+        "幽雅に咲かせ、墨染の桜 ～ Border of Life"
+      ],
+      "referenceUrl": "https://www.nicozon.net/watch/sm12610509"
+    },
+    {
+      "videoId": "qtGRTDhaaRI",
+      "title": "絡繰りドール",
+      "artist": "SOUND HOLIC / Nana Takahashi",
+      "channelId": "UCgkYQqW2b56-puP2j2yZx9A",
+      "album": "NANA HOLIC IV",
+      "originalWork": "th07",
+      "originalTracks": [
+        "ブクレシュティの人形師",
+        "人形裁判 ～ 人の形弄びし少女"
+      ],
+      "referenceUrl": "https://sound-holic.booth.pm/items/3242615"
+    },
+    {
+      "videoId": "O5RDfPwkjys",
+      "title": "つるぺったん",
+      "artist": "Silver Forest",
+      "channelId": "UCpsojwvhOw09HbI77mV_BkA",
+      "album": "東方萃奏楽",
+      "originalWork": "th08",
+      "originalTracks": [
+        "竹取飛翔 ～ Lunatic Princess"
+      ],
+      "referenceUrl": "https://thbwiki.cc/東方萃奏楽"
+    },
+    {
+      "videoId": "bUszoxm_aLg",
+      "title": "SACRIFICE",
+      "artist": "Alstroemeria Records / ayame",
+      "channelId": "UCM6SVavv0ByZ_L04w0MtHkg",
+      "album": "Eunomia -Alstroemeria Records 15years-",
+      "originalWork": "th08",
+      "originalTracks": [
+        "月まで届け、不死の煙"
+      ],
+      "referenceUrl": "https://alst.net/arcd0057/"
+    },
+    {
+      "videoId": "sAmFllxfHOA",
+      "title": "月夜を二人で抜け出す程度の能力",
+      "artist": "IOSYS / 藤咲かりん",
+      "channelId": "UCKIF3YRmI_q7bM8CACE9FWg",
+      "album": "東方乙女囃子",
+      "originalWork": "th08",
+      "originalTracks": [
+        "少女綺想曲 ～ Dream Battle"
+      ],
+      "referenceUrl": "https://www.youtube.com/watch?v=sAmFllxfHOA"
+    },
+    {
+      "videoId": "GcGwB1KCn_U",
+      "title": "竹取飛翔",
+      "artist": "岸田教団&THE明星ロケッツ",
+      "channelId": "UCSDwXTEapUN0qI5mBx9XzTw",
+      "album": "ROLLING★STAR",
+      "originalWork": "th08",
+      "originalTracks": [
+        "竹取飛翔 ～ Lunatic Princess"
+      ],
+      "referenceUrl": "https://www.youtube.com/watch?v=GcGwB1KCn_U"
+    },
+    {
+      "videoId": "rLHF0UCzj2s",
+      "title": "レプリカの恋",
+      "artist": "幽閉サテライト / senya",
+      "channelId": "UCD7e7Ts65QLyEkuQVkNhaHQ",
+      "album": "SPアルバム2nd「月に叢雲華に風」",
+      "originalWork": "th08",
+      "originalTracks": [
+        "千年幻想郷 ～ History of the Moon"
+      ],
+      "referenceUrl": "https://www.yuuhei-satellite.jp/18391"
+    },
+    {
+      "videoId": "xRw0y35bhm0",
+      "title": "手のひらピアニッシモ",
+      "artist": "幽閉サテライト / senya",
+      "channelId": "UCmzieQGdu7fTXaPqi2AuXyg",
+      "album": "手のひらピアニッシモ",
+      "originalWork": "th08",
+      "originalTracks": [
+        "恋色マスタースパーク"
+      ],
+      "referenceUrl": "https://www.yuuhei-satellite.jp/2717"
+    }
+  ],
+  "name": "Touhou"
 }

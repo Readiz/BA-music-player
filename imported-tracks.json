@@ -54,6 +54,86 @@
       "sha256": "9c0086429bb7acec66fd91fb7bd5dea96cc2b81291a13e191bb580100caa89f8"
     },
     {
+      "src": "./music/동방 어레인지/yt-AdfwNozhH7Q.mp3",
+      "title": "Phantasm Brigade",
+      "folder": "동방 어레인지",
+      "artist": "Silver Forest",
+      "album": "Phantasm Brigade",
+      "originalWork": "th07",
+      "originalTracks": [
+        "ネクロファンタジア"
+      ],
+      "referenceUrl": "https://touhou.arrangement-chronicle.com/circle/Silver%20Forest/album/Phantasm%20Brigade",
+      "sourceUrl": "https://www.youtube.com/watch?v=AdfwNozhH7Q",
+      "sourceTitle": "Phantasm Brigade",
+      "sourceChannel": "Silver Forest - Topic",
+      "sourceChannelId": "UCpsojwvhOw09HbI77mV_BkA",
+      "collectedOn": "2026-10-07",
+      "duration": 274.286,
+      "bytes": 6584372,
+      "sha256": "261655c6f1361a83a9611c5a9ff08f93f7fe1f0ddcceff1facd4558174247603"
+    },
+    {
+      "src": "./music/동방 어레인지/yt-BJuIdACnVno.mp3",
+      "title": "ヒトリシズカ",
+      "folder": "동방 어레인지",
+      "artist": "幽閉サテライト / senya",
+      "album": "紅-KURENAI- Singles Best vol.3 ～ヒトリシズカ～",
+      "originalWork": "th06",
+      "originalTracks": [
+        "妖魔夜行"
+      ],
+      "referenceUrl": "https://www.youtube.com/watch?v=WWutwVsypKE",
+      "sourceUrl": "https://www.youtube.com/watch?v=BJuIdACnVno",
+      "sourceTitle": "ヒトリシズカ",
+      "sourceChannel": "幽閉サテライト・少女フラクタル・幽閉カタルシス 公式チャンネル",
+      "sourceChannelId": "UCD7e7Ts65QLyEkuQVkNhaHQ",
+      "collectedOn": "2026-10-07",
+      "duration": 258.68,
+      "bytes": 6209990,
+      "sha256": "c8bbe73b4ce762a0b1c72dff80d8a0f41a51f70a389ca16141f70203b591077d"
+    },
+    {
+      "src": "./music/동방 어레인지/yt-bUszoxm_aLg.mp3",
+      "title": "SACRIFICE",
+      "folder": "동방 어레인지",
+      "artist": "Alstroemeria Records / ayame",
+      "album": "Eunomia -Alstroemeria Records 15years-",
+      "originalWork": "th08",
+      "originalTracks": [
+        "月まで届け、不死の煙"
+      ],
+      "referenceUrl": "https://alst.net/arcd0057/",
+      "sourceUrl": "https://www.youtube.com/watch?v=bUszoxm_aLg",
+      "sourceTitle": "SACRIFICE",
+      "sourceChannel": "Alstroemeria Records - Topic",
+      "sourceChannelId": "UCM6SVavv0ByZ_L04w0MtHkg",
+      "collectedOn": "2026-10-07",
+      "duration": 206.7695,
+      "bytes": 4964092,
+      "sha256": "7bd34fd4464cfdb03b1a37e1c156231104a5abe56211079e7afc937e04b33aac"
+    },
+    {
+      "src": "./music/동방 어레인지/yt-CkEhvfhSd7E.mp3",
+      "title": "緋色月下、狂咲ノ絶",
+      "folder": "동방 어레인지",
+      "artist": "EastNewSound",
+      "album": "EastNewSoundBest Vol.1",
+      "originalWork": "th06",
+      "originalTracks": [
+        "U.N.オーエンは彼女なのか？"
+      ],
+      "referenceUrl": "https://e-ns.net/ens-0001/",
+      "sourceUrl": "https://www.youtube.com/watch?v=CkEhvfhSd7E",
+      "sourceTitle": "緋色月下、狂咲ノ絶",
+      "sourceChannel": "EastNewSound - Topic",
+      "sourceChannelId": "UCrUgB4Tn-5QQmyzeWE_8hYw",
+      "collectedOn": "2026-10-07",
+      "duration": 402.001,
+      "bytes": 9649854,
+      "sha256": "c3a2321ef98af9247118270038ac2009e8bdafcac8126f8cb5d44a828c2f605e"
+    },
+    {
       "src": "./music/동방 어레인지/yt-CmsENAjoXbs.mp3",
       "title": "お嫁にしなさいっ！",
       "folder": "동방 어레인지",
@@ -82,6 +162,86 @@
       "duration": 281.839,
       "bytes": 6765848,
       "sha256": "606d6795e0c079ea05ce4a94bf08ab42c810018cce1aea2a7a13625333b6a084"
+    },
+    {
+      "src": "./music/동방 어레인지/yt-G8KObVAb-WU.mp3",
+      "title": "Drive my Life",
+      "folder": "동방 어레인지",
+      "artist": "SOUND HOLIC / Nana Takahashi",
+      "album": "SOUND HOLIC MEETS TOHO ～東方的紅蓮烈火弾～",
+      "originalWork": "th07",
+      "originalTracks": [
+        "幽雅に咲かせ、墨染の桜 ～ Border of Life"
+      ],
+      "referenceUrl": "https://sound-holic.booth.pm/items/6858832",
+      "sourceUrl": "https://www.youtube.com/watch?v=G8KObVAb-WU",
+      "sourceTitle": "Drive my Life",
+      "sourceChannel": "SOUND HOLIC",
+      "sourceChannelId": "UCgkYQqW2b56-puP2j2yZx9A",
+      "collectedOn": "2026-10-07",
+      "duration": 269.56,
+      "bytes": 6470912,
+      "sha256": "5400f963444769f02d519410d99d2043a061a7d49fa5a9c8951988cdac5543e8"
+    },
+    {
+      "src": "./music/동방 어레인지/yt-GcGwB1KCn_U.mp3",
+      "title": "竹取飛翔",
+      "folder": "동방 어레인지",
+      "artist": "岸田教団&THE明星ロケッツ",
+      "album": "ROLLING★STAR",
+      "originalWork": "th08",
+      "originalTracks": [
+        "竹取飛翔 ～ Lunatic Princess"
+      ],
+      "referenceUrl": "https://www.youtube.com/watch?v=GcGwB1KCn_U",
+      "sourceUrl": "https://www.youtube.com/watch?v=GcGwB1KCn_U",
+      "sourceTitle": "竹取飛翔",
+      "sourceChannel": "Kisidakyoudan & the Akebosi rockets official",
+      "sourceChannelId": "UCSDwXTEapUN0qI5mBx9XzTw",
+      "collectedOn": "2026-10-07",
+      "duration": 239.467,
+      "bytes": 5748613,
+      "sha256": "e4772be2fc93b713ea64a9f8d00213c92b0e5c0d96eaba3e28f0deda32d4ccee"
+    },
+    {
+      "src": "./music/동방 어레인지/yt-mrcoA3P_WW4.mp3",
+      "title": "零れ桜",
+      "folder": "동방 어레인지",
+      "artist": "幽閉サテライト / senya",
+      "album": "感情ケミストリー",
+      "originalWork": "th07",
+      "originalTracks": [
+        "幽雅に咲かせ、墨染の桜 ～ Border of Life"
+      ],
+      "referenceUrl": "https://www.yuuhei-satellite.jp/416",
+      "sourceUrl": "https://www.youtube.com/watch?v=mrcoA3P_WW4",
+      "sourceTitle": "【公式】【東方Vocal】幽閉サテライト / 零れ桜（原曲：幽雅に咲かせ、墨染の桜 ～ Border of Life）【FullMV】",
+      "sourceChannel": "幽閉サテライト・少女フラクタル・幽閉カタルシス 公式チャンネル",
+      "sourceChannelId": "UCmzieQGdu7fTXaPqi2AuXyg",
+      "collectedOn": "2026-10-07",
+      "duration": 311.5885,
+      "bytes": 7479485,
+      "sha256": "f891c459f4adf973ef5145599cb5c81d787955b2e63785024e042a572de7a55f"
+    },
+    {
+      "src": "./music/동방 어레인지/yt-NEYuIsCqYCU.mp3",
+      "title": "東方妖々夢 ～the maximum moving about～",
+      "folder": "동방 어레인지",
+      "artist": "石鹸屋",
+      "album": "東方不可拘束 ～the maximum moving about!～",
+      "originalWork": "th07",
+      "originalTracks": [
+        "東方妖々夢 ～ Ancient Temple"
+      ],
+      "referenceUrl": "https://phantasia-lostwiki.com/dk/東方妖々夢_the_maximum_moving_about",
+      "sourceUrl": "https://www.youtube.com/watch?v=NEYuIsCqYCU",
+      "sourceTitle": "東方妖々夢　～the maximum moving about～",
+      "sourceChannel": "sekkenya - Topic",
+      "sourceChannelId": "UCJAvBMUqYpCpcuXjdUu2U3w",
+      "collectedOn": "2026-10-07",
+      "duration": 198.88,
+      "bytes": 4774606,
+      "sha256": "5aa6e57e36f8f9958aa29484aca56e7445506686a376b9bdcfbd86ee084d46d2"
     },
     {
       "src": "./music/동방 어레인지/yt-NfjTGFMMKL0.mp3",
@@ -114,6 +274,87 @@
       "sha256": "8dbd0f891bedf591a5cae9d052e4f1fa5aaaced6bc09c8736762da56e01b431e"
     },
     {
+      "src": "./music/동방 어레인지/yt-O5RDfPwkjys.mp3",
+      "title": "つるぺったん",
+      "folder": "동방 어레인지",
+      "artist": "Silver Forest",
+      "album": "東方萃奏楽",
+      "originalWork": "th08",
+      "originalTracks": [
+        "竹取飛翔 ～ Lunatic Princess"
+      ],
+      "referenceUrl": "https://thbwiki.cc/東方萃奏楽",
+      "sourceUrl": "https://www.youtube.com/watch?v=O5RDfPwkjys",
+      "sourceTitle": "つるぺったん",
+      "sourceChannel": "Silver Forest - Topic",
+      "sourceChannelId": "UCpsojwvhOw09HbI77mV_BkA",
+      "collectedOn": "2026-10-07",
+      "duration": 160,
+      "bytes": 3841462,
+      "sha256": "4f3e90d703bba9de8baaa45712b78a86af00a9569164dde9052259189b87caa4"
+    },
+    {
+      "src": "./music/동방 어레인지/yt-O8fqNIU2BLc.mp3",
+      "title": "蒼空に舞え、墨染の桜",
+      "folder": "동방 어레인지",
+      "artist": "Silver Forest",
+      "album": "GRAZE",
+      "originalWork": "th07",
+      "originalTracks": [
+        "幽雅に咲かせ、墨染の桜 ～ Border of Life"
+      ],
+      "referenceUrl": "https://www.nicozon.net/watch/sm12610509",
+      "sourceUrl": "https://www.youtube.com/watch?v=O8fqNIU2BLc",
+      "sourceTitle": "蒼空に舞え、墨染の桜",
+      "sourceChannel": "Silver Forest - Topic",
+      "sourceChannelId": "UCpsojwvhOw09HbI77mV_BkA",
+      "collectedOn": "2026-10-07",
+      "duration": 220.35,
+      "bytes": 5290114,
+      "sha256": "2d511c1e532dcd7cc8d4d8cb25e1e58d05013ef091c85c07c66d7c5054b3fe1b"
+    },
+    {
+      "src": "./music/동방 어레인지/yt-qtGRTDhaaRI.mp3",
+      "title": "絡繰りドール",
+      "folder": "동방 어레인지",
+      "artist": "SOUND HOLIC / Nana Takahashi",
+      "album": "NANA HOLIC IV",
+      "originalWork": "th07",
+      "originalTracks": [
+        "ブクレシュティの人形師",
+        "人形裁判 ～ 人の形弄びし少女"
+      ],
+      "referenceUrl": "https://sound-holic.booth.pm/items/3242615",
+      "sourceUrl": "https://www.youtube.com/watch?v=qtGRTDhaaRI",
+      "sourceTitle": "絡繰りドール",
+      "sourceChannel": "SOUND HOLIC",
+      "sourceChannelId": "UCgkYQqW2b56-puP2j2yZx9A",
+      "collectedOn": "2026-10-07",
+      "duration": 264.9735,
+      "bytes": 6360901,
+      "sha256": "ffc6bb28d166b7961992ebe423a2d62e2c11ef2255150bb4e987d8ce7176f50c"
+    },
+    {
+      "src": "./music/동방 어레인지/yt-R4FddQecvJY.mp3",
+      "title": "No Life Queen",
+      "folder": "동방 어레인지",
+      "artist": "SOUND HOLIC / Nana Takahashi",
+      "album": "SOUND HOLIC MEETS TOHO ～東方的幽々舞踏劇～",
+      "originalWork": "th06",
+      "originalTracks": [
+        "亡き王女の為のセプテット"
+      ],
+      "referenceUrl": "https://sound-holic.booth.pm/items/3242615",
+      "sourceUrl": "https://www.youtube.com/watch?v=R4FddQecvJY",
+      "sourceTitle": "No Life Queen",
+      "sourceChannel": "SOUND HOLIC",
+      "sourceChannelId": "UCgkYQqW2b56-puP2j2yZx9A",
+      "collectedOn": "2026-10-07",
+      "duration": 240.0135,
+      "bytes": 5761856,
+      "sha256": "cbb53bbc4717c59f90f5807d5f16bd885a6d79a0661a7f803ec57c4d31324fe7"
+    },
+    {
       "src": "./music/동방 어레인지/yt-RaGQqCWNFe4.mp3",
       "title": "우사테이 (ウサテイ)",
       "folder": "동방 어레인지",
@@ -127,6 +368,46 @@
       "duration": 240.0405,
       "bytes": 5762436,
       "sha256": "d5047c6fb3d20c158111e1212abf2a02cb022b659ef3dd313eac143cf0a854ce"
+    },
+    {
+      "src": "./music/동방 어레인지/yt-rLHF0UCzj2s.mp3",
+      "title": "レプリカの恋",
+      "folder": "동방 어레인지",
+      "artist": "幽閉サテライト / senya",
+      "album": "SPアルバム2nd「月に叢雲華に風」",
+      "originalWork": "th08",
+      "originalTracks": [
+        "千年幻想郷 ～ History of the Moon"
+      ],
+      "referenceUrl": "https://www.yuuhei-satellite.jp/18391",
+      "sourceUrl": "https://www.youtube.com/watch?v=rLHF0UCzj2s",
+      "sourceTitle": "レプリカの恋 (幻想万華鏡第12話・肝試しの章（前編）予告編挿入歌)",
+      "sourceChannel": "幽閉サテライト・少女フラクタル・幽閉カタルシス 公式チャンネル",
+      "sourceChannelId": "UCD7e7Ts65QLyEkuQVkNhaHQ",
+      "collectedOn": "2026-10-07",
+      "duration": 233.68,
+      "bytes": 5609798,
+      "sha256": "8b2686187a3752b22dbdc0c78a2db6c40fd0dcc5d9457615b1da9b06e8cc3a34"
+    },
+    {
+      "src": "./music/동방 어레인지/yt-sAmFllxfHOA.mp3",
+      "title": "月夜を二人で抜け出す程度の能力",
+      "folder": "동방 어레인지",
+      "artist": "IOSYS / 藤咲かりん",
+      "album": "東方乙女囃子",
+      "originalWork": "th08",
+      "originalTracks": [
+        "少女綺想曲 ～ Dream Battle"
+      ],
+      "referenceUrl": "https://www.youtube.com/watch?v=sAmFllxfHOA",
+      "sourceUrl": "https://www.youtube.com/watch?v=sAmFllxfHOA",
+      "sourceTitle": "【東方】月夜を二人で抜け出す程度の能力【IOSYS】",
+      "sourceChannel": "IOSYS music",
+      "sourceChannelId": "UCKIF3YRmI_q7bM8CACE9FWg",
+      "collectedOn": "2026-10-07",
+      "duration": 232.0605,
+      "bytes": 5571227,
+      "sha256": "68d07146786d7c5acfddea4c8d7c2b481943d7901422826ea4592c7ddc9d3f90"
     },
     {
       "src": "./music/동방 어레인지/yt-skCiZ9IJmZY.mp3",
@@ -159,6 +440,66 @@
       "sha256": "ba21dc357c6330ee48efc9c9a0dbc2bba1f5c206ddcad9cf26ae818abfc3c880"
     },
     {
+      "src": "./music/동방 어레인지/yt-swhZODArvvs.mp3",
+      "title": "Grip & Break down!!",
+      "folder": "동방 어레인지",
+      "artist": "SOUND HOLIC / Nana Takahashi",
+      "album": "紅 -KURENAI-",
+      "originalWork": "th06",
+      "originalTracks": [
+        "U.N.オーエンは彼女なのか？"
+      ],
+      "referenceUrl": "https://sound-holic.booth.pm/items/3242615",
+      "sourceUrl": "https://www.youtube.com/watch?v=swhZODArvvs",
+      "sourceTitle": "Grip & Break down !!",
+      "sourceChannel": "SOUND HOLIC",
+      "sourceChannelId": "UCgkYQqW2b56-puP2j2yZx9A",
+      "collectedOn": "2026-10-07",
+      "duration": 241.787,
+      "bytes": 5804486,
+      "sha256": "fade4ca7db9e073dab1576a487aecf4aeb59061415bcf830acba8eed152d3fff"
+    },
+    {
+      "src": "./music/동방 어레인지/yt-sxcvxv5COOI.mp3",
+      "title": "孤独月",
+      "folder": "동방 어레인지",
+      "artist": "幽閉サテライト / senya",
+      "album": "3in1CD 色は匂へど散りぬるを",
+      "originalWork": "th06",
+      "originalTracks": [
+        "U.N.オーエンは彼女なのか？"
+      ],
+      "referenceUrl": "https://www.yuuhei-satellite.jp/2717",
+      "sourceUrl": "https://www.youtube.com/watch?v=sxcvxv5COOI",
+      "sourceTitle": "【公式】【東方Vocal】幽閉サテライト / 孤独月 歌唱:senya【FullMV】(原曲:U.N.オーエンは彼女なのか?)",
+      "sourceChannel": "幽閉サテライト・少女フラクタル・幽閉カタルシス 公式チャンネル",
+      "sourceChannelId": "UCmzieQGdu7fTXaPqi2AuXyg",
+      "collectedOn": "2026-10-07",
+      "duration": 249.127,
+      "bytes": 5980733,
+      "sha256": "b4147611fc0f9644e719a5cbf23186627f096de5230ed80fffd92701baa3116a"
+    },
+    {
+      "src": "./music/동방 어레인지/yt-TQI085_r9cs.mp3",
+      "title": "sweet little sister",
+      "folder": "동방 어레인지",
+      "artist": "Silver Forest / さゆり",
+      "album": "Silver Forest 2006-2016 BESTⅢ",
+      "originalWork": "th06",
+      "originalTracks": [
+        "U.N.オーエンは彼女なのか？"
+      ],
+      "referenceUrl": "https://www.youtube.com/watch?v=TQI085_r9cs",
+      "sourceUrl": "https://www.youtube.com/watch?v=TQI085_r9cs",
+      "sourceTitle": "【Touhou PV】sweet little sister 完成版【東方 Silver Forest公式】",
+      "sourceChannel": "silver forest",
+      "sourceChannelId": "UC8ZEvXtWOwkyw4a0JAZqjmw",
+      "collectedOn": "2026-10-07",
+      "duration": 248.7895,
+      "bytes": 5972675,
+      "sha256": "b8aa51b0059b4f14dc34f7d8e30b6c7f98c31d157b269a122e6f86dee47c2fd7"
+    },
+    {
       "src": "./music/동방 어레인지/yt-Wi_QXkB-kTY.mp3",
       "title": "최종귀축 여동생 플랑드르·S (最終鬼畜妹フランドール・S)",
       "folder": "동방 어레인지",
@@ -172,6 +513,26 @@
       "duration": 205.033,
       "bytes": 4922706,
       "sha256": "50f33aaad7163d46544359bffc35f2791330ff2e72d674ba73360ef36207778e"
+    },
+    {
+      "src": "./music/동방 어레인지/yt-xRw0y35bhm0.mp3",
+      "title": "手のひらピアニッシモ",
+      "folder": "동방 어레인지",
+      "artist": "幽閉サテライト / senya",
+      "album": "手のひらピアニッシモ",
+      "originalWork": "th08",
+      "originalTracks": [
+        "恋色マスタースパーク"
+      ],
+      "referenceUrl": "https://www.yuuhei-satellite.jp/2717",
+      "sourceUrl": "https://www.youtube.com/watch?v=xRw0y35bhm0",
+      "sourceTitle": "【公式】【東方Vocal】幽閉サテライト / 手のひらピアニッシモ（原曲：恋色マスタースパーク）【FullMV】/senya",
+      "sourceChannel": "幽閉サテライト・少女フラクタル・幽閉カタルシス 公式チャンネル",
+      "sourceChannelId": "UCmzieQGdu7fTXaPqi2AuXyg",
+      "collectedOn": "2026-10-07",
+      "duration": 276.097,
+      "bytes": 6628178,
+      "sha256": "146a5d53e97cead11065476b2ef6a71e395c75540f7df56d54a98d01198697cb"
     },
     {
       "src": "./music/동방 어레인지/yt-XyymOq1ZEJg.mp3",
