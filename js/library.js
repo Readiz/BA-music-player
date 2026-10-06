@@ -10,18 +10,20 @@ async function getMusics() {
     fetch(window.BAMusicSource.catalog("blue-archive-ost.json"), { cache: "no-cache" }).then((res) => res.ok ? res.json() : { titles: {} }).catch(() => ({ titles: {} })),
     fetch(window.BAMusicSource.catalog("imported-tracks.json"), { cache: "no-cache" }).then((res) => res.ok ? res.json() : { tracks: [] }).catch(() => ({ tracks: [] }))
   ]);
-  const addedTitles = new Map((added.tracks || []).map((track) => [track.src, track.title]));
+  const addedTracks = new Map((added.tracks || []).map((track) => [track.src, track]));
   const list = document.createDocumentFragment();
   for (const [index, item] of arr.entries()) {
     const parts = String(item).split("/");
-    const artist = decodeURIComponent(parts[parts.length - 2]);
+    const folderArtist = decodeURIComponent(parts[parts.length - 2]);
+    const metadata = addedTracks.get(item);
+    const artist = (metadata == null ? void 0 : metadata.artist) || folderArtist;
     let songname = decodeURIComponent(parts[parts.length - 1]).replace(/\.(ogg|mp3|m4a)$/i, "");
-    songname = addedTitles.get(item) || songname;
-    const unnamed = artist === "Blue Archive" && songname.match(/^theme_(\d+)$/);
+    songname = (metadata == null ? void 0 : metadata.title) || songname;
+    const unnamed = folderArtist === "Blue Archive" && songname.match(/^theme_(\d+)$/);
     const title = unnamed && ((_a = catalog.titles) == null ? void 0 : _a[Number(unnamed[1])]);
     if (title) songname += `-${title}`;
     const li = document.createElement("li");
-    li.dataset.folder = parts.slice(2, -1).map(decodeURIComponent).join("/") || artist;
+    li.dataset.folder = parts.slice(2, -1).map(decodeURIComponent).join("/") || folderArtist;
     if (index === 0) li.classList.add("simp-active");
     const source = document.createElement("span");
     source.className = "simp-source";
