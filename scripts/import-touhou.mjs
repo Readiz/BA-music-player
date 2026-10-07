@@ -1,6 +1,6 @@
 import { createDownloader, youtubeVideo } from '../server/imports.mjs';
 import { mediaIdentity, importedSource } from '../server/media-identity.mjs';
-import { validateCatalog } from '../server/github-sync.mjs';
+import { validateCatalog } from '../server/catalog.mjs';
 import { createWaveform } from '../server/waveforms.mjs';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
@@ -103,4 +103,4 @@ if (collectionKey === 'original') {
   renameSync('musicList.json.next', 'musicList.json');
 }
 validateCatalog(manifest, catalog, waveforms);
-console.log(`Prepared ${collection.tracks.length} tracks for ${collection.name}. Run tests and publish the verified catalog.`);
+console.log(`Prepared ${collection.tracks.length} tracks for ${collection.name}. Run tests, then npm run library:publish to verify the NAS backup and publish on the Mac.`);

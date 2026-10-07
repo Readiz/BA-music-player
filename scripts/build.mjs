@@ -1,6 +1,6 @@
 import { transformSync } from 'esbuild';
 import { readAndroidRelease } from './android-release.mjs';
-import { MUSIC_PAGES, validateCatalog } from '../server/github-sync.mjs';
+import { MUSIC_LIBRARY, validateCatalog } from '../server/catalog.mjs';
 import { createHash } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -27,8 +27,7 @@ for (const track of tracks) {
 rmSync('dist', { recursive: true, force: true });
 mkdirSync('dist');
 const pages = process.env.MUSIC_BUILD_TARGET === 'pages';
-for (const path of ['index.html', 'app-start.html', 'offline.html', 'manifest.webmanifest', 'sw.js', 'css', 'js', 'assets', 'music', 'musicList.json', 'imported-tracks.json', 'blue-archive-ost.json', 'waveforms.json', 'lastUpdated.txt']) {
-  if (path === 'music' && !pages) continue;
+for (const path of ['index.html', 'app-start.html', 'offline.html', 'manifest.webmanifest', 'sw.js', 'css', 'js', 'assets', 'musicList.json', 'imported-tracks.json', 'blue-archive-ost.json', 'waveforms.json', 'lastUpdated.txt']) {
   cpSync(path, `dist/${path}`, { recursive: true });
 }
 // Tizen 5.0 uses Chromium 63. Keep native audio usable without modern syntax.
@@ -51,8 +50,8 @@ if (existsSync('output/android/readiz-music.apk')) {
 }
 writeFileSync('dist/app-config.json', JSON.stringify({
   schemaVersion: 1, appId: 'com.readiz.music', name: 'Readiz Music', version,
-  origin: 'https://music.readiz.com', catalog: `${MUSIC_PAGES}musicList.json`,
-  titles: `${MUSIC_PAGES}blue-archive-ost.json`, waveforms: `${MUSIC_PAGES}waveforms.json`,
-  mediaBase: MUSIC_PAGES, buildTarget: pages ? 'pages' : 'app', android, tv: { preview: './?tv=1', tizenPackage: './app.wgt', tizenChecksum: './app.wgt.sha256', signed: false, appId: 'ReadizMU01.ReadizMusic' }, trackCount: tracks.length, revision, dirty,
+  origin: 'https://music.readiz.com', catalog: `${MUSIC_LIBRARY}musicList.json`,
+  titles: `${MUSIC_LIBRARY}blue-archive-ost.json`, waveforms: `${MUSIC_LIBRARY}waveforms.json`,
+  mediaBase: MUSIC_LIBRARY, buildTarget: pages ? 'pages' : 'app', android, tv: { preview: './?tv=1', tizenPackage: './app.wgt', tizenChecksum: './app.wgt.sha256', signed: false, appId: 'ReadizMU01.ReadizMusic' }, trackCount: tracks.length, revision, dirty,
 }, null, 2) + '\n');
 console.log(`Built Readiz Music ${version}: ${tracks.length} tracks, ${revision.slice(0, 12)}${dirty ? ' (working tree)' : ''}`);

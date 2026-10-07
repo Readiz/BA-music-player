@@ -8,7 +8,9 @@ import { join } from 'node:path';
 import { createImports, createFileConverter, MAX_BYTES } from '../server/imports.mjs';
 import { createHandler } from '../server/app.mjs';
 import { createApiServer } from '../server/http.mjs';
-import { validateCatalog, waitForPages } from '../server/github-sync.mjs';
+import { validateCatalog } from '../server/catalog.mjs';
+import { createLocalSync, verifyPublishedTrack } from '../server/local-sync.mjs';
+import { publishLibrary, readMetadata, verifyLibrary } from '../server/library.mjs';
 const revision = 'a'.repeat(40), origin = 'https://music.example.com';
 const bytes = Buffer.from('test original audio');
 const id = 'upload-' + createHash('sha256').update(bytes).digest('hex');
@@ -18,7 +20,7 @@ const request = (body = bytes, name = '한 곡.mp3', headers = {}) => new Reques
 const convert = async ({ source, title, directory }) => { assert.deepEqual(readFileSync(source), bytes); const path = join(directory, 'audio.mp3'); writeFileSync(path, 'mp3'); return { path, title, duration: 2, bytes: 3 }; };
 async function until(store, status) { for (let i = 0; i < 200; i++) { const job = store.list('1')[0]; if (job?.status === status) return job; await new Promise(resolve => setTimeout(resolve, 5)); } throw new Error('Missing ' + status + ': ' + JSON.stringify(store.list('1'))); }
 
-test('upload stays private until Pages verification, deduplicates original bytes, cleans files and survives restart', async t => {
+test('upload stays private until backup and public verification, deduplicates original bytes, cleans files and survives restart', async t => {
   const root = temp(t); let release;
   const gate = new Promise(resolve => { release = resolve; });
   let conversions = 0;
@@ -75,12 +77,15 @@ test('HTTP upload authenticates before reading, rejects cross-origin and preserv
   } finally { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); await store.close(); }
 });
 
-test('uploaded identities pass the same Pages catalog, waveform and audio verification', async () => {
+test('uploaded identities pass the same Mac catalog, waveform and audio verification', async () => {
   const track = { src, title: 'Uploaded song', sha256: createHash('sha256').update(bytes).digest('hex'), bytes: bytes.length };
   const files = { 'imported-tracks.json': { schemaVersion: 1, tracks: [track] }, 'musicList.json': [src], 'waveforms.json': { [src]: { duration: 2, peaks: Array(480).fill(0.4) } } };
   validateCatalog(files['imported-tracks.json'], files['musicList.json'], files['waveforms.json']);
-  const result = await waitForPages({ revision, videoId: id, client: { raw: async file => Buffer.from(JSON.stringify(files[file])) }, fetcher: async url => new Response(url.pathname.endsWith('.mp3') ? bytes : JSON.stringify(files[url.pathname.split('/').pop()])), pause: () => assert.fail('No propagation delay') });
-  assert.equal(result.track.src, src);
+  const result = await verifyPublishedTrack({ track, waveform: files['waveforms.json'][src], fetcher: async (url, options) => {
+    if (url.pathname.endsWith('.mp3')) return new Response(bytes, options.headers?.Range ? { status: 206, headers: { 'Content-Range': `bytes 0-${bytes.length-1}/${bytes.length}` } } : undefined);
+    return new Response(JSON.stringify(files[url.pathname.split('/').pop()]));
+  }, pause: () => assert.fail('No publication delay') });
+  assert.equal(result.src, src);
 });
 
 test('real file conversion accepts WAV and rejects disguised text, playlists, and excess duration', async t => {
@@ -98,23 +103,30 @@ test('real file conversion accepts WAV and rejects disguised text, playlists, an
   await assert.rejects(tooLong({ source, title: 'x', directory, stage: () => {} }), /30분/);
 });
 
-test('Action preparation publishes an uploaded MP3, safe title and 480 peaks together', async t => {
+test('local preparation publishes an uploaded MP3, safe title and 480 peaks with a NAS copy', async t => {
   const ffmpeg = process.platform === 'darwin' ? '/opt/homebrew/bin' : '/usr/bin';
   if (!existsSync(join(ffmpeg, 'ffmpeg'))) { t.skip('ffmpeg unavailable'); return; }
   const root = temp(t);
   const { mkdirSync } = await import('node:fs');
-  mkdirSync(join(root, 'music-inbox'));
-  execFileSync(join(ffmpeg, 'ffmpeg'), ['-v', 'error', '-f', 'lavfi', '-i', 'sine=frequency=660:duration=0.5', join(root, 'music-inbox', id + '.mp3')]);
-  writeFileSync(join(root, 'music-inbox', id + '.json'), JSON.stringify({ videoId: id, title: ' 업로드\n곡 ' }));
-  const git = args => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
-  git(['init', '-q']); git(['add', 'music-inbox']); git(['-c', 'user.name=fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '-qm', 'Fixture']);
-  const source = git(['rev-parse', 'HEAD']);
-  for (const [name, data] of [['imported-tracks.json', { schemaVersion: 1, tracks: [] }], ['musicList.json', []], ['waveforms.json', {}]]) writeFileSync(join(root, name), JSON.stringify(data));
-  const script = new URL('./prepare-import.mjs', import.meta.url);
-  execFileSync(process.execPath, [script.pathname], { cwd: root, env: { ...process.env, MUSIC_FFMPEG: ffmpeg, IMPORT_VIDEO_ID: id, IMPORT_SOURCE_SHA: source } });
-  const manifest = JSON.parse(readFileSync(join(root, 'imported-tracks.json')));
-  validateCatalog(manifest, JSON.parse(readFileSync(join(root, 'musicList.json'))), JSON.parse(readFileSync(join(root, 'waveforms.json'))));
-  assert.equal(manifest.tracks[0].sourceType, 'upload'); assert.equal(manifest.tracks[0].sourceUrl, undefined);
-  assert.equal(manifest.tracks[0].title, '업로드곡');
-  assert.equal(manifest.tracks[0].sha256, createHash('sha256').update(readFileSync(join(root, src))).digest('hex'));
+  const seed = join(root, 'seed');
+  mkdirSync(join(seed, 'music/Base'), { recursive: true });
+  const original = './music/Base/original.mp3';
+  writeFileSync(join(seed, original), 'old audio');
+  for (const [name, data] of [['imported-tracks.json', { schemaVersion: 1, tracks: [] }], ['musicList.json', [original]], ['waveforms.json', { [original]: { duration: 1, peaks: Array(480).fill(0.5) } }], ['blue-archive-ost.json', { titles: {} }]]) writeFileSync(join(seed, name), JSON.stringify(data));
+  const settings = { root: join(root, 'mac'), nasRoot: join(root, 'nas'), nasMount: root, requireMount: false };
+  await publishLibrary({ ...settings, sourceRoot: seed });
+  const input = join(root, 'input.mp3');
+  execFileSync(join(ffmpeg, 'ffmpeg'), ['-v', 'error', '-f', 'lavfi', '-i', 'sine=frequency=660:duration=0.5', input]);
+  const sync = createLocalSync({ settings, ffmpeg, verify: async ({ track }) => {
+    assert.equal((await verifyLibrary(settings)).trackCount, 2);
+    return track;
+  } });
+  const result = await sync({ video: { id }, result: { path: input, title: ' 업로드\n곡 ' } });
+  const metadata = await readMetadata(join(settings.root, 'current'));
+  const track = metadata['imported-tracks.json'].tracks[0];
+  validateCatalog(metadata['imported-tracks.json'], metadata['musicList.json'], metadata['waveforms.json']);
+  assert.equal(track.sourceType, 'upload'); assert.equal(track.sourceUrl, undefined);
+  assert.equal(track.title, '업로드곡');
+  assert.equal(track.sha256, createHash('sha256').update(readFileSync(join(settings.root, 'current', src))).digest('hex'));
+  assert.equal(result.track.src, src);
 });

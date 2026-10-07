@@ -1,11 +1,11 @@
 (function () {
-  const base = 'https://blog.readiz.com/BA-music-player/';
+  const base = 'https://music.readiz.com/';
   window.BAMusicSource = {
     base,
     media: path => new URL(path, base).href,
     catalog(path) {
       const url = new URL(path, base);
-      // Pages uses a ten-minute CDN cache; a completed import must be visible now.
+      // A completed import must be visible without reusing an older catalog.
       url.searchParams.set('v', Date.now().toString());
       return url.href;
     },

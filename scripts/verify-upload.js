@@ -2,7 +2,7 @@
 async page => {
   const errors=[];page.on('pageerror',error=>errors.push(error.message));
   const assert=(value,message)=>{if(!value)throw new Error(message);};
-  await page.route('https://blog.readiz.com/BA-music-player/**',async route=>{
+  await page.route('https://music.readiz.com/**',async route=>{
     const url=new URL(route.request().url());
     const response=await page.request.get('http://127.0.0.1:4543/__pages/'+url.pathname.slice('/BA-music-player/'.length)+url.search);
     await route.fulfill({response,headers:{...response.headers(),'access-control-allow-origin':'*'}});

@@ -1,4 +1,4 @@
-import { MUSIC_PAGES } from './github-sync.mjs';
+import { MUSIC_LIBRARY } from './catalog.mjs';
 import { handleAuth, authJson } from './auth-handler.mjs';
 import { ImportError } from './imports.mjs';
 
@@ -9,7 +9,7 @@ export function createHandler({ auth, imports, staticRoot, revision = 'developme
     if (path === '/api/health' && request.method === 'GET') return authJson({ service: 'readiz-music', revision, auth: !!auth });
     if (['/waveforms.json', '/musicList.json', '/api/library'].includes(path) && request.method === 'GET') {
       const file = path === '/api/library' ? 'imported-tracks.json' : path.slice(1);
-      return new Response(null, { status: 307, headers: { Location: new URL(file, MUSIC_PAGES).href, 'Cache-Control': 'no-cache' } });
+      return new Response(null, { status: 307, headers: { Location: new URL(file, MUSIC_LIBRARY).href, 'Cache-Control': 'no-cache' } });
     }
     if (path === '/api/uploads') {
       const user = auth?.user(request);

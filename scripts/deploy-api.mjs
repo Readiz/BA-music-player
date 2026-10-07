@@ -11,8 +11,7 @@ const root = join(home, '.local/share/readiz-music');
 const authPath = join(home, '.config/readiz-music/discord-auth.json');
 const command = join(root, 'downloader/bin/yt-dlp');
 if (!existsSync(authPath) || !existsSync(command)) throw new Error('Set up music Discord configuration and yt-dlp first; see ops/README.md.');
-const github = JSON.parse(execFileSync('/opt/homebrew/bin/gh', ['api', 'repos/Readiz/BA-music-player'], { encoding: 'utf8' }));
-if (!github.permissions?.push) throw new Error('GitHub music synchronization requires repository write access through gh.');
+if (!existsSync(join(root, 'library/current/library-info.json'))) throw new Error('Publish and verify the Mac/NAS library before deploying the API.');
 const revision = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const release = join(root, 'api-releases', `${Date.now()}-${revision.slice(0, 12)}`);
 mkdirSync(release, { recursive: true });
@@ -24,7 +23,7 @@ const plistPath = join(home, 'Library/LaunchAgents/com.readiz.music.api.plist');
 const previousPlist = existsSync(plistPath) ? readFileSync(plistPath) : null;
 const label = `gui/${process.getuid()}/com.readiz.music.api`;
 const xml = value => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
-const env = { MUSIC_AUTH_CONFIG: authPath, MUSIC_DATA_ROOT: join(root, 'data'), MUSIC_YTDLP: command, MUSIC_FFMPEG: '/opt/homebrew/bin', MUSIC_REVISION: revision, PATH: `${process.execPath.slice(0, process.execPath.lastIndexOf('/'))}:/opt/homebrew/bin:/usr/bin:/bin` };
+const env = { MUSIC_LIBRARY_ROOT: join(root, 'library'), MUSIC_NAS_ROOT: process.env.MUSIC_NAS_ROOT || '/Volumes/readiz_private/cl_backup/readiz-music', MUSIC_NAS_MOUNT: process.env.MUSIC_NAS_MOUNT || '/Volumes/readiz_private', MUSIC_AUTH_CONFIG: authPath, MUSIC_DATA_ROOT: join(root, 'data'), MUSIC_YTDLP: command, MUSIC_FFMPEG: '/opt/homebrew/bin', MUSIC_REVISION: revision, PATH: `${process.execPath.slice(0, process.execPath.lastIndexOf('/'))}:/opt/homebrew/bin:/usr/bin:/bin` };
 const plist = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>Label</key><string>com.readiz.music.api</string><key>ProgramArguments</key><array><string>${xml(process.execPath)}</string><string>${xml(join(current, 'server/start.mjs'))}</string></array><key>EnvironmentVariables</key><dict>${Object.entries(env).map(([key,value]) => `<key>${key}</key><string>${xml(value)}</string>`).join('')}</dict><key>RunAtLoad</key><true/><key>KeepAlive</key><true/><key>ThrottleInterval</key><integer>5</integer><key>StandardOutPath</key><string>${xml(join(root, 'logs/api.log'))}</string><key>StandardErrorPath</key><string>${xml(join(root, 'logs/api.err.log'))}</string></dict></plist>`;
 function link(target) { const next = `${current}.next`; rmSync(next, { force: true }); symlinkSync(target, next); renameSync(next, current); }
 function stop() { try { execFileSync('launchctl', ['bootout', label], { stdio: 'ignore' }); } catch { /* First install. */ } }

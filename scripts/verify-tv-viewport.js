@@ -15,8 +15,8 @@ async (sourcePage) => {
     });
     try {
       // Use the local catalog/media fixture, without relying on external TLS or catalog changes.
-      await context.route('https://blog.readiz.com/BA-music-player/**', async route => {
-        const response = await route.fetch({ url: route.request().url().replace('https://blog.readiz.com/BA-music-player', base) });
+      await context.route('https://music.readiz.com/**', async route => {
+        const response = await route.fetch({ url: route.request().url().replace('https://music.readiz.com', base) });
         await route.fulfill({ response });
       });
       await context.route('**/api/auth/me', route => route.fulfill({ status: 401, json: { authenticated: false } }));

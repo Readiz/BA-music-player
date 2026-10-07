@@ -160,21 +160,21 @@ export function createImports({ dataRoot, downloader = createDownloader(), conve
         const synced = await synchronize({ video, result, signal: controller.signal, checkpoint: JSON.parse(row.sync_state || '{}'),
           saveCheckpoint: state => db.prepare('UPDATE imports SET sync_state=? WHERE id=?').run(JSON.stringify(state), row.id),
           onProgress: stage => {
-            if (!['uploading', 'waiting', 'preparing', 'waveform', 'testing', 'publishing', 'verifying'].includes(stage)) return;
+            if (!['uploading', 'waiting', 'preparing', 'waveform', 'testing', 'backing-up', 'publishing', 'verifying'].includes(stage)) return;
             db.prepare('UPDATE imports SET sync_stage=?,updated_at=? WHERE id=? AND (sync_stage IS NULL OR sync_stage!=?)').run(stage, now(), row.id, stage);
           } });
         controller.signal.throwIfAborted();
         if (!/^[a-f0-9]{40}$/.test(synced.revision || '')) throw new Error('Missing synchronization proof');
         db.prepare("UPDATE imports SET status='ready',title=?,sync_revision=?,error=NULL,updated_at=? WHERE id=?").run(synced.track?.title || result.title, synced.revision, now(), row.id);
-        // GitHub and the verified static release now own the final file.
-        try { rmSync(path, { force: true }); } catch { /* A cache cleanup failure cannot undo Pages publication. */ }
+        // The verified Mac library and NAS backup now own the final file.
+        try { rmSync(path, { force: true }); } catch { /* A cache cleanup failure cannot undo verified publication. */ }
       } catch (error) {
         if (controller.signal.aborted) update(row.id, 'queued');
         else {
           if (row.video_id.startsWith('upload-')) rmSync(join(uploads, row.video_id), { force: true });
-          const message = get(row.id).status === 'syncing'
+          const message = error instanceof ImportError ? error.message : get(row.id).status === 'syncing'
             ? '음악 동기화에 실패했습니다. 같은 링크나 파일로 다시 요청해 주세요. 준비된 음악은 보관됩니다.'
-            : error instanceof ImportError ? error.message : '음악 추가에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+            : '음악 추가에 실패했습니다. 잠시 후 다시 시도해 주세요.';
           db.prepare("UPDATE imports SET status='failed',error=?,updated_at=? WHERE id=?").run(message, now(), row.id);
         }
       } finally { rmSync(directory, { recursive: true, force: true }); }

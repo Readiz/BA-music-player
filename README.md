@@ -1,5 +1,14 @@
 # Readiz Music
 
+## 맥 음원 서빙과 NAS 백업 (1.5.6)
+
+음원·통합 목록·곡명·파형은 `https://music.readiz.com/`의 맥 서버에서 제공합니다.
+NAS에는 SHA-256으로 검증한 음원과 같은 목록의 복구 사본을 보관합니다.
+새 곡은 맥에서 준비한 뒤 NAS 백업을 검증하고 공개 목록을 한 번에 전환합니다.
+홈페이지 위젯·웹·Android·TV가 같은 라이브러리를 사용하며 기존 음질을 유지합니다.
+GitHub Pages에는 음원 없는 플레이어만 배포합니다. 최신 음원의 복구 원본은 NAS입니다.
+백업·전체 검증·복구 명령은 [운영 안내](ops/README.md)를 참고하세요.
+
 ## th original (1.5.5)
 
 **th original** 앨범에는 홍마향(th06) 17곡, 요요몽(th07) 20곡, 췌몽상(th075) 47곡,
@@ -64,7 +73,7 @@ Bad Apple!!은 Lovelight 수록 버전이고, 幽閉サテライト 보컬곡은
 
 추가 요청은 **다운로드 → 동기화 중 → ETC 추가 완료**로 진행합니다. 동기화가 끝나면 곡이 목록에 나타나며 몇 분 걸릴 수 있습니다. 창을 닫아도 계속 진행하고, 다시 열면 최근 상태를 확인할 수 있습니다. 실패하면 같은 링크로 재시도합니다. 다운로드가 끝난 파일은 동기화 재시도 때 재사용합니다.
 
-서버는 임시 다운로드를 맡고, GitHub Actions가 MP3를 검사하고 곡명·태그·파형을 정리한 뒤 `music/ETC`, `musicList.json`, `waveforms.json`, `imported-tracks.json`을 하나의 커밋으로 저장합니다. GitHub Pages 배포 작업이 성공하고 기존 Pages 주소에서 목록·파형·음원의 반영을 확인한 뒤에만 완료로 표시합니다. `music.readiz.com`은 화면·로그인·추가 API를 제공하고, 음원·목록·곡명·파형은 `https://blog.readiz.com/BA-music-player/`에서 직접 읽습니다. 기존 Android APK의 음악 주소도 Pages로 리다이렉트되며 서버는 음원 복사본을 배포하지 않습니다. 최종 자료는 GitHub 저장소에서 복원할 수 있으며, 사용자·인증·작업 정보는 공개 저장소에 올리지 않습니다.
+맥 서버가 MP3의 곡명·태그·파형을 정리하고 음원·목록·파형을 NAS에 검증해서 백업합니다. 공개 목록을 원자적으로 교체한 뒤 `music.readiz.com`에서 음원 전체 해시와 탐색용 Range 응답을 확인해야 완료로 표시합니다. 백업이나 검증에 실패하면 준비한 MP3를 보관해 재시도하며 기존 곡은 계속 재생합니다. 요청 이력과 인증 정보는 공개하지 않습니다.
 
 한 번에 한 곡, 최대 30분·100MB를 지원합니다. 같은 영상은 중복 추가하지 않습니다. 기존 서버 보관곡도 첫 실행 때 자동 동기화합니다. 설치와 복구는 [운영 안내](ops/README.md)를 참고하세요. TV에서는 감상만 제공하며 음악 추가는 PC·모바일 웹에서 사용합니다.
 
@@ -209,6 +218,6 @@ https://blog.readiz.com/BA-music-player/
 
 대표 주소는 **https://music.readiz.com/** 입니다. 음악 프로젝트는 이 저장소에서 독립적으로 관리하며 홈페이지의 이전 음악 상세 주소는 새 서비스로 연결합니다. [운영·Cloudflare DNS·배포 안내](ops/README.md), [Android 앱 준비와 다음 단계](android/README.md)를 참고하세요.
 
-`npm test`는 공개 빌드의 음원 경로·파일 공개 경계·설치 자산을 검증합니다. `npm run build`로 Pages를 사용하는 앱 화면을 `dist/`에 만들고(음원 포함 빌드는 `MUSIC_BUILD_TARGET=pages`), 깨끗한 커밋에서 `npm run deploy:local`로 독립 배포합니다. `npm run build:apk`는 정식 APK·lint·Android 단위 테스트를 검증하고 배포용 메타데이터를 만듭니다. 앱 ID는 `com.readiz.music`입니다.
+`npm test`는 공개 빌드의 음원 경로·파일 공개 경계·설치 자산을 검증합니다. `npm run build`로 맥 음원 서버에 연결하는 앱 화면을 `dist/`에 만들고(Pages 빌드도 음원은 제외), 깨끗한 커밋에서 `npm run deploy:local`로 독립 배포합니다. `npm run build:apk`는 정식 APK·lint·Android 단위 테스트를 검증하고 배포용 메타데이터를 만듭니다. 앱 ID는 `com.readiz.music`입니다.
 
 홈 화면 설치용 매니페스트·전용 아이콘·오프라인 연결 안내를 제공합니다. 외부 폰트 CDN 의존성을 제거하고 Font Awesome 4.7.0의 CSS·WOFF2를 라이선스 안내와 함께 보관합니다. 음원은 설치 시 캐시하지 않으며 브라우저가 직접 스트리밍합니다. `app-config.json`은 후속 앱에서 목록과 제목 자료를 찾는 버전 1 계약입니다.

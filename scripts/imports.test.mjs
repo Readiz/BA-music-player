@@ -116,7 +116,7 @@ test('public APIs redirect to Pages and retain import authentication boundaries'
   for (const [path, target] of [['/musicList.json','musicList.json'],['/waveforms.json','waveforms.json'],['/api/library','imported-tracks.json']]) {
     const response = await handler(request(path));
     assert.equal(response.status, 307);
-    assert.equal(response.headers.get('location'), 'https://blog.readiz.com/BA-music-player/'+target);
+    assert.equal(response.headers.get('location'), 'https://music.readiz.com/'+target);
     assert.equal(response.headers.get('cache-control'), 'no-cache');
   }
   assert.equal(imports.list('1')[0].track, undefined);
