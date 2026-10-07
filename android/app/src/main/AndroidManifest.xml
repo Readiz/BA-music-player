@@ -26,9 +26,17 @@
         <service android:name=".PlaybackService" android:exported="true" android:foregroundServiceType="mediaPlayback">
             <intent-filter><action android:name="androidx.media3.session.MediaSessionService" /></intent-filter>
         </service>
-        <receiver android:name=".MusicWidget" android:exported="false" android:label="@string/widget_name">
+        <receiver android:name=".MusicWidget" android:exported="false" android:label="@string/widget_album_name">
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/music_widget_info" />
+        </receiver>
+        <receiver android:name=".MusicWidgetCompact" android:exported="false" android:label="@string/widget_compact_name">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/music_widget_compact_info" />
+        </receiver>
+        <receiver android:name=".MusicWidgetMini" android:exported="false" android:label="@string/widget_mini_name">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/music_widget_mini_info" />
         </receiver>
         <provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.updates"
             android:exported="false" android:grantUriPermissions="true">

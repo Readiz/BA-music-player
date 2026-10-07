@@ -10,6 +10,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Build;
+import android.util.SizeF;
+import android.view.View;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.RemoteViews;
@@ -22,15 +25,19 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.io.ByteArrayOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /** A private receiver: launcher buttons carry immutable, explicit PendingIntents. */
 @androidx.annotation.OptIn(markerClass = androidx.media3.common.util.UnstableApi.class)
-public final class MusicWidget extends AppWidgetProvider {
+public class MusicWidget extends AppWidgetProvider {
     static final String TOGGLE = "com.readiz.music.widget.TOGGLE";
     static final String PREVIOUS = "com.readiz.music.widget.PREVIOUS";
     static final String NEXT = "com.readiz.music.widget.NEXT";
+    private static final Class<?>[] PROVIDERS = { MusicWidget.class, MusicWidgetCompact.class, MusicWidgetMini.class };
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
     private static final ExecutorService ARTWORK = Executors.newSingleThreadExecutor();
     private static String artworkKey = "";
@@ -87,8 +94,10 @@ public final class MusicWidget extends AppWidgetProvider {
     static void updateAll(Context context) {
         Context app = context.getApplicationContext();
         AppWidgetManager manager = AppWidgetManager.getInstance(app);
-        int[] ids = manager.getAppWidgetIds(new ComponentName(app, MusicWidget.class));
-        if (ids.length == 0) return;
+        ArrayList<Integer> ids = new ArrayList<>();
+        for (Class<?> provider : PROVIDERS)
+            for (int id : manager.getAppWidgetIds(new ComponentName(app, provider))) ids.add(id);
+        if (ids.isEmpty()) return;
         Player player = PlaybackService.widgetPlayer();
         MediaItem item;
         boolean playing = false;
@@ -117,10 +126,40 @@ public final class MusicWidget extends AppWidgetProvider {
                 });
             }
         }
-        manager.updateAppWidget(ids, views(app, item, playing, message, artwork));
+        for (int id : ids) {
+            var info = manager.getAppWidgetInfo(id);
+            boolean rowOnly = info != null && !MusicWidget.class.getName().equals(info.provider.getClassName());
+            manager.updateAppWidget(id, sizedViews(app, manager.getAppWidgetOptions(id), rowOnly, item, playing, message, artwork));
+        }
+    }
+    static RemoteViews sizedViews(Context context, Bundle options, boolean rowOnly, MediaItem item,
+            boolean playing, String message, Bitmap cover) {
+        if (Build.VERSION.SDK_INT >= 31) {
+            Map<SizeF, RemoteViews> sizes = new LinkedHashMap<>();
+            for (int width : new int[] {110, 164, 232, 300})
+                sizes.put(new SizeF(width, 48), views(context, item, playing, message, cover, width, 48, true));
+            if (!rowOnly) sizes.put(new SizeF(180, 148), views(context, item, playing, message, cover, 180, 148, false));
+            return new RemoteViews(sizes);
+        }
+        // Older launchers supply portrait width / landscape height as the minimums.
+        int portraitWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 300);
+        int portraitHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, rowOnly ? 48 : 148);
+        int landscapeWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, portraitWidth);
+        int landscapeHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, portraitHeight);
+        return new RemoteViews(
+                views(context, item, playing, message, cover, landscapeWidth, landscapeHeight, rowOnly),
+                views(context, item, playing, message, cover, portraitWidth, portraitHeight, rowOnly));
     }
     static RemoteViews views(Context context, MediaItem item, boolean playing, String message, Bitmap cover) {
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.music_widget);
+        return views(context, item, playing, message, cover, 300, 148, false);
+    }
+    static RemoteViews views(Context context, MediaItem item, boolean playing, String message, Bitmap cover,
+            int width, int height, boolean rowOnly) {
+        boolean row = rowOnly || width < 180 || height < 148;
+        RemoteViews views = new RemoteViews(context.getPackageName(), row ? R.layout.music_widget_row : R.layout.music_widget);
+        views.setViewVisibility(R.id.widget_cover, !row || width >= 300 ? View.VISIBLE : View.GONE);
+        views.setViewVisibility(R.id.widget_previous, !row || width >= 232 ? View.VISIBLE : View.GONE);
+        views.setViewVisibility(R.id.widget_next, !row || width >= 164 ? View.VISIBLE : View.GONE);
         PendingIntent open = PendingIntent.getActivity(context, 40,
                 new Intent(context, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP),
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
@@ -130,6 +169,9 @@ public final class MusicWidget extends AppWidgetProvider {
         CharSequence subtitle = item == null ? context.getString(R.string.widget_empty) : item.mediaMetadata.artist;
         if (item != null && (subtitle == null || subtitle.length() == 0)) subtitle = item.mediaMetadata.albumTitle;
         views.setTextViewText(R.id.widget_artist, message.isEmpty() ? subtitle : message);
+        CharSequence title = item == null || item.mediaMetadata.title == null ? context.getString(R.string.widget_name) : item.mediaMetadata.title;
+        views.setContentDescription(R.id.widget_info, title + " · " + (message.isEmpty() ? (subtitle == null ? "" : subtitle) : message)
+                + " · " + context.getString(R.string.widget_open));
         if (cover != null) views.setImageViewBitmap(R.id.widget_cover, cover);
         else views.setImageViewResource(R.id.widget_cover, R.drawable.music_icon);
         views.setImageViewResource(R.id.widget_toggle, playing ? R.drawable.widget_pause : R.drawable.widget_play);
@@ -139,7 +181,7 @@ public final class MusicWidget extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.widget_next, command(context, NEXT, 43));
         for (int id : new int[] { R.id.widget_previous, R.id.widget_next }) {
             views.setBoolean(id, "setEnabled", item != null);
-            views.setFloat(id, "setAlpha", item == null ? 0.35f : 1f);
+            views.setInt(id, "setImageAlpha", item == null ? 90 : 255);
         }
         return views;
     }

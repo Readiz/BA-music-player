@@ -1,6 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root" android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical" android:gravity="center_vertical" android:padding="12dp" android:background="@drawable/widget_background">
+    android:orientation="vertical" android:gravity="center_vertical" android:paddingStart="8dp" android:paddingEnd="8dp" android:paddingTop="12dp" android:paddingBottom="12dp" android:background="@drawable/widget_background">
     <LinearLayout android:id="@+id/widget_info" android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="horizontal" android:gravity="center_vertical"
         android:contentDescription="@string/widget_open" android:background="?android:attr/selectableItemBackground">
@@ -22,7 +22,7 @@
             android:src="@drawable/widget_previous" android:background="@drawable/widget_button" android:padding="12dp"
             android:contentDescription="@string/widget_previous" />
         <ImageButton android:id="@+id/widget_toggle" android:layout_width="48dp" android:layout_height="48dp"
-            android:layout_marginStart="12dp" android:layout_marginEnd="12dp" android:src="@drawable/widget_play"
+            android:layout_marginStart="8dp" android:layout_marginEnd="8dp" android:src="@drawable/widget_play"
             android:background="@drawable/widget_button" android:padding="10dp" android:contentDescription="@string/widget_play" />
         <ImageButton android:id="@+id/widget_next" android:layout_width="48dp" android:layout_height="48dp"
             android:src="@drawable/widget_next" android:background="@drawable/widget_button" android:padding="12dp"

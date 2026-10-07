@@ -9,4 +9,9 @@
     <string name="widget_next">다음 곡</string>
     <string name="widget_loading">불러오는 중…</string>
     <string name="widget_error">재생 오류 · 다시 시도해 주세요</string>
+    <string name="widget_album_name">Readiz Music · 앨범형</string>
+    <string name="widget_compact_name">Readiz Music · 한 줄</string>
+    <string name="widget_mini_name">Readiz Music · 미니</string>
+    <string name="widget_compact_description">한 줄에서 곡명과 재생 버튼을 표시합니다. 너비를 늘리면 이전·다음 곡과 표지도 표시합니다.</string>
+    <string name="widget_mini_description">작은 공간에 곡명과 재생 버튼을 표시합니다. 가로로 늘리면 조작 버튼이 추가됩니다.</string>
 </resources>
