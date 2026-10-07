@@ -119,6 +119,30 @@
       "sha256": "d2c4099f8c35edb7097be90c24c249b5f529a89cc2f792f6fd43d214bc012bcc"
     },
     {
+      "src": "./music/th original/yt-1XGE9v9yqKU.mp3",
+      "title": "[th075-22] ラクトガール (弐符アレンジ)",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "ラクトガール (弐符アレンジ)"
+      ],
+      "trackNumber": 22,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 22,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=1XGE9v9yqKU",
+      "sourceTitle": "ラクトガール (弐符アレンジ)",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 234.3335,
+      "bytes": 5625417,
+      "sha256": "465831cd5a042ce7ff129090807e08d6038bec8950c69e4028814f400229095a"
+    },
+    {
       "src": "./music/th original/yt-1YRrPl7elLE.mp3",
       "title": "[th06-10] メイドと血の懐中時計",
       "folder": "th original",
@@ -138,6 +162,78 @@
       "duration": 345.153,
       "bytes": 8285375,
       "sha256": "510badc71e0c4583e4fbfe12c2cb1ba178685f48cfa1efbb42d2d9677c86d6bc"
+    },
+    {
+      "src": "./music/th original/yt-2JKdG7vdHT4.mp3",
+      "title": "[th075-36] 東方妖々夢　～ Ancient Temple",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "東方妖々夢　～ Ancient Temple"
+      ],
+      "trackNumber": 36,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 12,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=2JKdG7vdHT4",
+      "sourceTitle": "東方妖々夢　～ Ancient Temple",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 167.683,
+      "bytes": 4025877,
+      "sha256": "226a46b58cbd77a768062abcdeacc60c2813e167b09513e71aaf39aed4c46356"
+    },
+    {
+      "src": "./music/th original/yt-2pP-Sy3GSCs.mp3",
+      "title": "[th075-45] 夜が降りてくる　～ Evening Star (Arrange Version / あきやまうに)",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "夜が降りてくる　～ Evening Star (Arrange Version / あきやまうに)"
+      ],
+      "trackNumber": 45,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 21,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=2pP-Sy3GSCs",
+      "sourceTitle": "夜が降りてくる　～ Evening Star (Arrange Version / あきやまうに)",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 116.381,
+      "bytes": 2795008,
+      "sha256": "4197704f8f448a74fbdb687f5c56ad02dbf98b7e5b7755fbb22222880a28231d"
+    },
+    {
+      "src": "./music/th original/yt-3OKzg3paVCQ.mp3",
+      "title": "[th075-07] Intermezzo",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "Intermezzo"
+      ],
+      "trackNumber": 7,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 7,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=3OKzg3paVCQ",
+      "sourceTitle": "Intermezzo",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 67.48,
+      "bytes": 1621035,
+      "sha256": "b5ab84862040e08918529fa1fd9d33601ccc78bece541e1e95ec265a47369f4c"
     },
     {
       "src": "./music/th original/yt-45B3J8JX_Cw.mp3",
@@ -161,6 +257,30 @@
       "sha256": "42a85279757385b907e3e5d8c6e8e880d21203109e2c420f631d6d9a574a45b1"
     },
     {
+      "src": "./music/th original/yt-4aI4gygE1Zs.mp3",
+      "title": "[th075-02] 東方妖恋談",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "東方妖恋談"
+      ],
+      "trackNumber": 2,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 2,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=4aI4gygE1Zs",
+      "sourceTitle": "東方妖恋談",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 177.387,
+      "bytes": 4259120,
+      "sha256": "8fb69083d2edcac8891af0257b81cc39bbdfeb06061a7643bdb4f4258dde1b26"
+    },
+    {
       "src": "./music/th original/yt-4BTVyY2qEXU.mp3",
       "title": "[th08-13] ヴォヤージュ1969",
       "folder": "th original",
@@ -182,6 +302,30 @@
       "sha256": "169d4e6d86b96cca43909d88f05af491f7b7a2dc1adaaf16e5c9bcd7bd1c03e6"
     },
     {
+      "src": "./music/th original/yt-5TTdy7vJHgY.mp3",
+      "title": "[th075-21] ブクレシュティの人形師 (弐符アレンジ)",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "ブクレシュティの人形師 (弐符アレンジ)"
+      ],
+      "trackNumber": 21,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 21,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=5TTdy7vJHgY",
+      "sourceTitle": "ブクレシュティの人形師 (弐符アレンジ)",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 335.0535,
+      "bytes": 8042904,
+      "sha256": "bbcb76090d6125f193aea4cf32a51b4293fbc2155791465bda53161bca2e7ec3"
+    },
+    {
       "src": "./music/th original/yt-5yEtzQGv7Y8.mp3",
       "title": "[th07-01] 妖々夢　～ Snow or Cherry Petal",
       "folder": "th original",
@@ -201,6 +345,54 @@
       "duration": 200.691,
       "bytes": 4818436,
       "sha256": "1b655e72d670787c7130452530d57da4393abdce3dccec692ba3d28ff9b29d4e"
+    },
+    {
+      "src": "./music/th original/yt-6C42hywcYrc.mp3",
+      "title": "[th075-06] メイドと血の懐中時計",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "メイドと血の懐中時計"
+      ],
+      "trackNumber": 6,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 6,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=6C42hywcYrc",
+      "sourceTitle": "メイドと血の懐中時計",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 215.0135,
+      "bytes": 5161727,
+      "sha256": "9e24f60929bdafb21f96d8f99ecc30fa5f28c91c9e5dac6c9453a64e1858784a"
+    },
+    {
+      "src": "./music/th original/yt-8mk7m8-Rk4M.mp3",
+      "title": "[th075-27] 森閑",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "森閑"
+      ],
+      "trackNumber": 27,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 3,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=8mk7m8-Rk4M",
+      "sourceTitle": "森閑",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 92.004,
+      "bytes": 2209718,
+      "sha256": "81c84cc01c8e520e30cba89c0ae1a59ebe5e65d834b45887b45aa04fed382f60"
     },
     {
       "src": "./music/th original/yt-9IB3ZXiB8dg.mp3",
@@ -245,6 +437,78 @@
       "sha256": "1a8196d9aefc40d7ef0a957397884ea52f95153fd82e76fbb06dd1bdc62cfcda"
     },
     {
+      "src": "./music/th original/yt-aEF5iQAZuIQ.mp3",
+      "title": "[th075-11] 裏心",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "裏心"
+      ],
+      "trackNumber": 11,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 11,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=aEF5iQAZuIQ",
+      "sourceTitle": "裏心",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 55.8,
+      "bytes": 1340520,
+      "sha256": "fcc0e8e77505264b34b8ddb50475f95d1acc3761e85ca10b4d6fffff20b4e07b"
+    },
+    {
+      "src": "./music/th original/yt-aKf52NBkvJw.mp3",
+      "title": "[th075-46] 御伽の国の鬼が島　～ Missing Power (Arrange Version / あきやまうに)",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "御伽の国の鬼が島　～ Missing Power (Arrange Version / あきやまうに)"
+      ],
+      "trackNumber": 46,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 22,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=aKf52NBkvJw",
+      "sourceTitle": "御伽の国の鬼が島　～ Missing Power (Arrange Version / あきやまうに)",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 267.2435,
+      "bytes": 6415748,
+      "sha256": "949a7f6076bce871e2ad0223227738180d0b0725a89ac37c2bb5fdaaaa98d3ae"
+    },
+    {
+      "src": "./music/th original/yt-AU19ZNMoovw.mp3",
+      "title": "[th075-25] 萃夢想",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "萃夢想"
+      ],
+      "trackNumber": 25,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 1,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=AU19ZNMoovw",
+      "sourceTitle": "萃夢想",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 190.042,
+      "bytes": 4562681,
+      "sha256": "b72af2b3f5b48c274d6d551b0ebd4e9d38dc6184e336acc75d596c89e3ef3aff"
+    },
+    {
       "src": "./music/th original/yt-aZ7ToDR5Gw4.mp3",
       "title": "[th08-09] 少女綺想曲　～ Dream Battle",
       "folder": "th original",
@@ -287,6 +551,30 @@
       "sha256": "9209243c36221b6e1b866a6739e479485cee50eb91712a6fbbd54a173d62f41f"
     },
     {
+      "src": "./music/th original/yt-CDEa5R-t_G0.mp3",
+      "title": "[th075-12] 広有射怪鳥事　～ Till When？",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "広有射怪鳥事　～ Till When？"
+      ],
+      "trackNumber": 12,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 12,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=CDEa5R-t_G0",
+      "sourceTitle": "広有射怪鳥事　～ Till When？",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 148,
+      "bytes": 3553543,
+      "sha256": "82ff2aecc2a93789a8e47f73d1ae12c5d3f7f0d3dae32ba7b0382fe260e05657"
+    },
+    {
       "src": "./music/th original/yt-CnTASN6-qFk.mp3",
       "title": "[th08-20] Eternal Dream　～ 幽玄の槭樹",
       "folder": "th original",
@@ -306,6 +594,30 @@
       "duration": 211.396,
       "bytes": 5075332,
       "sha256": "8bbd87a40348edadcf81d766f32451c9c988b96f5d119f8f8e0c4bfa63135a8c"
+    },
+    {
+      "src": "./music/th original/yt-cZFW32yBGgU.mp3",
+      "title": "[th075-24] 亡き王女の為のセプテット (弐符アレンジ)",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "亡き王女の為のセプテット (弐符アレンジ)"
+      ],
+      "trackNumber": 24,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 24,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=cZFW32yBGgU",
+      "sourceTitle": "亡き王女の為のセプテット (弐符アレンジ)",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 203.8135,
+      "bytes": 4893339,
+      "sha256": "1be0faad99809d82a2aae4109fee085d6056f9487b03d764fffe73e9f2e1d584"
     },
     {
       "src": "./music/th original/yt-DAmMad9b7Ek.mp3",
@@ -329,6 +641,30 @@
       "sha256": "53e7c7f1f7d11c3798715bff0ac5c2ec18397b5d1cbef020cac9352faacb8a16"
     },
     {
+      "src": "./music/th original/yt-dCWz751UzkI.mp3",
+      "title": "[th075-08] ブクレシュティの人形師",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "ブクレシュティの人形師"
+      ],
+      "trackNumber": 8,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 8,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=dCWz751UzkI",
+      "sourceTitle": "ブクレシュティの人形師",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 244.707,
+      "bytes": 5874818,
+      "sha256": "9bf519cdfc93d0739028be51ef4c70784d99e271d29f0ec4a4811b975092c6a4"
+    },
+    {
       "src": "./music/th original/yt-EvhbaRKH_BQ.mp3",
       "title": "[th07-17] 妖々跋扈　～ Who done it!",
       "folder": "th original",
@@ -350,6 +686,126 @@
       "sha256": "a63e75aee6196c6b23ab3bc9d5f8dc9ede599243af5a857066ade7568c27da67"
     },
     {
+      "src": "./music/th original/yt-FiNP1BKSeYE.mp3",
+      "title": "[th075-31] 幽境",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "幽境"
+      ],
+      "trackNumber": 31,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 7,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=FiNP1BKSeYE",
+      "sourceTitle": "幽境",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 81.886,
+      "bytes": 1966646,
+      "sha256": "3f27b4e6878c41fc2ca509ed3eb07acac29851da9882b9c518e2ccde187e5723"
+    },
+    {
+      "src": "./music/th original/yt-frP5RclxfIA.mp3",
+      "title": "[th075-35] 禍機",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "禍機"
+      ],
+      "trackNumber": 35,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 11,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=frP5RclxfIA",
+      "sourceTitle": "禍機",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 76.019,
+      "bytes": 1826103,
+      "sha256": "7f3d5c0c82293a690d5b9608f967acb3ed42dad48da9961087c8adb1d7006c4f"
+    },
+    {
+      "src": "./music/th original/yt-FWV7CpZmjEs.mp3",
+      "title": "[th075-14] 幽雅に咲かせ、墨染の桜　～ Border of Life",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "幽雅に咲かせ、墨染の桜　～ Border of Life"
+      ],
+      "trackNumber": 14,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 14,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=FWV7CpZmjEs",
+      "sourceTitle": "幽雅に咲かせ、墨染の桜　～ Border of Life",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 110.027,
+      "bytes": 2642328,
+      "sha256": "f752b2ee920a71f921ec57177948a2915c01bace82813dd84dd9aabf362705ad"
+    },
+    {
+      "src": "./music/th original/yt-Gg9a1oyT6T8.mp3",
+      "title": "[th075-42] 御伽の国の鬼が島　～ Missing Power",
+      "folder": "th original",
+      "artist": "ZUN / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "御伽の国の鬼が島　～ Missing Power"
+      ],
+      "trackNumber": 42,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 18,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=Gg9a1oyT6T8",
+      "sourceTitle": "御伽の国の鬼が島　～ Missing Power",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 395.729,
+      "bytes": 9499022,
+      "sha256": "18a510c6d377179f7e720340259fac70d21a30ca5d5a3f1a3127f3cf4c76e11d"
+    },
+    {
+      "src": "./music/th original/yt-gM97FW0S-X0.mp3",
+      "title": "[th075-38] Demystify Feast",
+      "folder": "th original",
+      "artist": "ZUN / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "Demystify Feast"
+      ],
+      "trackNumber": 38,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 14,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=gM97FW0S-X0",
+      "sourceTitle": "Demystify Feast",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 278.721,
+      "bytes": 6690993,
+      "sha256": "c5c5fb51d713e66b3a9a2237b499005b4acf4ec2ee6cd4b0eef72ed8d64fe253"
+    },
+    {
       "src": "./music/th original/yt-gmrbCOTpzas.mp3",
       "title": "[th08-16] ヴォヤージュ1970",
       "folder": "th original",
@@ -369,6 +825,30 @@
       "duration": 113.767,
       "bytes": 2732151,
       "sha256": "313a21828c47395342e58e42add992ccb2c5a328a1ca6279a25ffef38d195c45"
+    },
+    {
+      "src": "./music/th original/yt-gMRWmUyNA0I.mp3",
+      "title": "[th075-13] 亡き王女の為のセプテット",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "亡き王女の為のセプテット"
+      ],
+      "trackNumber": 13,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 13,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=gMRWmUyNA0I",
+      "sourceTitle": "亡き王女の為のセプテット",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 133.107,
+      "bytes": 3196422,
+      "sha256": "2d16bfb9a7888c3b305c0e71f14d37a5f0024cffd20dfa7a34ee5b42ab4e3695"
     },
     {
       "src": "./music/th original/yt-gQAy3uG0oYo.mp3",
@@ -413,6 +893,30 @@
       "sha256": "29a5ffd52d5eba0d71076d74685f74ce9b4b0e8314c2797203f0eb2cf304987c"
     },
     {
+      "src": "./music/th original/yt-GSWda8uv0TI.mp3",
+      "title": "[th075-43] 東方萃夢想",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "東方萃夢想"
+      ],
+      "trackNumber": 43,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 19,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=GSWda8uv0TI",
+      "sourceTitle": "東方萃夢想",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 85.58,
+      "bytes": 2055360,
+      "sha256": "23892e7a890475150b193d6e9585afc836e4f206066e294be2289dd4a3c99885"
+    },
+    {
       "src": "./music/th original/yt-HFljf7-tk48.mp3",
       "title": "[th06-17] 紅楼　～ Eastern Dream...",
       "folder": "th original",
@@ -432,6 +936,30 @@
       "duration": 229.59,
       "bytes": 5511934,
       "sha256": "1c8af66678ee9a5e71955aeb3f07c98b32975be99a5fbfb08489ac79e0f88c2d"
+    },
+    {
+      "src": "./music/th original/yt-hjx730d48nc.mp3",
+      "title": "[th075-01] 遍参",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "遍参"
+      ],
+      "trackNumber": 1,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 1,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=hjx730d48nc",
+      "sourceTitle": "遍参",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 158.0135,
+      "bytes": 3793703,
+      "sha256": "fa733b979234c164f8950ae1eda344a39b64734ec9d672cba44ae0bf67295b9c"
     },
     {
       "src": "./music/th original/yt-HUU8SM2xw9I.mp3",
@@ -474,6 +1002,30 @@
       "duration": 193.639,
       "bytes": 4649074,
       "sha256": "393d9ee10e33273949b848926bf9b0f8346d97eeaf308b891e5e5dcbb0dce56c"
+    },
+    {
+      "src": "./music/th original/yt-Ig2Tbj-UaU4.mp3",
+      "title": "[th075-37] 仰空",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "仰空"
+      ],
+      "trackNumber": 37,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 13,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=Ig2Tbj-UaU4",
+      "sourceTitle": "仰空",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 90.023,
+      "bytes": 2161911,
+      "sha256": "40a75330c2b1820b6a3c6a9a07c54ac6fdcbf4ef35013d8a9a325df7f5977bb5"
     },
     {
       "src": "./music/th original/yt-IHRS-KIEAG4.mp3",
@@ -539,6 +1091,30 @@
       "sha256": "e0342c9ce8caecb9c95207db9fe5a55ab6bab2c0e4b1a0f353430f4226abb8bb"
     },
     {
+      "src": "./music/th original/yt-JwKqbqNz7sg.mp3",
+      "title": "[th075-41] 砕月",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "砕月"
+      ],
+      "trackNumber": 41,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 17,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=JwKqbqNz7sg",
+      "sourceTitle": "砕月",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 103.877,
+      "bytes": 2494839,
+      "sha256": "70a8403b8c2d0125951ed077f121388cdc5db14e9a40c410b62874eac850c349"
+    },
+    {
       "src": "./music/th original/yt-JYCvhA1LLg4.mp3",
       "title": "[th06-11] 月時計　～ ルナ・ダイアル",
       "folder": "th original",
@@ -558,6 +1134,30 @@
       "duration": 193.109,
       "bytes": 4636422,
       "sha256": "c3929fcbd2c6c16e5e82854d75d325ce613537deca6746876029cf678c57b0a1"
+    },
+    {
+      "src": "./music/th original/yt-JzvzcKAdDBU.mp3",
+      "title": "[th075-03] 月輪",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "月輪"
+      ],
+      "trackNumber": 3,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 3,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=JzvzcKAdDBU",
+      "sourceTitle": "月輪",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 43.2,
+      "bytes": 1038119,
+      "sha256": "0d70d63ac22eee33c414029a83e475ee5d5f82bc213c05cc6f1a9fcab1132303"
     },
     {
       "src": "./music/th original/yt-KFbk7lWQh5M.mp3",
@@ -686,6 +1286,30 @@
       "sha256": "2b1872f7c5f5faf67549b1614f2676bf06f20bc58b32b4590f366b8a4e80a63f"
     },
     {
+      "src": "./music/th original/yt-KwNocsw6caY.mp3",
+      "title": "[th075-47] 東方萃夢想 (Arrange Version / あきやまうに)",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "東方萃夢想 (Arrange Version / あきやまうに)"
+      ],
+      "trackNumber": 47,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 23,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=KwNocsw6caY",
+      "sourceTitle": "東方萃夢想 (Arrange Version / あきやまうに)",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 271.481,
+      "bytes": 6517095,
+      "sha256": "af58f21fefeaae40970a47e82a6308b1f1c5ba03ca746f6bac46da4e992130f4"
+    },
+    {
       "src": "./music/th original/yt-l-X46SHhWx0.mp3",
       "title": "[th08-05] もう歌しか聞こえない",
       "folder": "th original",
@@ -705,6 +1329,54 @@
       "duration": 186.922,
       "bytes": 4487806,
       "sha256": "bf3b138a09bec62eb7125a3dfaec5393c6dfe6fdb6962814bf0726a214272bbd"
+    },
+    {
+      "src": "./music/th original/yt-L8CcaowHxBQ.mp3",
+      "title": "[th075-09] 魔所",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "魔所"
+      ],
+      "trackNumber": 9,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 9,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=L8CcaowHxBQ",
+      "sourceTitle": "魔所",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 78.0135,
+      "bytes": 1873895,
+      "sha256": "58468bb4c9bb46ea7ab0cbc9f50b525c8ed4e8a05a0823317938789f915b93c9"
+    },
+    {
+      "src": "./music/th original/yt-LD6uOCy0Fjs.mp3",
+      "title": "[th075-20] メイドと血の懐中時計 (弐符アレンジ)",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "メイドと血の懐中時計 (弐符アレンジ)"
+      ],
+      "trackNumber": 20,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 20,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=LD6uOCy0Fjs",
+      "sourceTitle": "メイドと血の懐中時計 (弐符アレンジ)",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 250.7735,
+      "bytes": 6019989,
+      "sha256": "5363a99f6daffab1ac631a870be9e9d16ff3c46da109dec48ba69ac819264854"
     },
     {
       "src": "./music/th original/yt-LjOb2MzZWGY.mp3",
@@ -770,6 +1442,30 @@
       "sha256": "760bc4720fbb22b0938733acd499adeaeef07fd1e90d49e093f5fc2cda042950"
     },
     {
+      "src": "./music/th original/yt-Ml8lfafVlhg.mp3",
+      "title": "[th075-16] 恋色マジック (体験版Ver.)",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "恋色マジック (体験版Ver.)"
+      ],
+      "trackNumber": 16,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 16,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=Ml8lfafVlhg",
+      "sourceTitle": "恋色マジック (体験版Ver.)",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 182.04,
+      "bytes": 4370308,
+      "sha256": "24561d2a9b7c6a1621312bfc0d1a47c62a45f656d882f3ed6ef88863f998ecd4"
+    },
+    {
       "src": "./music/th original/yt-Mllh9m47rEQ.mp3",
       "title": "[th07-11] 広有射怪鳥事　～ Till When?",
       "folder": "th original",
@@ -789,6 +1485,30 @@
       "duration": 237.287,
       "bytes": 5696260,
       "sha256": "e152145f9b7a5d61a18c037b7092bfe258ac61c28bf99895eb3184ae146666c2"
+    },
+    {
+      "src": "./music/th original/yt-mVhvsqi8wR4.mp3",
+      "title": "[th075-04] 恋色マジック",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "恋色マジック"
+      ],
+      "trackNumber": 4,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 4,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=mVhvsqi8wR4",
+      "sourceTitle": "恋色マジック",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 132.48,
+      "bytes": 3180851,
+      "sha256": "90c9542f34f553eba08a21960458c50caa2bb27beacfdabdc8a45ab90f7011f1"
     },
     {
       "src": "./music/th original/yt-nHvKb1sE9IQ.mp3",
@@ -812,6 +1532,54 @@
       "sha256": "28e77702835059d3091b136f0f5775bccc9da39e1c925040c87341089060816d"
     },
     {
+      "src": "./music/th original/yt-npubGYY2DB4.mp3",
+      "title": "[th075-32] 人形裁判",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "人形裁判"
+      ],
+      "trackNumber": 32,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 8,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=npubGYY2DB4",
+      "sourceTitle": "人形裁判",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 134.834,
+      "bytes": 3237884,
+      "sha256": "3d102e650ef27b08fd63153a52a5ea186fdeb19c8c0e267cba76b4c44070d8e6"
+    },
+    {
+      "src": "./music/th original/yt-nqfuAbHowwY.mp3",
+      "title": "[th075-05] あゆのかぜ",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "あゆのかぜ"
+      ],
+      "trackNumber": 5,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 5,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=nqfuAbHowwY",
+      "sourceTitle": "あゆのかぜ",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 88.84,
+      "bytes": 2133680,
+      "sha256": "2e5eb94bd3195fa434724555dec58162a88b3c5961a46ec9fb5cb2fa4392f745"
+    },
+    {
       "src": "./music/th original/yt-Nw26RNPPlwg.mp3",
       "title": "[th07-20] さくらさくら　～ Japanize Dream...",
       "folder": "th original",
@@ -831,6 +1599,30 @@
       "duration": 184.939,
       "bytes": 4440011,
       "sha256": "8a69db5664efcdbd8e93489b54c06f362def2cdfcab030f3c2679541fb041c69"
+    },
+    {
+      "src": "./music/th original/yt-oqTZQ3QLGao.mp3",
+      "title": "[th075-10] ラクトガール　～ 少女密室",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "ラクトガール　～ 少女密室"
+      ],
+      "trackNumber": 10,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 10,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=oqTZQ3QLGao",
+      "sourceTitle": "ラクトガール　～ 少女密室",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 213.56,
+      "bytes": 5127175,
+      "sha256": "df65a9787d95d992ea4ba93e4fa77bcd3f4717c0351eb617213ce667c7460dae"
     },
     {
       "src": "./music/th original/yt-orZas65EWB4.mp3",
@@ -896,6 +1688,30 @@
       "sha256": "ea5c89e010df5dbdcf4d3d19d8ac3ce6c947bcd52385093bd674e38797886e81"
     },
     {
+      "src": "./music/th original/yt-pEg57pYE1R4.mp3",
+      "title": "[th075-30] 月時計　～ ルナ・ダイアル",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "月時計　～ ルナ・ダイアル"
+      ],
+      "trackNumber": 30,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 6,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=pEg57pYE1R4",
+      "sourceTitle": "月時計　～ ルナ・ダイアル",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 179.396,
+      "bytes": 4306965,
+      "sha256": "283fa1d3de6c1b231474d53fce14aada9dcec3262f8fee49131fc6a26ef314d1"
+    },
+    {
       "src": "./music/th original/yt-pHIWEx0zCX8.mp3",
       "title": "[th08-07] プレインエイジア",
       "folder": "th original",
@@ -936,6 +1752,30 @@
       "duration": 128.875,
       "bytes": 3094475,
       "sha256": "e0e2b8e12efb7d901df255e7eda9bc7aaef1e510832d0025a22bde4febaee2ff"
+    },
+    {
+      "src": "./music/th original/yt-pSYZSBTp5Xk.mp3",
+      "title": "[th075-18] 東方妖恋談 (弐符アレンジ)",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "東方妖恋談 (弐符アレンジ)"
+      ],
+      "trackNumber": 18,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 18,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=pSYZSBTp5Xk",
+      "sourceTitle": "東方妖恋談 (弐符アレンジ)",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 280.227,
+      "bytes": 6727302,
+      "sha256": "67e4387a723223cb959e8bd65efaa4f43b53bedc85e0e9fc3ad78e38f73ebbd0"
     },
     {
       "src": "./music/th original/yt-PupVQXN6Ol0.mp3",
@@ -1022,6 +1862,150 @@
       "sha256": "d0015ee7a03f5274df71c42f8a787b313096f75b06e1bb9317323c793680a1a9"
     },
     {
+      "src": "./music/th original/yt-RBAkIVVcVKo.mp3",
+      "title": "[th075-15] 夏明き",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "夏明き"
+      ],
+      "trackNumber": 15,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 15,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=RBAkIVVcVKo",
+      "sourceTitle": "夏明き",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 120.7335,
+      "bytes": 2899179,
+      "sha256": "fc4348cd702b2f0011d28af293ada0259c4859746a3b28d79e885056322afc9c"
+    },
+    {
+      "src": "./music/th original/yt-RKiZD-XUL00.mp3",
+      "title": "[th075-40] 夜が降りてくる　～ Evening Star",
+      "folder": "th original",
+      "artist": "ZUN / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "夜が降りてくる　～ Evening Star"
+      ],
+      "trackNumber": 40,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 16,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=RKiZD-XUL00",
+      "sourceTitle": "夜が降りてくる　～ Evening Star",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 298.451,
+      "bytes": 7164490,
+      "sha256": "ebd7e3bdcf2751970693a5289d401961662d475418ff8437173b0ff88bde1799"
+    },
+    {
+      "src": "./music/th original/yt-rS9ltueffyQ.mp3",
+      "title": "[th075-19] 恋色マジック (弐符アレンジ)",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "恋色マジック (弐符アレンジ)"
+      ],
+      "trackNumber": 19,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 19,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=rS9ltueffyQ",
+      "sourceTitle": "恋色マジック (弐符アレンジ)",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 274.787,
+      "bytes": 6596553,
+      "sha256": "709d5d836a6bc12242393d085ee01553fb35d761718307d47382aa4b400a1bba"
+    },
+    {
+      "src": "./music/th original/yt-sTsbak0ZsMM.mp3",
+      "title": "[th075-29] 紅夜",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "紅夜"
+      ],
+      "trackNumber": 29,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 5,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=sTsbak0ZsMM",
+      "sourceTitle": "紅夜",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 80.586,
+      "bytes": 1935542,
+      "sha256": "eb29070b585d84136b87c01965f8b08b8179b132d0bdc437cac0c8a10300410b"
+    },
+    {
+      "src": "./music/th original/yt-T_nrTYqM3Mc.mp3",
+      "title": "[th075-33] 珍客",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "珍客"
+      ],
+      "trackNumber": 33,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 9,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=T_nrTYqM3Mc",
+      "sourceTitle": "珍客",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 108.009,
+      "bytes": 2593910,
+      "sha256": "8a222ea6670246bb8dd20e73e3714ff676a4d01e35f5e54d73e53ffbe9f1e6a1"
+    },
+    {
+      "src": "./music/th original/yt-TjbWpFtA90Y.mp3",
+      "title": "[th075-44] Demystify Feast (Arrange Version / あきやまうに)",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "Demystify Feast (Arrange Version / あきやまうに)"
+      ],
+      "trackNumber": 44,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 20,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=TjbWpFtA90Y",
+      "sourceTitle": "Demystify Feast (Arrange Version / あきやまうに)",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 225.1265,
+      "bytes": 5404839,
+      "sha256": "4629584963ee4c3304677ebd9087d233b6d7146223660b4e6d13727e01d0ff1c"
+    },
+    {
       "src": "./music/th original/yt-ugFEFj0IO78.mp3",
       "title": "[th07-09] 幽霊楽団　～ Phantom Ensemble",
       "folder": "th original",
@@ -1064,6 +2048,30 @@
       "sha256": "5985e28a6a071268a8c350504af8dd0d89a9bdd5f1ea6f892c4fbb2610d50397"
     },
     {
+      "src": "./music/th original/yt-uw_sxhb1zXc.mp3",
+      "title": "[th075-23] 広有射怪鳥事 (弐符アレンジ)",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "広有射怪鳥事 (弐符アレンジ)"
+      ],
+      "trackNumber": 23,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 23,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=uw_sxhb1zXc",
+      "sourceTitle": "広有射怪鳥事 (弐符アレンジ)",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 196.7735,
+      "bytes": 4723977,
+      "sha256": "7cd0febeb701083be89f44a2a58beeebf4d3df69602d85302ed789239f52cc1d"
+    },
+    {
       "src": "./music/th original/yt-v2hNqDz-RMw.mp3",
       "title": "[th07-07] 人形裁判　～ 人の形弄びし少女",
       "folder": "th original",
@@ -1085,6 +2093,30 @@
       "sha256": "7eed222500b13437ed78631ae1163c5c5d93e258e85a3f1ccfe7fae9d6dcbe5e"
     },
     {
+      "src": "./music/th original/yt-VBHSS5Ms6XA.mp3",
+      "title": "[th075-26] 少女綺想曲　～ Capriccio",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "少女綺想曲　～ Capriccio"
+      ],
+      "trackNumber": 26,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 2,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=VBHSS5Ms6XA",
+      "sourceTitle": "少女綺想曲　～ Capriccio",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 142.965,
+      "bytes": 3432591,
+      "sha256": "76b7b08f17e03ccd73ea2e587ca7d8b24afe8af0e6a7dab29da70cae988be8b3"
+    },
+    {
       "src": "./music/th original/yt-vfkktZ4p8Rw.mp3",
       "title": "[th07-14] ボーダーオブライフ",
       "folder": "th original",
@@ -1104,6 +2136,54 @@
       "duration": 136.596,
       "bytes": 3279932,
       "sha256": "d43f74acbe63bd2afa743d730d7490918f21c41865b03013d40e3d5d2c4c8ede"
+    },
+    {
+      "src": "./music/th original/yt-vRwZF_pwIp4.mp3",
+      "title": "[th075-34] ヴワル魔法図書館",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "ヴワル魔法図書館"
+      ],
+      "trackNumber": 34,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 10,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=vRwZF_pwIp4",
+      "sourceTitle": "ヴワル魔法図書館",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 172.194,
+      "bytes": 4134153,
+      "sha256": "0d3eac8e805d57d77acc190a0271c2843b9dfa4b6408ce4335412861d796a3a2"
+    },
+    {
+      "src": "./music/th original/yt-wJTGvOAs6vk.mp3",
+      "title": "[th075-39] 戦迅",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "戦迅"
+      ],
+      "trackNumber": 39,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 15,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=wJTGvOAs6vk",
+      "sourceTitle": "戦迅",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 88.11,
+      "bytes": 2116407,
+      "sha256": "c0c377ef8355aa6b9ae6e7d4fb26c7b52b4d42095857afa1ca3e612f0a58ab34"
     },
     {
       "src": "./music/th original/yt-wpuCXD67Y7A.mp3",
@@ -1167,6 +2247,30 @@
       "duration": 332.639,
       "bytes": 7984719,
       "sha256": "c4b6c12bc40012e7a0aa4a6275e7a2bbbc6469cbd92a165f0247a268499870f4"
+    },
+    {
+      "src": "./music/th original/yt-YCc0ZETV62Y.mp3",
+      "title": "[th075-17] 広有射怪鳥事 (体験版Ver.)",
+      "folder": "th original",
+      "artist": "NKZ / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "広有射怪鳥事 (体験版Ver.)"
+      ],
+      "trackNumber": 17,
+      "discNumber": 1,
+      "discTotal": 2,
+      "discTrackNumber": 17,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=YCc0ZETV62Y",
+      "sourceTitle": "広有射怪鳥事 (体験版Ver.)",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 151.2135,
+      "bytes": 3630724,
+      "sha256": "039f6d66c35d64dfaaa1eb24890d4b2dc2262e551077c9e39e10ed9c6be45f3c"
     },
     {
       "src": "./music/th original/yt-YIy2S8MB8c8.mp3",
@@ -1251,6 +2355,30 @@
       "duration": 342.093,
       "bytes": 8211652,
       "sha256": "d1a48c238ad1509d226aff7470fe1adff46daf17ac4af8c9fd6b1dac3d282661"
+    },
+    {
+      "src": "./music/th original/yt-zSYYzsdayH8.mp3",
+      "title": "[th075-28] 魔女達の舞踏会",
+      "folder": "th original",
+      "artist": "あきやまうに / 黄昏フロンティア",
+      "album": "幻想曲抜萃",
+      "originalWork": "th075",
+      "originalTracks": [
+        "魔女達の舞踏会"
+      ],
+      "trackNumber": 28,
+      "discNumber": 2,
+      "discTotal": 2,
+      "discTrackNumber": 4,
+      "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_k-6dLAOCagbyWMYNyFgu5TBue_8-pVELk",
+      "sourceUrl": "https://www.youtube.com/watch?v=zSYYzsdayH8",
+      "sourceTitle": "魔女達の舞踏会",
+      "sourceChannel": "Twilight Frontier - Topic",
+      "sourceChannelId": "UCijtpfpeLpHUPd2WQtm-vNQ",
+      "collectedOn": "2026-10-07",
+      "duration": 141.73,
+      "bytes": 3403205,
+      "sha256": "8116ccb65381ade66442f484d10dfa6a3c9052273393ea4257bd03287f1145be"
     },
     {
       "src": "./music/동방 어레인지/yt-2TTuH9BPwjI.mp3",
