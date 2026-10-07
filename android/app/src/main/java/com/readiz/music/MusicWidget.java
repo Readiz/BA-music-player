@@ -157,9 +157,10 @@ public class MusicWidget extends AppWidgetProvider {
             int width, int height, boolean rowOnly) {
         boolean row = rowOnly || width < 180 || height < 148;
         RemoteViews views = new RemoteViews(context.getPackageName(), row ? R.layout.music_widget_row : R.layout.music_widget);
-        views.setViewVisibility(R.id.widget_cover, !row || width >= 300 ? View.VISIBLE : View.GONE);
-        views.setViewVisibility(R.id.widget_previous, !row || width >= 232 ? View.VISIBLE : View.GONE);
-        views.setViewVisibility(R.id.widget_next, !row || width >= 164 ? View.VISIBLE : View.GONE);
+        views.setViewVisibility(R.id.widget_cover, View.VISIBLE);
+        if (row) views.setViewVisibility(R.id.widget_text, width >= 164 ? View.VISIBLE : View.GONE);
+        views.setViewVisibility(R.id.widget_previous, !row || width >= 300 ? View.VISIBLE : View.GONE);
+        views.setViewVisibility(R.id.widget_next, !row || width >= 232 ? View.VISIBLE : View.GONE);
         PendingIntent open = PendingIntent.getActivity(context, 40,
                 new Intent(context, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP),
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
