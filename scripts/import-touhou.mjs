@@ -39,7 +39,9 @@ for (const [index, entry] of collection.tracks.entries()) {
   const existing = manifest.tracks.find(track => track.src === src);
   if (existing && existsSync(src) && statSync(src).size === existing.bytes
     && createHash('sha256').update(readFileSync(src)).digest('hex') === existing.sha256
-    && existing.title === entry.title && existing.artist === entry.artist && waveforms[src]?.peaks?.length === 480) {
+    && existing.title === entry.title && existing.artist === entry.artist
+    && ['trackNumber', 'discNumber', 'discTotal', 'discTrackNumber'].every(key => existing[key] === entry[key])
+    && waveforms[src]?.peaks?.length === 480) {
     console.log(`[${index + 1}/${collection.tracks.length}] Already prepared: ${entry.title}`);
     continue;
   }
@@ -60,11 +62,13 @@ for (const [index, entry] of collection.tracks.entries()) {
       mkdirSync(`music/${collection.folder}`, { recursive: true });
       const temporary = `${src}.next.mp3`;
       await execute(join(ffmpeg, 'ffmpeg'), ['-nostdin', '-v', 'error', '-y', '-i', result.path, '-map', '0:a:0', '-c:a', 'copy', '-map_metadata', '-1', '-metadata', `title=${entry.title}`, '-metadata', `artist=${entry.artist}`, '-metadata', `album=${collection.name}`,
-        ...(entry.trackNumber ? ['-metadata', `track=${entry.trackNumber}`, '-metadata', `disc=${Number(entry.originalWork.slice(2)) - 5}/3`] : []), temporary]);
+        ...(entry.trackNumber ? ['-metadata', `track=${entry.discTrackNumber ?? entry.trackNumber}`, '-metadata', `disc=${entry.discNumber ?? Number(entry.originalWork.slice(2)) - 5}/${entry.discTotal ?? 3}`] : []), temporary]);
       const peaks = await createWaveform(temporary, { ffmpeg });
       const bytes = statSync(temporary).size;
       const track = { src, title: entry.title, folder: collection.folder, artist: entry.artist, album: entry.album,
-        originalWork: entry.originalWork, originalTracks: entry.originalTracks, trackNumber: entry.trackNumber, referenceUrl: entry.referenceUrl,
+        originalWork: entry.originalWork, originalTracks: entry.originalTracks, trackNumber: entry.trackNumber,
+        ...(entry.discNumber ? { discNumber: entry.discNumber, discTotal: entry.discTotal, discTrackNumber: entry.discTrackNumber } : {}),
+        referenceUrl: entry.referenceUrl,
         sourceUrl: video.url, sourceTitle: metadata.title, sourceChannel: metadata.channel, sourceChannelId: metadata.channel_id,
         collectedOn: collection.checkedOn, duration: peaks.duration, bytes, sha256: createHash('sha256').update(readFileSync(temporary)).digest('hex') };
       renameSync(temporary, src);
@@ -85,6 +89,18 @@ for (const [index, entry] of collection.tracks.entries()) {
       await delay(2000);
     }
   }
+}
+// Follow the soundtrack sequence while preserving all other catalog positions.
+if (collectionKey === 'original') {
+  const ordered = [...seen];
+  let position = 0;
+  for (const [index, src] of catalog.entries()) {
+    if (seen.has(src)) catalog[index] = ordered[position++];
+  }
+  if (position !== ordered.length) throw new Error('Incomplete original soundtrack order');
+  validateCatalog(manifest, catalog, waveforms);
+  writeFileSync('musicList.json.next', JSON.stringify(catalog, null, 2) + '\n');
+  renameSync('musicList.json.next', 'musicList.json');
 }
 validateCatalog(manifest, catalog, waveforms);
 console.log(`Prepared ${collection.tracks.length} tracks for ${collection.name}. Run tests and publish the verified catalog.`);
