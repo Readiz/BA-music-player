@@ -1,4 +1,4 @@
-// Playwright CLI run-code; serve dist locally with dist/music -> ../music for fixtures.
+// Playwright CLI run-code; serve dist locally. Audio fixtures may link dist/music to the Mac library's current/music directory.
 async (sourcePage) => {
   const base = new URL(sourcePage.url()).origin;
   const reports = [];

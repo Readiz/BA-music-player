@@ -4,7 +4,7 @@ async page => {
   const assert=(value,message)=>{if(!value)throw new Error(message);};
   await page.route('https://music.readiz.com/**',async route=>{
     const url=new URL(route.request().url());
-    const response=await page.request.get('http://127.0.0.1:4543/__pages/'+url.pathname.slice('/BA-music-player/'.length)+url.search);
+    const response=await page.request.get('http://127.0.0.1:4543/__pages/'+url.pathname.slice(1)+url.search);
     await route.fulfill({response,headers:{...response.headers(),'access-control-allow-origin':'*'}});
   });
   await page.goto('http://127.0.0.1:4543/');
@@ -23,7 +23,7 @@ async page => {
   assert(await page.locator('.music-add-jobs strong').first().textContent()==='업로드 검증 <script>','Unsafe or incorrect title');
   await page.screenshot({path:'output/playwright/music-upload/desktop.png'});
   await page.getByRole('button',{name:'듣기',exact:true}).click();
-  await page.waitForFunction(()=>document.querySelector('#audio').src.includes('/upload-')&&!document.querySelector('#audio').paused);
+  await page.waitForFunction(()=>document.querySelector('#audio').src.includes('/upload-')&&!document.querySelector('#audio').paused&&document.querySelector('#audio').currentTime>0.2&&!document.querySelector('#audio').error);
   await page.getByRole('button',{name:'음악 추가',exact:true}).click();
   await page.getByLabel('음악 파일',{exact:true}).setInputFiles('output/playwright/music-upload/sample.wav');
   await page.getByRole('button',{name:'파일을 ETC에 추가'}).click();
@@ -39,7 +39,7 @@ async page => {
   await page.getByRole('button',{name:'전체 해제',exact:true}).click();
   await page.getByRole('checkbox',{name:'ETC',exact:true}).check();
   await page.locator('#ulist li').filter({hasText:'업로드 검증 <script>'}).click();
-  await page.waitForFunction(()=>document.querySelector('#audio').src.includes('/upload-')&&!document.querySelector('#audio').paused);
+  await page.waitForFunction(()=>document.querySelector('#audio').src.includes('/upload-')&&!document.querySelector('#audio').paused&&document.querySelector('#audio').currentTime>0.2&&!document.querySelector('#audio').error);
   assert(!errors.length,'Browser errors: '+errors.join(';'));
   return {guestBlocked:true,fileTransmittedAndConverted:true,readyPlayback:true,deduplication:true,mobileLayout:true,anonymousPlayback:true,errors};
 }

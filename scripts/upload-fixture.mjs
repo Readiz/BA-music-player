@@ -13,8 +13,10 @@ mkdirSync('output/playwright/music-upload', { recursive: true });
 execFileSync('/opt/homebrew/bin/ffmpeg', ['-v', 'error', '-f', 'lavfi', '-i', 'sine=frequency=440:duration=12', '-y', 'output/playwright/music-upload/sample.wav']);
 const root=mkdtempSync(join(tmpdir(),'music-upload-browser-')), origin='http://127.0.0.1:4543';
 const auth=createAuth({origin,clientId:'test',clientSecret:'test',redirectUri:origin+'/api/auth/discord/callback',allowedUserIds:['1'],sessionSecret:'test-fixture-secret-at-least-32-characters',storePath:join(root,'auth.sqlite')},{fetch:async url=>Response.json(String(url).endsWith('/token')?{access_token:'fake'}:{id:'1',username:'fixture'})});
-const catalog=JSON.parse(readFileSync('musicList.json')); const manifest=JSON.parse(readFileSync('imported-tracks.json')); const waves=JSON.parse(readFileSync('waveforms.json'));
-const media = new Map();
+const original=join(root,'original.mp3'), originalSrc='./music/Blue Archive/fixture-original.mp3';
+execFileSync('/opt/homebrew/bin/ffmpeg', ['-v','error','-i','output/playwright/music-upload/sample.wav','-c:a','libmp3lame','-b:a','192k','-y',original]);
+const catalog=[originalSrc], manifest={schemaVersion:1,tracks:[]}, waves={[originalSrc]:await createWaveform(original)};
+const media = new Map([[originalSrc,readFileSync(original)]]);
 const imports=createImports({dataRoot:join(root,'data'),synchronize:async({video,result})=>{
   await new Promise(r=>setTimeout(r,1000));
   const src=`./music/ETC/${video.id}.mp3`;media.set(src,readFileSync(result.path));
@@ -28,11 +30,12 @@ const server=createApiServer({origin,handler:async request=>{
  if(url.pathname.startsWith('/api/'))return api(request);
  if(url.pathname.startsWith('/__pages/')){
   const file='./'+decodeURIComponent(url.pathname.slice('/__pages/'.length));
-  const json={'./blue-archive-ost.json':JSON.parse(readFileSync('blue-archive-ost.json')),'./musicList.json':catalog,'./imported-tracks.json':manifest,'./waveforms.json':waves};
+  const json={'./blue-archive-ost.json':{titles:{}},'./musicList.json':catalog,'./imported-tracks.json':manifest,'./waveforms.json':waves};
   if(json[file])return Response.json(json[file]);
-  if(file.startsWith('./music/')){try{return new Response(media.get(file)||readFileSync(file),{headers:{'Content-Type':'audio/mpeg'}});}catch{return new Response('',{status:404});}}
+  if(file.startsWith('./music/')){const audio=media.get(file);return audio?new Response(audio,{headers:{'Content-Type':'audio/mpeg'}}):new Response('',{status:404});}
  }
- const path=resolve('dist','.'+decodeURIComponent(url.pathname==='/'?'/index.html':url.pathname));
+ const pathname=url.pathname.startsWith('/__pages/')?url.pathname.slice('/__pages'.length):url.pathname;
+ const path=resolve('dist','.'+decodeURIComponent(pathname==='/'?'/index.html':pathname));
  if(!path.startsWith(resolve('dist')+'/'))return new Response('',{status:404});
  try {return new Response(readFileSync(path),{headers:{'Content-Type':{'.html':'text/html','.js':'application/javascript','.css':'text/css','.json':'application/json','.png':'image/png','.svg':'image/svg+xml','.jpg':'image/jpeg'}[extname(path)]||'application/octet-stream','Cache-Control':'no-store'}});}catch{return new Response('',{status:404});}
 }});
