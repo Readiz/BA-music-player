@@ -1,5 +1,5 @@
 (function() {
-  const base = "https://blog.readiz.com/BA-music-player/";
+  const base = "https://music.readiz.com/";
   window.BAMusicSource = {
     base,
     media: (path) => new URL(path, base).href,

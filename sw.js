@@ -9,7 +9,7 @@ self.addEventListener('activate', event => {
     .map(key => caches.delete(key)))));
 });
 self.addEventListener('fetch', event => {
-  // Music, range requests and catalogs stay on the network. Do not download 503 MB for installation.
+  // Music, range requests and catalogs stay on the network; installation does not copy the library.
   if (event.request.method !== 'GET' || event.request.mode !== 'navigate') return;
   if (new URL(event.request.url).origin !== self.location.origin) return;
   event.respondWith(fetch(event.request).catch(() => caches.match(OFFLINE)));

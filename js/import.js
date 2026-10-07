@@ -25,7 +25,7 @@
   const logout = modal.querySelector(".music-logout");
   let authenticated = false, timer, priorFocus, refreshing = false, refreshAgain = false, pollError = "", duplicate;
   const labels = { queued: "대기 중", checking: "음악 확인 중", downloading: "다운로드 중", converting: "음악 준비 중", syncing: "동기화 중 · 완료 후 ETC에 추가됩니다", ready: "동기화 완료 · ETC에 추가됨", failed: "추가 실패" };
-  const syncLabels = { uploading: "음원 전송 중", waiting: "공개 작업 대기 중", preparing: "공개 준비 중", waveform: "파형 생성 중", testing: "음원 검사 중", publishing: "목록에 반영 중", verifying: "공개된 음원 확인 중" };
+  const syncLabels = { uploading: "음원 전송 중", waiting: "공개 작업 대기 중", preparing: "공개 준비 중", waveform: "파형 생성 중", testing: "음원 검사 중", "backing-up": "백업 확인 중", publishing: "목록에 반영 중", verifying: "공개된 음원 확인 중" };
   const active = (job) => !["ready", "failed"].includes(job.status);
   const label = (job) => job.status === "syncing" ? syncLabels[job.syncStage] || "음원 공개 처리 중" : labels[job.status];
   const elapsed = (job) => {

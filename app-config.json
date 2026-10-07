@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "appId": "com.readiz.music",
   "name": "Readiz Music",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "origin": "https://music.readiz.com",
-  "catalog": "https://blog.readiz.com/BA-music-player/musicList.json",
-  "titles": "https://blog.readiz.com/BA-music-player/blue-archive-ost.json",
-  "waveforms": "https://blog.readiz.com/BA-music-player/waveforms.json",
-  "mediaBase": "https://blog.readiz.com/BA-music-player/",
+  "catalog": "https://music.readiz.com/musicList.json",
+  "titles": "https://music.readiz.com/blue-archive-ost.json",
+  "waveforms": "https://music.readiz.com/waveforms.json",
+  "mediaBase": "https://music.readiz.com/",
   "buildTarget": "pages",
   "tv": {
     "preview": "./?tv=1",
@@ -17,6 +17,6 @@
     "appId": "ReadizMU01.ReadizMusic"
   },
   "trackCount": 476,
-  "revision": "77e5053b5fffeea7ee7a7a6084e4abb83a6602ca",
+  "revision": "7c645429f8e1529396e86101cc8f1f96de729204",
   "dirty": false
 }
