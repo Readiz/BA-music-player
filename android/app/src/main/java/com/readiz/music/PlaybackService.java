@@ -3,6 +3,8 @@ package com.readiz.music;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
@@ -20,6 +22,18 @@ import java.util.List;
 @androidx.annotation.OptIn(markerClass = androidx.media3.common.util.UnstableApi.class)
 public final class PlaybackService extends MediaSessionService {
     static final String OPTIONS = "com.readiz.music.OPTIONS";
+    private static PlaybackService active;
+    private final Handler checkpointHandler = new Handler(Looper.getMainLooper());
+    private final Runnable checkpoint = new Runnable() {
+        @Override public void run() {
+            saveSnapshot();
+            if (player != null && player.getPlayWhenReady()) checkpointHandler.postDelayed(this, 15000);
+        }
+    };
+    static Player widgetPlayer() { return active == null ? null : active.player; }
+    private void saveSnapshot() {
+        if (player != null && session != null) PlaybackSnapshot.save(this, player, session.getSessionExtras());
+    }
     private ExoPlayer player;
     private MediaSession session;
     @Override public void onCreate() {
@@ -50,6 +64,7 @@ public final class PlaybackService extends MediaSessionService {
                         player.setRepeatMode(repeat ? Player.REPEAT_MODE_ONE : Player.REPEAT_MODE_ALL);
                         player.setPauseAtEndOfMediaItems(!repeat && !args.getBoolean("autoNext", true));
                         s.setSessionExtras(new Bundle(args));
+                        saveSnapshot();
                         return Futures.immediateFuture(new SessionResult(SessionResult.RESULT_SUCCESS));
                     }
                     @Override public ListenableFuture<List<MediaItem>> onAddMediaItems(MediaSession s, MediaSession.ControllerInfo controller,
@@ -61,12 +76,34 @@ public final class PlaybackService extends MediaSessionService {
                         return Futures.immediateFuture(items);
                     }
                 }).build();
+        PlaybackSnapshot saved = PlaybackSnapshot.load(this);
+        if (!saved.items.isEmpty()) {
+            player.setMediaItems(saved.items, saved.index, saved.position);
+            player.setRepeatMode(saved.options.getBoolean("repeat") ? Player.REPEAT_MODE_ONE : Player.REPEAT_MODE_ALL);
+            player.setPauseAtEndOfMediaItems(!saved.options.getBoolean("repeat") && !saved.options.getBoolean("autoNext", true));
+            session.setSessionExtras(saved.options);
+        }
+        active = this;
+        player.addListener(new Player.Listener() {
+            @Override public void onEvents(Player source, Player.Events events) {
+                saveSnapshot();
+                MusicWidget.updateAll(PlaybackService.this);
+                checkpointHandler.removeCallbacks(checkpoint);
+                if (player.getPlayWhenReady()) checkpointHandler.postDelayed(checkpoint, 15000);
+            }
+        });
+        MusicWidget.updateAll(this);
     }
     @Override public MediaSession onGetSession(MediaSession.ControllerInfo controller) { return session; }
     @Override public void onTaskRemoved(Intent rootIntent) {
+        saveSnapshot();
         if (!isPlaybackOngoing()) stopSelf();
     }
     @Override public void onDestroy() {
+        saveSnapshot();
+        checkpointHandler.removeCallbacksAndMessages(null);
+        active = null;
+        MusicWidget.updateAll(this);
         if (session != null) session.release();
         if (player != null) player.release();
         super.onDestroy();
