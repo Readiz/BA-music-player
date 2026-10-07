@@ -93,7 +93,8 @@ test('waveform maintenance with no audio leaves the previous metadata intact', a
   assert.deepEqual(JSON.parse(await readFile(join(repo, 'waveforms.json'))), { preserved: true });
 });
 
-test('waveform maintenance reads the Mac library and preserves the exact catalog URLs', async t => {
+const mediaToolsAvailable = ['ffmpeg', 'ffprobe'].every(command => spawnSync(command, ['-version'], { stdio: 'ignore' }).status === 0);
+test('waveform maintenance reads the Mac library and preserves the exact catalog URLs', { skip: mediaToolsAvailable ? false : 'ffmpeg/ffprobe unavailable' }, async t => {
   const { repo, library, env } = await waveformFixture(t);
   const path = join(library, 'current', audioPath(first));
   await mkdir(dirname(path), { recursive: true });
