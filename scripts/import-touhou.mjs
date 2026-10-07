@@ -2,6 +2,7 @@ import { createDownloader, youtubeVideo } from '../server/imports.mjs';
 import { mediaIdentity, importedSource } from '../server/media-identity.mjs';
 import { validateCatalog } from '../server/catalog.mjs';
 import { createWaveform } from '../server/waveforms.mjs';
+import { audioPath, librarySettings } from '../server/library.mjs';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { setTimeout as delay } from 'node:timers/promises';
@@ -26,6 +27,7 @@ const collection = JSON.parse(readFileSync(expected.file, 'utf8'));
 const manifest = JSON.parse(readFileSync('imported-tracks.json', 'utf8'));
 const catalog = JSON.parse(readFileSync('musicList.json', 'utf8'));
 const waveforms = JSON.parse(readFileSync('waveforms.json', 'utf8'));
+const liveRoot = join(librarySettings().root, 'current');
 if (collection.schemaVersion !== 1 || collection.folder !== expected.folder || collection.name !== expected.name) throw new Error('Invalid collection');
 const seen = new Set();
 for (const entry of collection.tracks) {
@@ -37,8 +39,9 @@ const download = createDownloader({ command, ffmpeg });
 for (const [index, entry] of collection.tracks.entries()) {
   const src = `./music/${collection.folder}/${mediaIdentity(entry.videoId).filename}`;
   const existing = manifest.tracks.find(track => track.src === src);
-  if (existing && existsSync(src) && statSync(src).size === existing.bytes
-    && createHash('sha256').update(readFileSync(src)).digest('hex') === existing.sha256
+  const prepared = existsSync(src) ? src : join(liveRoot, audioPath(src));
+  if (existing && existsSync(prepared) && statSync(prepared).size === existing.bytes
+    && createHash('sha256').update(readFileSync(prepared)).digest('hex') === existing.sha256
     && existing.title === entry.title && existing.artist === entry.artist
     && ['trackNumber', 'discNumber', 'discTotal', 'discTrackNumber'].every(key => existing[key] === entry[key])
     && waveforms[src]?.peaks?.length === 480) {

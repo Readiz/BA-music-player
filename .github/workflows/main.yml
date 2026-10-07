@@ -24,6 +24,7 @@ jobs:
         timeout-minutes: 10
         with:
           ref: ${{ github.event_name == 'push' && 'master' || github.sha }}
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -46,7 +47,7 @@ jobs:
         with:
           branch: gh-pages
           folder: dist
-      - name: Upload GitHub Pages library
+      - name: Upload GitHub Pages player
         if: github.event_name == 'push'
         uses: actions/upload-pages-artifact@v4
         with:
@@ -65,6 +66,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Publish GitHub Pages library
+      - name: Publish GitHub Pages player
         id: deployment
         uses: actions/deploy-pages@v4

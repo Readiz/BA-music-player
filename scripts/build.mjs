@@ -1,28 +1,16 @@
 import { transformSync } from 'esbuild';
 import { readAndroidRelease } from './android-release.mjs';
-import { MUSIC_LIBRARY, validateCatalog } from '../server/catalog.mjs';
-import { createHash } from 'node:crypto';
-import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { MUSIC_LIBRARY } from '../server/catalog.mjs';
+import { readMetadata } from '../server/library.mjs';
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
-import { resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 process.chdir(root);
-const tracks = JSON.parse(readFileSync('musicList.json', 'utf8'));
-const imported = JSON.parse(readFileSync('imported-tracks.json', 'utf8'));
-validateCatalog(imported, tracks, JSON.parse(readFileSync('waveforms.json', 'utf8')));
-for (const track of imported.tracks) {
-  const audio = readFileSync(track.src);
-  if (audio.length !== track.bytes || createHash('sha256').update(audio).digest('hex') !== track.sha256) throw new Error('Imported audio checksum mismatch');
-}
-if (!Array.isArray(tracks) || !tracks.length) throw new Error('Empty music catalog');
-for (const track of tracks) {
-  const path = resolve(decodeURI(track));
-  if (!path.startsWith(resolve('music') + sep) || !existsSync(path) || !statSync(path).isFile()) {
-    throw new Error(`Invalid or missing track: ${track}`);
-  }
-}
+// Audio integrity belongs to Mac/NAS publication; code builds validate metadata only.
+const metadata = await readMetadata(root);
+const tracks = metadata['musicList.json'];
 // Explicit publication list: never serve the repository, dependencies or native build output.
 rmSync('dist', { recursive: true, force: true });
 mkdirSync('dist');

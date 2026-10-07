@@ -1,6 +1,6 @@
 {
   "name": "BA-music-player",
-  "version": "1.5.6",
+  "version": "1.5.7",
   "description": "Readiz Music independent web player and Android app foundation",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "dev": "node node_modules/serve/build/main.js dist -l tcp://127.0.0.1:4523",
     "devwin": "node node_modules/serve/build/main.js dist",
     "build": "node scripts/build.mjs",
-    "deploy:local": "npm run library:publish && npm run build && node scripts/deploy-api.mjs && node scripts/deploy-local.mjs",
+    "deploy:local": "npm run build && node scripts/deploy-api.mjs && node scripts/deploy-local.mjs",
     "build:apk:debug": "bash scripts/build-android.sh",
     "build:wgt": "python3 scripts/build-wgt.py",
     "start:api": "node server/start.mjs",

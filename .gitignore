@@ -9,3 +9,6 @@ android/local.properties
 *.jks
 *.keystore
 .DS_Store
+
+# Audio is served from the Mac library and backed up on the NAS.
+music/

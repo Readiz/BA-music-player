@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 process.chdir(fileURLToPath(new URL('..', import.meta.url)));
 execFileSync(process.execPath, ['scripts/build.mjs'], { stdio: 'inherit' });
-test('publication contains every catalog track and only public runtime files', () => {
+test('source-only publication validates the catalog and contains only public runtime files', () => {
   const tracks = JSON.parse(readFileSync('dist/musicList.json', 'utf8'));
   const config = JSON.parse(readFileSync('dist/app-config.json', 'utf8'));
   assert.equal(config.trackCount, tracks.length);

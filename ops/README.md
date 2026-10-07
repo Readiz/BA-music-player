@@ -3,12 +3,12 @@
 ## 맥 라이브러리와 NAS 복구 (1.5.6)
 
 - 공개 원점은 `https://music.readiz.com/`입니다. 맥 라이브러리는 `~/.local/share/readiz-music/library/current`이고 NAS 백업은 `/Volumes/readiz_private/cl_backup/readiz-music`입니다. `MUSIC_LIBRARY_ROOT`, `MUSIC_NAS_ROOT`, `MUSIC_NAS_MOUNT`로 경로를 지정할 수 있습니다.
-- `npm run library:publish`는 체크아웃의 음원·목록·파형·곡명을 검사하고 기존 온라인 추가곡도 보존합니다. 음원은 SHA-256 객체로 한 번씩 저장하고, 작은 목록 스냅샷을 따로 보관합니다. 맥 공개 스냅샷은 객체를 하드 링크하므로 배포마다 전체 음원을 복제하지 않습니다.
+- `npm run library:publish`는 체크아웃의 목록·파형·곡명과 Git에서 제외한 로컬 준비 음원 또는 기존 맥 음원을 검사합니다. 공개 잠금 안에서 온라인 추가곡을 합쳐 보존합니다. 음원은 SHA-256 객체로 한 번씩 저장하고, 작은 목록 스냅샷을 따로 보관합니다. 맥 공개 스냅샷은 객체를 하드 링크하므로 배포마다 전체 음원을 복제하지 않습니다.
 - NAS가 실제로 마운트됐는지 확인한 뒤 모든 음원 크기·해시와 목록을 검증합니다. NAS가 끊겼을 때 같은 이름의 로컬 폴더에 백업하지 않습니다. 백업이 완료돼야 맥 `current`를 원자적으로 전환하며, 실패하면 기존 공개 목록을 유지합니다. 백업 객체와 과거 목록은 자동 삭제하지 않습니다.
 - `npm run library:verify`는 현재 맥과 NAS 사본 전체의 크기·SHA-256·목록을 다시 검사합니다. `library-info.json`에는 현재 곡 수·용량·최근 백업 검증 시각만 공개하며 NAS 경로나 인증 정보는 포함하지 않습니다.
 - 복구는 NAS를 연결하고 `npm run library:restore`를 실행합니다. 특정 목록으로 복구할 때는 `npm run library:restore -- <40자리 revision>`을 사용합니다. NAS 객체와 목록만으로 비어 있는 맥 저장소를 재구성하며 검증 후 공개 링크를 전환합니다. 별도 복구 경로는 `MUSIC_LIBRARY_ROOT=/복구/경로 npm run library:restore`로 시험할 수 있습니다.
-- 배포는 의도한 변경을 커밋한 뒤 `npm test`, `npm run deploy:local` 순서로 수행합니다. 최초 전환에는 `ops/music.Caddyfile`과 홈페이지 Caddy CSP를 validate/reload합니다. 공개 카탈로그·음원은 Caddy가 직접 제공하며 HTTP Range·CORS를 지원합니다. `/api/*` 인증은 기존대로 유지합니다.
-- GitHub Pages 빌드에도 음원은 넣지 않습니다. 기존 저장소에 보관된 음원과 Git 이력은 유지하지만 새 온라인 추가곡의 원본은 맥/NAS가 관리합니다. 최신 전체 라이브러리는 NAS에서 복원하며 GitHub 체크아웃만으로 최신 온라인 추가곡을 복구할 수 없습니다.
+- 코드 배포는 의도한 변경을 커밋한 뒤 `npm test`, `npm run deploy:local` 순서로 수행하며 음원과 공개 목록을 재게시하지 않습니다. 새 맥은 먼저 NAS를 연결해 `npm run library:restore`로 라이브러리를 복구합니다. 최초 전환에는 `ops/music.Caddyfile`과 홈페이지 Caddy CSP를 validate/reload합니다. 공개 카탈로그·음원은 Caddy가 직접 제공하며 HTTP Range·CORS를 지원합니다. `/api/*` 인증은 기존대로 유지합니다.
+- `music/`는 Git 추적에서 제거하고 `.gitignore`로 제외합니다. 소스 빌드와 Pages CI는 목록·파형·경로 메타데이터를 검사하며 음원 파일을 요구하지 않습니다. 음원 전체 해시는 맥/NAS 게시와 `library:verify`에서 검사합니다. 최신 전체 라이브러리는 NAS에서 복원합니다. 과거 커밋의 음원 이력은 남아 있으며, 새 소스 체크아웃은 `git clone --depth 1 https://github.com/Readiz/BA-music-player.git`로 받을 수 있습니다.
 
 원본 저장소 `Readiz/BA-music-player`를 음악 서비스와 후속 앱의 독립 프로젝트로 유지한다. 운영 체크아웃은 `/Users/readiz/workspace/openclaw/BA-music-player`다. new-home은 바로가기와 기존 주소의 리다이렉트만 관리한다.
 
@@ -50,7 +50,7 @@ curl -f https://music.readiz.com/app-config.json
 - 공개 결과는 `music/동방 어레인지/yt-<영상ID>.mp3`, `musicList.json`, `imported-tracks.json`, `waveforms.json`에 함께 보관한다. 곡명·보컬/서클명·원래 앨범·공식 출처 URL/채널/영상 제목을 기록한다. 임시 자료는 무시되는 `output/import/touhou/`에만 생성한다.
 - 카테고리는 폴더별로 자동 생성되며 `js/library.js`는 폴더와 별도로 manifest의 아티스트를 표시한다. `js/script.js`는 저장 경로와 앨범 선택 키를 보존하면서 카드·체크박스·Media Session·네이티브 재생 큐의 앨범명을 **Touhou**로 표시한다. 커버는 `assets/albums/touhou-arrange.jpg`, 생성 프롬프트는 `assets/albums/prompts.json`이다. 일반 웹 음악 추가는 기존 ETC를 사용한다.
 - 원곡 카테고리·Media Session·네이티브 재생 큐의 앨범명은 **th original**이다. 원곡 전용 커버는 `assets/albums/touhou-original.jpg`, 생성 프롬프트는 같은 `prompts.json`에 보관한다.
-- 카탈로그 검증은 ETC·동방 어레인지·th original 세 폴더의 안정된 import ID만 허용한다. 새 manifest가 기존 ETC 추가를 방해하지 않도록 같은 커밋의 API도 배포한다. 준비 후 `npm test`, `MUSIC_BUILD_TARGET=pages npm test`, 의도한 파일만 커밋·push, `npm run deploy:local`을 실행한다.
+- 카탈로그 검증은 ETC·동방 어레인지·th original 세 폴더의 안정된 import ID만 허용한다. 새 manifest가 기존 ETC 추가를 방해하지 않도록 같은 커밋의 API도 배포한다. 목록·음원을 바꿨다면 `npm run library:publish`로 맥/NAS를 검증해 게시한 뒤 `npm test`, 의도한 소스·메타데이터만 커밋·push, `npm run deploy:local`을 실행한다. `music/`의 로컬 준비 파일은 Git에서 제외한다.
 - 맥/NAS 게시 성공 뒤 공개 manifest/목록/파형과 각 MP3의 크기·SHA-256·Range 응답을 확인한다. 브라우저에서 Touhou 30곡, th original 105곡, 두 앨범 동시 선택 135곡, 아티스트·커버·파형, 실제 재생과 다음 곡, 선택 복원, 모바일·TV 표시와 재생 알림의 앨범명까지 확인한 뒤 완료로 보고한다.
 
 ### Pages 게시 단계
