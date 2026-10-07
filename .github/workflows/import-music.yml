@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-        timeout-minutes: 5
+        timeout-minutes: 10
         with:
           ref: master
           fetch-depth: 0

@@ -47,7 +47,7 @@ curl -f https://music.readiz.com/app-config.json
 
 2026-10-07부터 Pages의 `build_type`은 `workflow`다. 일반 배포와 음악 추가 모두 검사한 `dist`를 `actions/upload-pages-artifact@v4`로 전송하고, 같은 workflow의 후속 job에서 `actions/deploy-pages@v4`로 게시한다. `gh-pages` 브랜치에도 동일한 결과물을 보관하지만 별도 Jekyll 작업에서 전체 음원 저장소를 다시 clone하지 않는다. 실제 공개 URL·목록·음원·파형 확인은 그대로 완료 조건이다.
 
-`github-pages` 환경은 배포 job의 `master` 실행을 허용하며 `pages: write`와 `id-token: write`는 이 job에만 부여한다. checkout은 5분, 검사 job은 20분, 배포 job은 10분으로 제한한다. Pages 설정과 배포 workflow를 함께 바꾸며, 원복은 Pages `build_type: legacy` 및 기존 `gh-pages` 원본 설정으로 되돌리는 방식이다. [GitHub 공식 artifact 배포 계약](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
+`github-pages` 환경은 배포 job의 `master` 실행을 허용하며 `pages: write`와 `id-token: write`는 이 job에만 부여한다. checkout은 10분, 검사 job은 20분, 배포 job은 10분으로 제한한다. Pages 설정과 배포 workflow를 함께 바꾸며, 원복은 Pages `build_type: legacy` 및 기존 `gh-pages` 원본 설정으로 되돌리는 방식이다. [GitHub 공식 artifact 배포 계약](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
 
 ## 설치와 이전
 

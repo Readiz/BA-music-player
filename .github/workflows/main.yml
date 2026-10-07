@@ -21,7 +21,7 @@ jobs:
       MUSIC_BUILD_TARGET: pages
     steps:
       - uses: actions/checkout@v4
-        timeout-minutes: 5
+        timeout-minutes: 10
         with:
           ref: ${{ github.event_name == 'push' && 'master' || github.sha }}
       - uses: actions/setup-node@v4
