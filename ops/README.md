@@ -44,6 +44,15 @@ DSM·FTP·WebDAV·Web Station의 외부 진입점은 추가하지 않습니다.
 롤백 시 보관한 이전 Music Caddy 설정을 validate/reload하면 기존 Mac 음원 사본으로
 돌아갈 수 있습니다. NAS 객체·원본·과거 스냅샷은 삭제하지 않습니다.
 
+
+### macOS 파일 접근 권한
+
+Caddy의 로컬 네트워크 권한과 **네트워크 볼륨** 파일 접근 권한은 별개입니다.
+처음 NAS 음원을 열 때 macOS가 네트워크 볼륨 접근을 요청할 수 있습니다.
+Mac이 잠겨 승인 창을 처리할 수 없으면 파일 열기가 대기하여 HTTP 요청이 지연될 수 있습니다.
+먼저 권한을 확인하고 실제 Caddy 프로세스의 NAS 파일 응답을 검증한 뒤 공개 경로를 전환합니다.
+전환 검증이 실패하면 보관한 Mac 음원용 Caddy 설정으로 즉시 되돌립니다.
+
 ## Mac 복구 사본과 NAS 백업
 
 - 공개 원점은 `https://music.readiz.com/`입니다. 맥 라이브러리는 `~/.local/share/readiz-music/library/current`이고 NAS 백업은 `/Volumes/readiz_private/cl_backup/readiz-music`입니다. `MUSIC_LIBRARY_ROOT`, `MUSIC_NAS_ROOT`, `MUSIC_NAS_MOUNT`로 경로를 지정할 수 있습니다.
