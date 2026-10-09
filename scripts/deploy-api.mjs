@@ -17,6 +17,8 @@ const release = join(root, 'api-releases', `${Date.now()}-${revision.slice(0, 12
 mkdirSync(release, { recursive: true });
 mkdirSync(join(root, 'logs'), { recursive: true, mode: 0o700 });
 cpSync('server', join(release, 'server'), { recursive: true });
+mkdirSync(join(release, 'scripts'));
+cpSync('scripts/mount-static.mjs', join(release, 'scripts/mount-static.mjs'));
 const current = join(root, 'api-current');
 const previous = existsSync(current) ? readlinkSync(current) : null;
 const plistPath = join(home, 'Library/LaunchAgents/com.readiz.music.api.plist');
@@ -24,6 +26,7 @@ const previousPlist = existsSync(plistPath) ? readFileSync(plistPath) : null;
 const label = `gui/${process.getuid()}/com.readiz.music.api`;
 const xml = value => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 const env = { MUSIC_LIBRARY_ROOT: join(root, 'library'), MUSIC_NAS_ROOT: process.env.MUSIC_NAS_ROOT || '/Volumes/readiz_private/cl_backup/readiz-music', MUSIC_NAS_MOUNT: process.env.MUSIC_NAS_MOUNT || '/Volumes/readiz_private', MUSIC_AUTH_CONFIG: authPath, MUSIC_DATA_ROOT: join(root, 'data'), MUSIC_YTDLP: command, MUSIC_FFMPEG: '/opt/homebrew/bin', MUSIC_REVISION: revision, PATH: `${process.execPath.slice(0, process.execPath.lastIndexOf('/'))}:/opt/homebrew/bin:/usr/bin:/bin` };
+for (const key of ['MUSIC_STATIC_PUBLISH_MOUNT', 'MUSIC_STATIC_SERVE_MOUNT']) if (process.env[key]) env[key] = process.env[key];
 const plist = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>Label</key><string>com.readiz.music.api</string><key>ProgramArguments</key><array><string>${xml(process.execPath)}</string><string>${xml(join(current, 'server/start.mjs'))}</string></array><key>EnvironmentVariables</key><dict>${Object.entries(env).map(([key,value]) => `<key>${key}</key><string>${xml(value)}</string>`).join('')}</dict><key>RunAtLoad</key><true/><key>KeepAlive</key><true/><key>ThrottleInterval</key><integer>5</integer><key>StandardOutPath</key><string>${xml(join(root, 'logs/api.log'))}</string><key>StandardErrorPath</key><string>${xml(join(root, 'logs/api.err.log'))}</string></dict></plist>`;
 function link(target) { const next = `${current}.next`; rmSync(next, { force: true }); symlinkSync(target, next); renameSync(next, current); }
 function stop() { try { execFileSync('launchctl', ['bootout', label], { stdio: 'ignore' }); } catch { /* First install. */ } }

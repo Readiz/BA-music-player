@@ -1,6 +1,6 @@
 {
   "name": "BA-music-player",
-  "version": "1.5.7",
+  "version": "1.5.8",
   "description": "Readiz Music independent web player and Android app foundation",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "dev": "node node_modules/serve/build/main.js dist -l tcp://127.0.0.1:4523",
     "devwin": "node node_modules/serve/build/main.js dist",
     "build": "node scripts/build.mjs",
-    "deploy:local": "npm run build && node scripts/deploy-api.mjs && node scripts/deploy-local.mjs",
+    "deploy:local": "npm run build && node scripts/deploy-api.mjs && node scripts/deploy-static.mjs && node scripts/deploy-local.mjs",
     "build:apk:debug": "bash scripts/build-android.sh",
     "build:wgt": "python3 scripts/build-wgt.py",
     "start:api": "node server/start.mjs",
@@ -17,6 +17,8 @@
     "import:touhou": "node scripts/import-touhou.mjs",
     "import:touhou-original": "node scripts/import-touhou.mjs original",
     "library:publish": "node scripts/library.mjs publish",
+    "library:stage-static": "node scripts/library.mjs stage-static",
+    "static:mount": "node scripts/mount-static.mjs",
     "library:verify": "node scripts/library.mjs verify",
     "library:restore": "node scripts/library.mjs restore"
   },

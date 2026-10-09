@@ -2,9 +2,13 @@ import { MUSIC_LIBRARY } from './catalog.mjs';
 import { handleAuth, authJson } from './auth-handler.mjs';
 import { ImportError } from './imports.mjs';
 
-export function createHandler({ auth, imports, staticRoot, revision = 'development' }) {
+export function createHandler({ auth, imports, staticRoot, resolveStatic, revision = 'development' }) {
   return async (request, ip = 'local') => {
     const path = new URL(request.url).pathname.replace(/\/$/, '');
+    if (path === '/_internal/music-static') {
+      if (!['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(ip)) return authJson({ error: 'not-found' }, 404);
+      return resolveStatic ? resolveStatic(request) : authJson({ error: 'static-unavailable' }, 503);
+    }
     if (path.startsWith('/api/auth/')) return handleAuth(request, auth, ip);
     if (path === '/api/health' && request.method === 'GET') return authJson({ service: 'readiz-music', revision, auth: !!auth });
     if (['/waveforms.json', '/musicList.json', '/api/library'].includes(path) && request.method === 'GET') {

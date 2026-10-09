@@ -160,7 +160,7 @@ export function createImports({ dataRoot, downloader = createDownloader(), conve
         const synced = await synchronize({ video, result, signal: controller.signal, checkpoint: JSON.parse(row.sync_state || '{}'),
           saveCheckpoint: state => db.prepare('UPDATE imports SET sync_state=? WHERE id=?').run(JSON.stringify(state), row.id),
           onProgress: stage => {
-            if (!['uploading', 'waiting', 'preparing', 'waveform', 'testing', 'backing-up', 'publishing', 'verifying'].includes(stage)) return;
+            if (!['uploading', 'waiting', 'preparing', 'waveform', 'testing', 'backing-up', 'publishing', 'publishing-static', 'verifying'].includes(stage)) return;
             db.prepare('UPDATE imports SET sync_stage=?,updated_at=? WHERE id=? AND (sync_stage IS NULL OR sync_stage!=?)').run(stage, now(), row.id, stage);
           } });
         controller.signal.throwIfAborted();

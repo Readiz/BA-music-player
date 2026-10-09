@@ -4,6 +4,7 @@ import { copyFile, link, lstat, mkdir, open, readFile, realpath, rename, rm, sta
 import { homedir } from 'node:os';
 import { dirname, join, resolve, sep } from 'node:path';
 import { validateCatalog } from './catalog.mjs';
+import { publishNasStatic, staticSettings, verifyNasStatic } from './nas-static.mjs';
 
 export const METADATA_FILES = ['musicList.json', 'imported-tracks.json', 'waveforms.json', 'blue-archive-ost.json'];
 const sha = data => createHash('sha256').update(data).digest('hex');
@@ -15,6 +16,7 @@ export function librarySettings(env = process.env) {
     nasRoot: resolve(env.MUSIC_NAS_ROOT || '/Volumes/readiz_private/cl_backup/readiz-music'),
     nasMount: resolve(env.MUSIC_NAS_MOUNT || '/Volumes/readiz_private'),
     requireMount: true,
+    static: staticSettings(env),
   };
 }
 
@@ -189,6 +191,10 @@ async function publishUnlocked(options) {
     } finally { await rm(stage, { recursive: true, force: true }); }
   }
   if (snapshotIdentity(await readMetadata(target), JSON.parse(await readFile(join(target, 'snapshot.json'), 'utf8')).files) !== revision) throw new Error('Mac catalog verification failed');
+  if (options.static) {
+    await publishNasStatic({ settings: options.static, root, snapshot, signal, onProgress });
+    await atomicJson(join(target, 'library-info.json'), { schemaVersion: 1, revision, trackCount: snapshot.trackCount, bytes: snapshot.bytes, publishedAt: createdAt, backupVerifiedAt: createdAt, serving: 'nas-via-mac', backup: 'mac-and-nas' });
+  }
   await assertNasMounted(options);
   await switchCurrent(root, revision);
   await atomicJson(join(root, 'backup-status.json'), { revision, verifiedAt: createdAt, trackCount: snapshot.trackCount, bytes: snapshot.bytes });
@@ -231,7 +237,8 @@ export async function verifyLibrary(options) {
       if ((await stat(filename)).size !== file.bytes || await hashFile(filename, options.signal) !== file.sha256) throw new Error('Library verification failed');
     }
   }
-  return { revision: snapshot.revision, trackCount: snapshot.trackCount, bytes: snapshot.bytes, mac: 'verified', nas: 'verified' };
+  const serving = options.static ? await verifyNasStatic(options.static, snapshot, options.signal) : undefined;
+  return { revision: snapshot.revision, trackCount: snapshot.trackCount, bytes: snapshot.bytes, mac: 'verified', nas: 'verified', ...(serving ? { nasStatic: serving } : {}) };
 }
 
 export async function restoreLibrary(options, revision) {

@@ -14,7 +14,34 @@ music.readiz.com {
 		Permissions-Policy "camera=(), microphone=(), geolocation=()"
 		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://git.readiz.com; media-src 'self' blob: https://git.readiz.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 	}
-	@library path /music/* /musicList.json /waveforms.json /imported-tracks.json /blue-archive-ost.json /lastUpdated.txt /library-info.json
+	@audio path /music/*
+	handle @audio {
+		route {
+			header {
+				Access-Control-Allow-Origin "*"
+				Access-Control-Allow-Methods "GET, HEAD, OPTIONS"
+				Access-Control-Allow-Headers "Range, If-Range"
+				Access-Control-Expose-Headers "Accept-Ranges, Content-Length, Content-Range, ETag"
+				Cache-Control "no-cache"
+			}
+			@audio_preflight method OPTIONS
+			respond @audio_preflight "" 204
+			@audio_write not method GET HEAD
+			respond @audio_write "" 405
+			request_header -X-Readiz-Music-Object
+			forward_auth 127.0.0.1:4525 {
+				uri /_internal/music-static
+				copy_headers X-Readiz-Music-Object
+				transport http {
+					response_header_timeout 5s
+				}
+			}
+			rewrite * /{http.request.header.X-Readiz-Music-Object}
+			root * /Users/readiz/.local/share/readiz-static/serve/objects
+			file_server
+		}
+	}
+	@library path /musicList.json /waveforms.json /imported-tracks.json /blue-archive-ost.json /lastUpdated.txt /library-info.json
 	handle @library {
 		root * /Users/readiz/.local/share/readiz-music/library/current
 		header {

@@ -1,11 +1,55 @@
 # Readiz Music 운영
 
-## 맥 라이브러리와 NAS 복구 (1.5.6)
+## NAS 정적 서빙 (1.5.8)
+
+`사용자 → music.readiz.com의 Mac Caddy → NAS readiz_static/music/objects` 경로로
+음원을 제공합니다. CDN 캐시 서비스는 추가하지 않았으며 DNS only를 유지합니다.
+DSM·FTP·WebDAV·Web Station의 외부 진입점은 추가하지 않습니다.
+
+- 공유폴더 `readiz_static`는 볼륨 1의 Btrfs에 생성했습니다. 데이터 체크섬과 관리자 전용
+  휴지통을 사용하고, 네트워크 목록 및 권한 없는 사용자에게 숨깁니다.
+  기존 관리자와 readiz만 쓰며 guest·seo·shared는 접근할 수 없습니다.
+- 게시 경로는 `~/.local/share/readiz-static/publish`입니다. 기존 인증된 SMB 세션으로
+  `//readiz@192.168.0.5/readiz_static`을 연결합니다.
+- 서빙 경로는 `~/.local/share/readiz-static/serve`입니다.
+  동일 공유의 `music` 하위 경로만 **읽기 전용**으로 별도 마운트합니다.
+  NAS 계정 비밀번호나 새로운 계정은 생성·저장하지 않습니다.
+- Mac의 API는 현재 카탈로그와 검증 영수증으로 요청을 확인하고 해시 객체 경로만 Caddy에
+  전달합니다. 실제 파일 바이트는 Caddy가 읽습니다. 내부 확인 API는 loopback에서만 받으며
+  공개 프록시 경로에 추가하지 않습니다. 사용자가 보낸 객체 경로 헤더는 제거합니다.
+- NAS 객체는 `music/objects/<앞 두 자리>/<SHA-256>.<확장자>`로 한 번씩 저장합니다.
+  SMB 하드링크·심볼릭 링크를 사용하지 않습니다. 개별 게시 목록은 작은 검증 기록으로 보존하며,
+  과거 객체를 자동 삭제하지 않습니다. 기존 개인 공유의 백업 디렉터리는 서빙하지 않습니다.
+- NAS 게시·서빙 마운트의 실제 SMB 원본, 쓰기/읽기 전용 상태, 파일 크기·경로를 확인합니다.
+  알려지지 않은 곡·목록 밖 경로·심볼릭 링크는 제공하지 않습니다.
+  음원은 GET/HEAD, CORS 사전 요청은 OPTIONS만 허용하며 파일 목록 탐색·업로드는 제공하지 않습니다.
+- 음원 주소는 내용이 바뀔 수 있어 `no-cache`와 ETag로 재검증합니다. 인증된 업로드 API의
+  접근 제한은 유지합니다. 요청 이력·계정·인증 정보는 공개 공유에 넣지 않습니다.
+- `npm run library:stage-static`은 기존 공개 목록의 검증된 Mac 객체를 NAS 게시 공간으로
+  복사합니다. `library:publish`와 새 곡 추가는 게시 객체 검증까지 마쳐야 Mac의 현재 목록을
+  전환합니다. `library:verify`는 Mac·NAS 백업·NAS 서빙 사본을 모두 확인합니다.
+- `npm run static:mount`가 연결을 확인·복구합니다. `deploy:local`은 API 배포와 함께
+  `com.readiz.static.mounts` LaunchAgent를 설치하여 사용자 로그인 시와 60초마다 확인합니다.
+  비밀번호 입력창은 띄우지 않습니다. 재부팅 등으로 기존 SMB 인증 세션이 없어지면 사용자
+  NAS 연결이 먼저 필요하며, 인증 없는 자동 재로그인을 보장하지 않습니다.
+- 마운트가 사라지면 바탕 디렉터리는 쓰기 불가(0500)입니다. 로컬 대체 폴더에 음원을 쓰지
+  않으며 음원 요청은 503/no-store로 실패합니다. API 자체가 중지되면 게이트웨이 오류가 됩니다.
+  작은 카탈로그와 앱 화면은 계속 Mac에서 제공됩니다.
+- 현재 Mac 전체 사본은 계속 갱신하여 복구·롤백용으로 유지합니다. 이번 전환은 Mac 용량을
+  회수하는 작업이 아닙니다. 동일 NAS 안의 게시본과 백업은 독립 장애 대비 사본이 아닙니다.
+
+첫 적용은 공유폴더·마운트 확인 → `library:stage-static` → 테스트·커밋 →
+`deploy:local` → Caddy validate/reload → 공개 원본 해시·Range·브라우저 재생 확인 순서입니다.
+카탈로그 공개 정보의 `serving`은 `nas-via-mac`입니다. NAS 경로·계정은 포함하지 않습니다.
+롤백 시 보관한 이전 Music Caddy 설정을 validate/reload하면 기존 Mac 음원 사본으로
+돌아갈 수 있습니다. NAS 객체·원본·과거 스냅샷은 삭제하지 않습니다.
+
+## Mac 복구 사본과 NAS 백업
 
 - 공개 원점은 `https://music.readiz.com/`입니다. 맥 라이브러리는 `~/.local/share/readiz-music/library/current`이고 NAS 백업은 `/Volumes/readiz_private/cl_backup/readiz-music`입니다. `MUSIC_LIBRARY_ROOT`, `MUSIC_NAS_ROOT`, `MUSIC_NAS_MOUNT`로 경로를 지정할 수 있습니다.
 - `npm run library:publish`는 체크아웃의 목록·파형·곡명과 Git에서 제외한 로컬 준비 음원 또는 기존 맥 음원을 검사합니다. 공개 잠금 안에서 온라인 추가곡을 합쳐 보존합니다. 음원은 SHA-256 객체로 한 번씩 저장하고, 작은 목록 스냅샷을 따로 보관합니다. 맥 공개 스냅샷은 객체를 하드 링크하므로 배포마다 전체 음원을 복제하지 않습니다.
-- NAS가 실제로 마운트됐는지 확인한 뒤 모든 음원 크기·해시와 목록을 검증합니다. NAS가 끊겼을 때 같은 이름의 로컬 폴더에 백업하지 않습니다. 백업이 완료돼야 맥 `current`를 원자적으로 전환하며, 실패하면 기존 공개 목록을 유지합니다. 백업 객체와 과거 목록은 자동 삭제하지 않습니다.
-- `npm run library:verify`는 현재 맥과 NAS 사본 전체의 크기·SHA-256·목록을 다시 검사합니다. `library-info.json`에는 현재 곡 수·용량·최근 백업 검증 시각만 공개하며 NAS 경로나 인증 정보는 포함하지 않습니다.
+- NAS가 실제로 마운트됐는지 확인한 뒤 모든 음원 크기·해시와 목록을 검증합니다. NAS가 끊겼을 때 같은 이름의 로컬 폴더에 백업하지 않습니다. 백업과 NAS 게시 객체 검증이 완료돼야 맥 `current`를 원자적으로 전환하며, 실패하면 기존 공개 목록을 유지합니다. 백업 객체와 과거 목록은 자동 삭제하지 않습니다.
+- `npm run library:verify`는 현재 Mac·NAS 백업·NAS 서빙 사본 전체의 크기·SHA-256·목록을 다시 검사합니다. `library-info.json`에는 현재 곡 수·용량·최근 백업 검증 시각만 공개하며 NAS 경로나 인증 정보는 포함하지 않습니다.
 - 복구는 NAS를 연결하고 `npm run library:restore`를 실행합니다. 특정 목록으로 복구할 때는 `npm run library:restore -- <40자리 revision>`을 사용합니다. NAS 객체와 목록만으로 비어 있는 맥 저장소를 재구성하며 검증 후 공개 링크를 전환합니다. 별도 복구 경로는 `MUSIC_LIBRARY_ROOT=/복구/경로 npm run library:restore`로 시험할 수 있습니다.
 - 코드 배포는 의도한 변경을 커밋한 뒤 `npm test`, `npm run deploy:local` 순서로 수행하며 음원과 공개 목록을 재게시하지 않습니다. 새 맥은 먼저 NAS를 연결해 `npm run library:restore`로 라이브러리를 복구합니다. 최초 전환에는 `ops/music.Caddyfile`과 홈페이지 Caddy CSP를 validate/reload합니다. 공개 카탈로그·음원은 Caddy가 직접 제공하며 HTTP Range·CORS를 지원합니다. `/api/*` 인증은 기존대로 유지합니다.
 - `music/`는 Git 추적에서 제거하고 `.gitignore`로 제외합니다. 소스 빌드와 Pages CI는 목록·파형·경로 메타데이터를 검사하며 음원 파일을 요구하지 않습니다. 음원 전체 해시는 맥/NAS 게시와 `library:verify`에서 검사합니다. 최신 전체 라이브러리는 NAS에서 복원합니다. 과거 커밋의 음원 이력은 남아 있으며, 새 소스 체크아웃은 `git clone --depth 1 https://github.com/Readiz/BA-music-player.git`로 받을 수 있습니다.
@@ -15,7 +59,7 @@
 ## 도메인과 배포
 
 - 대표 주소: `https://music.readiz.com/`.
-- Cloudflare DNS: `music` CNAME → `mac.readiz.com`, **DNS only**, TTL Auto. TV와 같은 Mac/Caddy 운영 경로다. Cloudflare가 권한 DNS를 담당하고 앱 HTTPS는 Caddy가 처리한다. 음원·카탈로그도 맥의 별도 라이브러리 저장소에서 직접 제공하며 NAS에 같은 복구 사본을 보관한다.
+- Cloudflare DNS: `music` CNAME → `mac.readiz.com`, **DNS only**, TTL Auto. TV와 같은 Mac/Caddy 운영 경로다. Cloudflare가 권한 DNS를 담당하고 앱 HTTPS는 Caddy가 처리한다. 카탈로그는 Mac에 유지하고 음원 바이트는 NAS의 게시 전용 공유에서 읽는다. 기존 Mac/NAS 복구 사본도 유지한다.
 - 기존에는 전용 `music` 레코드가 없어서 와일드카드를 통해 `cafe24.readiz.com`으로 해석되었다. 새 `music` CNAME만 추가하며 다른 호스트와 와일드카드는 변경하지 않는다. DNS 롤백은 추가한 전용 `music` 레코드를 삭제하는 방식이다.
 - 게이트웨이 `/opt/homebrew/etc/Caddyfile`에 이 저장소의 `ops/music.Caddyfile`을 import한다.
 - 정적 릴리스: `/opt/homebrew/var/www/readiz-music/releases/<시각>-<commit>/`, 운영 링크: `current`.
@@ -31,7 +75,7 @@ curl -f https://music.readiz.com/app-config.json
 
 일반 정적 업데이트에는 Caddy reload가 필요 없다. 릴리스의 모든 파일을 복사한 뒤 `current` 심볼릭 링크를 원자적으로 바꾼다. 롤백은 배포 결과의 `previous` 경로로 임시 심볼릭 링크를 만든 뒤 `current`를 rename으로 교체한다. 음원 경로를 재사용하므로 음원도 ETag와 no-cache로 매번 재검증한다. HTML·JS·목록·매니페스트·서비스 워커는 매번 재검증한다.
 
-공개 출력은 허용 목록으로 구성하며 `.git`, `node_modules`, Android 소스·서명키, 스크립트, 운영 문서는 배포하지 않는다. `file_server`는 없는 앱 경로를 404로 반환한다. `/music/*` 주소는 맥 파일 서버가 직접 제공하며 Range와 공개 음원 CORS를 지원한다. 유튜브 추가 API는 별도 Node 데몬(127.0.0.1:4525)에서 실행한다. 홈페이지 서버 재시작은 필요 없다.
+공개 출력은 허용 목록으로 구성하며 `.git`, `node_modules`, Android 소스·서명키, 스크립트, 운영 문서는 배포하지 않는다. `file_server`는 없는 앱 경로를 404로 반환한다. `/music/*` 주소는 현재 목록에 등록된 NAS 객체만 Caddy가 제공하며 Range와 공개 음원 CORS를 지원한다. 유튜브 추가 API는 별도 Node 데몬(127.0.0.1:4525)에서 실행한다. 홈페이지 서버 재시작은 필요 없다.
 
 ## 확인 기준
 
@@ -76,7 +120,7 @@ curl -f https://music.readiz.com/app-config.json
 
 - 추가 창을 닫아도 진행 중 요청은 2초마다 확인한다. 다시 방문하거나 새로고침하면 인증된 요청 이력을 복원하며, 상단에 현재 단계·경과 시간·완료/실패를 표시한다. 연결 오류는 재확인 안내를 표시하고 5초 후 재시도한다.
 - 데스크톱·TV의 남은 화면 높이는 `.app-player`만 채운다. 상단 진행 알림은 내용 높이를 유지하여 요청 접수 뒤에도 앨범·재생 목록이 눌리지 않도록 한다.
-- `/api/imports`는 `updatedAt`과 `syncStage`를 제공한다. 동기화의 전송·대기·공개 준비·파형·검사·목록 반영·공개 음원 확인 단계를 SQLite에 저장한다. 완료는 NAS 백업과 맥 공개 목록·파형·음원 검증 뒤에만 인정한다.
+- `/api/imports`는 `updatedAt`과 `syncStage`를 제공한다. 동기화의 전송·대기·공개 준비·파형·검사·목록 반영·공개 음원 확인 단계를 SQLite에 저장한다. 완료는 NAS 백업·게시 객체와 공개 목록·파형·음원 검증 뒤에만 인정한다.
 - `scripts/verify-import-progress.js`는 격리된 브라우저에서 창 닫기·새로고침·연결 복구·완료·실패·로그아웃·모바일 표시를 확인한다. 운영 데이터나 인증 세션을 테스트에 사용하지 않는다.
 
 ## 음악 파일 업로드 (1.5.0)
@@ -94,10 +138,10 @@ curl -f https://music.readiz.com/app-config.json
 - 인증 설정은 `~/.config/readiz-music/discord-auth.json` (600)입니다. 중앙 SSO와 기존 Discord 허용 계정·Origin·업로드 제한은 유지합니다. Caddy는 임시 다운로드와 작업 DB를 공개하지 않습니다.
 - 다운로드 도구는 `~/.local/share/readiz-music/downloader/bin/yt-dlp`, 오디오 도구는 `/opt/homebrew/bin/ffmpeg`입니다. 런타임에서 GitHub 토큰·Contents·Actions 권한을 사용하지 않습니다.
 - 요청 DB는 `~/.local/share/readiz-music/data/imports.sqlite`입니다. 준비된 MP3는 `data/media/ETC/`, 변환 중 파일은 `data/staging/`에 둡니다. 실패한 동기화 파일은 재시도를 위해 보존합니다.
-- 곡 추가는 다운로드/변환 → 깨끗한 제목 태그 → 480개 파형 → 맥 객체 검사 → NAS 백업 검사 → 공개 목록 반영 → 공개 음원 해시·Range 확인 순서입니다. 입력 음원을 태그 정리할 때 다시 손실 압축하지 않습니다.
-- `queued/checking/downloading/converting/syncing/ready/failed` 상태와 `preparing/waveform/testing/backing-up/publishing/verifying` 단계를 저장합니다. NAS 백업이나 공개 검증에 실패하면 ready로 표시하지 않습니다. 중단된 요청은 재시작 때 다시 이어갑니다.
+- 곡 추가는 다운로드/변환 → 깨끗한 제목 태그 → 480개 파형 → Mac 객체 검사 → NAS 백업 검사 → NAS 게시 객체 검사 → 공개 목록 반영 → 공개 음원 해시·Range 확인 순서입니다. 입력 음원을 태그 정리할 때 다시 손실 압축하지 않습니다.
+- `queued/checking/downloading/converting/syncing/ready/failed` 상태와 `preparing/waveform/testing/backing-up/publishing/publishing-static/verifying` 단계를 저장합니다. NAS 백업이나 공개 검증에 실패하면 ready로 표시하지 않습니다. 중단된 요청은 재시작 때 다시 이어갑니다.
 - 맥과 NAS에 검증한 파일을 설치하고 공개 확인까지 완료한 뒤 임시 MP3를 정리합니다. 사용자·작업 ID·인증 정보는 공개 목록이나 NAS 공개 음원 메타데이터에 넣지 않습니다.
-- 브라우저와 홈페이지는 맥 공개 원점에서 목록·음원·파형을 읽습니다. 기존 Android의 `/music/*` 주소도 맥에서 직접 스트리밍하며 APK 재설치는 필요 없습니다. `/api/library`는 공개 메타데이터 주소로 연결합니다.
+- 브라우저와 홈페이지는 맥 공개 원점에서 목록·음원·파형을 읽습니다. 기존 Android의 `/music/*` 주소도 같은 Caddy에서 NAS 음원을 스트리밍하며 APK 재설치는 필요 없습니다. `/api/library`는 공개 메타데이터 주소로 연결합니다.
 - 한 곡 30분/100MB, 동시 다운로드 1개, 전체 대기열 5개, 계정당 시간당 20곡, 누적 10GiB, 남은 공간 500MiB 제한입니다. 준비 단계 실패는 재요청하고, NAS가 복구되면 같은 준비 파일을 재사용합니다.
 - 로그는 `~/.local/share/readiz-music/logs/`입니다. OAuth 코드·state·쿠키·토큰·상위 미디어 서명 URL을 출력하지 않습니다. 요청 이력·세션 DB는 개인 데이터이므로 음원 백업과 별도입니다.
 
