@@ -221,7 +221,7 @@ ETC로 이동한 세 곡의 실제 재생을 확인합니다.
 증명과는 구분합니다. 휴대폰의 실제 화면 잠금·다른 앱 전환·배터리 제한은 별도의 실기기
 확인이 필요합니다.
 
-https://blog.readiz.com/BA-music-player/
+https://git.readiz.com/BA-music-player/
 
 ## 독립 서비스와 앱 (1.1.0)
 
