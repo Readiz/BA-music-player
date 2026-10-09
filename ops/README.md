@@ -53,6 +53,14 @@ Mac이 잠겨 승인 창을 처리할 수 없으면 파일 열기가 대기하�
 먼저 권한을 확인하고 실제 Caddy 프로세스의 NAS 파일 응답을 검증한 뒤 공개 경로를 전환합니다.
 전환 검증이 실패하면 보관한 Mac 음원용 Caddy 설정으로 즉시 되돌립니다.
 
+### 2026-10-09 적용 검증
+
+- 운영 1.5.8(구현 커밋 `635bf63`)에서 476곡, 1,246,604,776바이트를 NAS 게시 영역으로 전환했습니다. 전체 객체의 SHA-256을 복사 시 검증했고 기존 URL을 유지했습니다.
+- Caddy 네트워크 볼륨 접근 승인 후 내부 파일 응답을 먼저 확인하고 공개 경로를 전환했습니다. 공개 HTTPS에서 476곡 모두 HEAD/크기 확인, 6개 앨범 대표곡 전체 SHA-256 및 중간 구간 206 응답을 통과했습니다.
+- 브라우저에서 재생 시간 증가, 탐색 막대로 약 55% 위치 이동, 다음 곡, 일시정지와 390px 모바일 폭을 확인했습니다. Android APK는 기존 0.4.2를 유지하며 이번 전환의 실제 Android 기기 검증은 수행하지 않았습니다.
+- 목록 밖 경로·내부 확인 API는 404, 비인증 추가 API는 401, 음원 POST는 405였습니다. 기존 전체 테스트 70개와 변경 후 NAS 전용 테스트 7개가 통과했습니다.
+- 서빙 마운트는 실제 SMB 읽기 전용이며 자동 연결 점검 LaunchAgent의 종료 코드는 0입니다. 상세 운영 증적과 롤백 설정은 `~/.config/readiz-nas/backups/20261009-music-static/`에 보관합니다.
+
 ## Mac 복구 사본과 NAS 백업
 
 - 공개 원점은 `https://music.readiz.com/`입니다. 맥 라이브러리는 `~/.local/share/readiz-music/library/current`이고 NAS 백업은 `/Volumes/readiz_private/cl_backup/readiz-music`입니다. `MUSIC_LIBRARY_ROOT`, `MUSIC_NAS_ROOT`, `MUSIC_NAS_MOUNT`로 경로를 지정할 수 있습니다.
@@ -90,7 +98,7 @@ curl -f https://music.readiz.com/app-config.json
 
 1. 권한 DNS, 공용 DNS, 로컬 DNS의 `music.readiz.com` 목적지를 각각 확인한다.
 2. 인증서 검증을 켠 HTTPS 200과 `app-config.json`의 커밋·곡 수를 확인한다.
-3. 맥 공개 음원에 `Range: bytes=0-1023`를 요청하면 리다이렉트 없이 206 및 `Content-Range`를 반환하는지 확인하고 NAS 전체 검증도 통과하는지 확인한다.
+3. 공개 NAS 음원에 `Range: bytes=0-1023`를 요청하면 리다이렉트 없이 206 및 `Content-Range`를 반환하는지 확인하고 NAS 전체 검증도 통과하는지 확인한다.
 4. 브라우저에서 앨범 선택 → 재생 → 일시정지 → 다음 곡, 모바일 폭, 아이콘·파형을 확인한다.
 5. 기존 `/showcase/Demos/BAMusicPlayer/`가 새 주소로 이동하는지 확인한다.
 
