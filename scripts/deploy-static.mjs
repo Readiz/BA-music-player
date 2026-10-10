@@ -6,7 +6,7 @@ import { join } from 'node:path';
 if (process.platform !== 'darwin') throw new Error('Static mount service requires macOS');
 const root = join(homedir(), '.local/share/readiz-music');
 const script = join(root, 'api-current/scripts/mount-static.mjs');
-execFileSync(process.execPath, [script], { stdio: 'inherit', timeout: 45_000 });
+execFileSync(process.execPath, [script], { stdio: 'inherit', timeout: 110_000 });
 const label = 'com.readiz.static.mounts';
 const job = `gui/${process.getuid()}/${label}`;
 const path = join(homedir(), 'Library/LaunchAgents', label + '.plist');
@@ -29,4 +29,4 @@ catch (error) {
   else rmSync(path, { force: true });
   throw error;
 }
-console.log(JSON.stringify({ service: label, intervalSeconds: 60, credentialsStored: false }));
+console.log(JSON.stringify({ service: label, intervalSeconds: 60, credentialsStored: false, authentication: 'macOS login Keychain' }));

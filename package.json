@@ -18,7 +18,7 @@
     "import:touhou-original": "node scripts/import-touhou.mjs original",
     "library:publish": "node scripts/library.mjs publish",
     "library:stage-static": "node scripts/library.mjs stage-static",
-    "static:mount": "node scripts/mount-static.mjs",
+    "static:mount": "/usr/bin/clang -Wall -Wextra -Werror -framework CoreFoundation -framework NetFS scripts/mount-static-keychain.c -o scripts/mount-static-keychain && node scripts/mount-static.mjs",
     "library:verify": "node scripts/library.mjs verify",
     "library:restore": "node scripts/library.mjs restore"
   },

@@ -12,3 +12,6 @@ android/local.properties
 
 # Audio is served from the Mac library and backed up on the NAS.
 music/
+
+# Native macOS NAS authentication helper (built during deployment)
+/scripts/mount-static-keychain

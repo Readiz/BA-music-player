@@ -19,6 +19,8 @@ mkdirSync(join(root, 'logs'), { recursive: true, mode: 0o700 });
 cpSync('server', join(release, 'server'), { recursive: true });
 mkdirSync(join(release, 'scripts'));
 cpSync('scripts/mount-static.mjs', join(release, 'scripts/mount-static.mjs'));
+// Build before touching the active release; NetAuth restores saved SMB credentials.
+execFileSync('/usr/bin/clang', ['-Wall', '-Wextra', '-Werror', '-framework', 'CoreFoundation', '-framework', 'NetFS', 'scripts/mount-static-keychain.c', '-o', join(release, 'scripts/mount-static-keychain')], { stdio: 'inherit' });
 const current = join(root, 'api-current');
 const previous = existsSync(current) ? readlinkSync(current) : null;
 const plistPath = join(home, 'Library/LaunchAgents/com.readiz.music.api.plist');
