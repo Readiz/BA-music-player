@@ -75,7 +75,7 @@ export function createLocalSync({ settings = librarySettings(), ffmpeg = process
         });
       } catch (error) {
         if (signal?.aborted) throw error;
-        throw new ImportError('백업이나 공개 반영을 완료하지 못했습니다. 준비한 음악은 보관됩니다. 같은 링크나 파일로 다시 요청해 주세요.', 503);
+        throw new ImportError('백업이나 공개 반영을 완료하지 못했습니다. 준비한 음악은 보관됩니다. 같은 링크나 파일로 다시 요청해 주세요.', 503, { cause: error });
       }
       saveCheckpoint({ libraryRevision: published.revision });
       onProgress('verifying');

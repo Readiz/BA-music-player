@@ -1,5 +1,19 @@
 # Readiz Music 운영
 
+## 로그인 복귀와 업로드 실패 진단 (1.5.9)
+
+- Android가 쿠키 저장 후 `/#add-music`을 열면 기존 플레이어에서 같은 문서 이동이
+  발생할 수 있습니다. 웹의 `hashchange`에서 로그인 상태와 추가 화면을 즉시 갱신합니다.
+  화면 복귀·포커스·뒤로 가기 캐시 복원에서도 인증을 다시 확인하며, 이전 응답이 새로운
+  로그인 결과를 덮어쓰지 않습니다. 선택한 파일·제목과 플레이어 문서는 유지합니다.
+  기존 APK 0.4.2에서도 적용되며 웹 화면을 한 번 새로 열어 최신 코드를 받습니다.
+- 추가 실패는 API 오류 로그에 `import_failure`, 시각, 작업 ID, 단계와 제한된 원인 코드를
+  남깁니다. 예외 원문·경로·곡명·계정·토큰·서명 URL은 기록하지 않습니다.
+  백업/게시 예외의 원인은 진단용으로 보존하고 사용자 응답은 기존 안전한 문구를 유지합니다.
+- 검증은 `npm test`와 격리된 `scripts/upload-fixture.mjs` 서버에 대한
+  `scripts/verify-login-return.js`, `scripts/verify-import-progress.js`,
+  `scripts/verify-upload.js`로 수행합니다. 실제 Discord 계정·Android 기기 검증과 구분합니다.
+
 ## NAS 정적 서빙 (1.5.8)
 
 `사용자 → music.readiz.com의 Mac Caddy → NAS readiz_static/music/objects` 경로로

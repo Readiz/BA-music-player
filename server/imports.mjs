@@ -5,9 +5,10 @@ import { join } from 'node:path';
 import { open } from 'node:fs/promises';
 import { mediaIdentity } from './media-identity.mjs';
 import { DatabaseSync } from 'node:sqlite';
+import { importFailureLog } from './import-log.mjs';
 
 export class ImportError extends Error {
-  constructor(message, status = 400) { super(message); this.status = status; }
+  constructor(message, status = 400, options) { super(message, options); this.status = status; }
 }
 export function youtubeVideo(value) {
   if (typeof value !== 'string' || value.length > 2048) throw new ImportError('유튜브 영상 링크를 입력해 주세요.');
@@ -172,6 +173,7 @@ export function createImports({ dataRoot, downloader = createDownloader(), conve
         if (controller.signal.aborted) update(row.id, 'queued');
         else {
           if (row.video_id.startsWith('upload-')) rmSync(join(uploads, row.video_id), { force: true });
+          importFailureLog({ id: row.id, stage: get(row.id).sync_stage || get(row.id).status, error });
           const message = error instanceof ImportError ? error.message : get(row.id).status === 'syncing'
             ? '음악 동기화에 실패했습니다. 같은 링크나 파일로 다시 요청해 주세요. 준비된 음악은 보관됩니다.'
             : '음악 추가에 실패했습니다. 잠시 후 다시 시도해 주세요.';
