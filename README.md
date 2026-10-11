@@ -234,3 +234,7 @@ https://git.readiz.com/BA-music-player/
 `npm test`는 공개 빌드의 음원 경로·파일 공개 경계·설치 자산을 검증합니다. `npm run build`로 맥 음원 서버에 연결하는 앱 화면을 `dist/`에 만들고(Pages 빌드도 음원은 제외), 깨끗한 커밋에서 `npm run deploy:local`로 독립 배포합니다. `npm run build:apk`는 정식 APK·lint·Android 단위 테스트를 검증하고 배포용 메타데이터를 만듭니다. 앱 ID는 `com.readiz.music`입니다.
 
 홈 화면 설치용 매니페스트·전용 아이콘·오프라인 연결 안내를 제공합니다. 외부 폰트 CDN 의존성을 제거하고 Font Awesome 4.7.0의 CSS·WOFF2를 라이선스 안내와 함께 보관합니다. 음원은 설치 시 캐시하지 않으며 브라우저가 직접 스트리밍합니다. `app-config.json`은 후속 앱에서 목록과 제목 자료를 찾는 버전 1 계약입니다.
+
+### 홈페이지 iframe 주소 연동
+
+`js/service-frame-bridge.js`는 newblog 공통 원본의 복사본이며 웹 빌드에 포함한다. 홈페이지 iframe 안에서 신뢰된 부모에게 현재 URL을 응답하고 현재 페이지 새로고침을 지원한다. 독립 탭에서는 이벤트를 등록하지 않는다.
