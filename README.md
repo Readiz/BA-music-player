@@ -21,15 +21,15 @@ NAS 게시 객체를 모두 검증한 뒤 목록에 반영합니다. GitHub Page
 비공개 폴더나 다른 음원 원점으로 자동 전환하지 않습니다.
 운영·검증·복구는 [운영 안내](ops/README.md)를 참고하세요.
 
-## th original (1.5.5)
+## th original
 
 **th original** 앨범에는 홍마향(th06) 17곡, 요요몽(th07) 20곡, 췌몽상(th075) 47곡,
-영야초(th08) 21곡, 총 **105곡**을 수록했습니다. 공식 Team Shanghai Alice Topic과
+영야초(th08) 21곡, 풍신록(th10) 18곡, 총 **123곡**을 수록했습니다. 공식 Team Shanghai Alice Topic과
 Twilight Frontier Topic의 사운드트랙 배급 음원을 사용합니다. 췌몽상은
 [공식 OST 幻想曲抜萃](https://tasofro.net/touhou/cd.html)의 Day Disc 24곡과 Night Disc 23곡을
 전부 포함하며, `砕月`, `Demystify Feast`, `夜が降りてくる`, `御伽の国の鬼が島`도 들을 수 있습니다.
 췌몽상 곡은 **NKZ / 黄昏フロンティア**, **あきやまうに / 黄昏フロンティア**,
-**ZUN / 黄昏フロンティア**로 표시하며, 기존 세 작품은 **ZUN / 上海アリス幻樂団**입니다.
+**ZUN / 黄昏フロンティア**로 표시하며, 홍마향·요요몽·영야초·풍신록은 **ZUN / 上海アリス幻樂団**입니다.
 
 곡명 앞의 `[th06-01]` 형식은 작품 번호와 원래 트랙 번호입니다. 작품별 OST 순서를
 유지하며 `U.N.オーエンは彼女なのか？`, `亡き王女の為のセプテット`, `ネクロファンタジア`,
@@ -38,7 +38,10 @@ Twilight Frontier Topic의 사운드트랙 배급 음원을 사용합니다. 췌
 원래 제목으로 식별합니다. MP3 트랙/디스크 태그는 Day/Night Disc 순서를 보존하고,
 앨범 태그와 재생 알림은 **th original**로 통일했습니다.
 
-작품별 공식 플레이리스트·전체 선곡은 [touhou-original.json](touhou-original.json),
+풍신록은 `[th10-01]`부터 `[th10-18]`까지 공식 OST 순서로 수록하며,
+`神々が恋した幻想郷`, `信仰は儚き人間の為に`, `ネイティブフェイス`와 엔딩·스태프롤·플레이어즈 스코어까지 포함합니다.
+
+작품별 공식 배급 링크·전체 선곡은 [touhou-original.json](touhou-original.json),
 실제 음원 출처·재생 시간·파일 해시는 [imported-tracks.json](imported-tracks.json)에 있습니다.
 어레인지 앨범 **Touhou**와 각각 선택하거나 함께 재생할 수 있으며, 원곡 앨범에도 전용 커버와
 480개 피크의 파형을 제공합니다. [운영 안내](ops/README.md)의 명령으로 준비된 파일을 재사용해 복구합니다.

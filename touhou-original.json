@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "folder": "th original",
   "name": "th original",
-  "description": "홍마향(th06) 17곡, 요요몽(th07) 20곡, 췌몽상(th075) 공식 OST 幻想曲抜萃 47곡, 영야초(th08) 21곡, 총 105곡. 공식 Team Shanghai Alice Topic 및 Twilight Frontier Topic 배급 음원을 작품별 사운드트랙 순서로 수록합니다.",
-  "checkedOn": "2026-10-07",
+  "description": "홍마향(th06) 17곡, 요요몽(th07) 20곡, 췌몽상(th075) 공식 OST 幻想曲抜萃 47곡, 영야초(th08) 21곡, 풍신록(th10) 18곡, 총 123곡. 공식 Team Shanghai Alice Topic 및 Twilight Frontier Topic 배급 음원을 작품별 사운드트랙 순서로 수록합니다.",
+  "checkedOn": "2026-10-11",
   "sources": [
     {
       "originalWork": "th06",
@@ -41,6 +41,14 @@
       "album": "東方永夜抄　～ Imperishable Night. サウンドトラック",
       "playlistUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0",
       "trackCount": 21
+    },
+    {
+      "originalWork": "th10",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "officialUrl": "https://lnk.to/4580547332612",
+      "albumUrl": "https://open.spotify.com/album/4MzXCSY1hEFvM0oEEYK5nS",
+      "trackCount": 18,
+      "checkedOn": "2026-10-11"
     }
   ],
   "tracks": [
@@ -1654,6 +1662,312 @@
       ],
       "trackNumber": 21,
       "referenceUrl": "https://www.youtube.com/playlist?list=OLAK5uy_lMwEeDpnzEl1_andJFec8TjdZh21q4ZQ0"
+    },
+    {
+      "videoId": "8JRswHXv5Vw",
+      "title": "[th10-01] 封印されし神々",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "封印されし神々",
+      "originalWork": "th10",
+      "originalTracks": [
+        "封印されし神々"
+      ],
+      "trackNumber": 1,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 1,
+      "referenceUrl": "https://lnk.to/4580547332612"
+    },
+    {
+      "videoId": "RQThqC3uFDs",
+      "title": "[th10-02] 人恋し神様　～ Romantic Fall",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "人恋し神様　～ Romantic Fall",
+      "originalWork": "th10",
+      "originalTracks": [
+        "人恋し神様　～ Romantic Fall"
+      ],
+      "trackNumber": 2,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 2,
+      "referenceUrl": "https://lnk.to/4580547332612"
+    },
+    {
+      "videoId": "B34MPsxhPQY",
+      "title": "[th10-03] 稲田姫様に叱られるから",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "稲田姫様に叱られるから",
+      "originalWork": "th10",
+      "originalTracks": [
+        "稲田姫様に叱られるから"
+      ],
+      "trackNumber": 3,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 3,
+      "referenceUrl": "https://lnk.to/4580547332612"
+    },
+    {
+      "videoId": "fXCyX465PtQ",
+      "title": "[th10-04] 厄神様の通り道　～ Dark Road",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "厄神様の通り道　～ Dark Road",
+      "originalWork": "th10",
+      "originalTracks": [
+        "厄神様の通り道　～ Dark Road"
+      ],
+      "trackNumber": 4,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 4,
+      "referenceUrl": "https://lnk.to/4580547332612"
+    },
+    {
+      "videoId": "KA8_NIJ8_NQ",
+      "title": "[th10-05] 運命のダークサイド",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "運命のダークサイド",
+      "originalWork": "th10",
+      "originalTracks": [
+        "運命のダークサイド"
+      ],
+      "trackNumber": 5,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 5,
+      "referenceUrl": "https://lnk.to/4580547332612"
+    },
+    {
+      "videoId": "lhTAdK7Vadg",
+      "title": "[th10-06] 神々が恋した幻想郷",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "神々が恋した幻想郷",
+      "originalWork": "th10",
+      "originalTracks": [
+        "神々が恋した幻想郷"
+      ],
+      "trackNumber": 6,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 6,
+      "referenceUrl": "https://lnk.to/4580547332612"
+    },
+    {
+      "videoId": "XpyIyUuitjI",
+      "title": "[th10-07] 芥川龍之介の河童　～ Candid Friend",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "芥川龍之介の河童　～ Candid Friend",
+      "originalWork": "th10",
+      "originalTracks": [
+        "芥川龍之介の河童　～ Candid Friend"
+      ],
+      "trackNumber": 7,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 7,
+      "referenceUrl": "https://lnk.to/4580547332612"
+    },
+    {
+      "videoId": "20DIaG5mXLw",
+      "title": "[th10-08] フォールオブフォール　～ 秋めく滝",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "フォールオブフォール　～ 秋めく滝",
+      "originalWork": "th10",
+      "originalTracks": [
+        "フォールオブフォール　～ 秋めく滝"
+      ],
+      "trackNumber": 8,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 8,
+      "referenceUrl": "https://lnk.to/4580547332612"
+    },
+    {
+      "videoId": "XUn0lrt3rKI",
+      "title": "[th10-09] 妖怪の山　～ Mysterious Mountain",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "妖怪の山　～ Mysterious Mountain",
+      "originalWork": "th10",
+      "originalTracks": [
+        "妖怪の山　～ Mysterious Mountain"
+      ],
+      "trackNumber": 9,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 9,
+      "referenceUrl": "https://lnk.to/4580547332612"
+    },
+    {
+      "videoId": "bM5sLDzn5pI",
+      "title": "[th10-10] 少女が見た日本の原風景",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "少女が見た日本の原風景",
+      "originalWork": "th10",
+      "originalTracks": [
+        "少女が見た日本の原風景"
+      ],
+      "trackNumber": 10,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 10,
+      "referenceUrl": "https://lnk.to/4580547332612"
+    },
+    {
+      "videoId": "a8GJjScduHk",
+      "title": "[th10-11] 信仰は儚き人間の為に",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "信仰は儚き人間の為に",
+      "originalWork": "th10",
+      "originalTracks": [
+        "信仰は儚き人間の為に"
+      ],
+      "trackNumber": 11,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 11,
+      "referenceUrl": "https://lnk.to/4580547332612"
+    },
+    {
+      "videoId": "RLnfhbq5Myc",
+      "title": "[th10-12] 御柱の墓場　～ Grave of Being",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "御柱の墓場　～ Grave of Being",
+      "originalWork": "th10",
+      "originalTracks": [
+        "御柱の墓場　～ Grave of Being"
+      ],
+      "trackNumber": 12,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 12,
+      "referenceUrl": "https://lnk.to/4580547332612"
+    },
+    {
+      "videoId": "_QlMOiuj5gg",
+      "title": "[th10-13] 神さびた古戦場　～ Suwa Foughten Field",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "神さびた古戦場　～ Suwa Foughten Field",
+      "originalWork": "th10",
+      "originalTracks": [
+        "神さびた古戦場　～ Suwa Foughten Field"
+      ],
+      "trackNumber": 13,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 13,
+      "referenceUrl": "https://lnk.to/4580547332612"
+    },
+    {
+      "videoId": "yMIuOiZUlOE",
+      "title": "[th10-14] 明日ハレの日、ケの昨日",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "明日ハレの日、ケの昨日",
+      "originalWork": "th10",
+      "originalTracks": [
+        "明日ハレの日、ケの昨日"
+      ],
+      "trackNumber": 14,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 14,
+      "referenceUrl": "https://lnk.to/4580547332612"
+    },
+    {
+      "videoId": "qzUg6BfESgc",
+      "title": "[th10-15] ネイティブフェイス",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "ネイティブフェイス",
+      "originalWork": "th10",
+      "originalTracks": [
+        "ネイティブフェイス"
+      ],
+      "trackNumber": 15,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 15,
+      "referenceUrl": "https://lnk.to/4580547332612"
+    },
+    {
+      "videoId": "SDEuPE4T3I0",
+      "title": "[th10-16] 麓の神社",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "麓の神社",
+      "originalWork": "th10",
+      "originalTracks": [
+        "麓の神社"
+      ],
+      "trackNumber": 16,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 16,
+      "referenceUrl": "https://lnk.to/4580547332612"
+    },
+    {
+      "videoId": "mnIzwOR2gJs",
+      "title": "[th10-17] 神は恵みの雨を降らす　～ Sylphid Dream",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "神は恵みの雨を降らす　～ Sylphid Dream",
+      "originalWork": "th10",
+      "originalTracks": [
+        "神は恵みの雨を降らす　～ Sylphid Dream"
+      ],
+      "trackNumber": 17,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 17,
+      "referenceUrl": "https://lnk.to/4580547332612"
+    },
+    {
+      "videoId": "8E5gbxjSFT4",
+      "title": "[th10-18] プレイヤーズスコア",
+      "artist": "ZUN / 上海アリス幻樂団",
+      "album": "東方風神録　〜 Mountain of Faith. サウンドトラック",
+      "channelId": "UCYiYZYbDlyy17QiX5CxCTeQ",
+      "sourceTitle": "プレイヤーズスコア",
+      "originalWork": "th10",
+      "originalTracks": [
+        "プレイヤーズスコア"
+      ],
+      "trackNumber": 18,
+      "discNumber": 1,
+      "discTotal": 1,
+      "discTrackNumber": 18,
+      "referenceUrl": "https://lnk.to/4580547332612"
     }
   ]
 }
