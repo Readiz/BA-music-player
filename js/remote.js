@@ -83,7 +83,7 @@
     if (!usable(row)) return;
     memory.queue = row;
     // Remember the first track too; reveal it once the startup layout is ready.
-    if (!remote || initialPending) return;
+    if (!remote || initialPending || (window.parent !== window && !document.hasFocus())) return;
     const current = document.activeElement;
     if (!dialog.hidden && group(priorFocus) === 'queue') priorFocus = row;
     if (group(current) === 'queue' || (current === document.body && lastFocus && group(lastFocus) === 'queue')) focus(row);
@@ -295,7 +295,7 @@
   }, true);
   // Album changes can remove the focused track or disable an action button.
   new MutationObserver(() => {
-    if (pending || !remote) return;
+    if (pending || !remote || (window.parent !== window && !document.hasFocus())) return;
     pending = true;
     requestAnimationFrame(() => {
       pending = false;

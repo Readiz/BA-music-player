@@ -58,11 +58,16 @@ BAAlbumPanel();
           loadState.hidden = true;
       } catch (error) {
           console.error(error);
-          loadState.querySelector('p').textContent = '음악 목록을 불러오지 못했습니다. 다시 시도해 주세요.';
+          loadState.querySelector('p').textContent = window.BAMusicNativeAudio?.desktop && window.BAMusicNativeAudio.error
+              ? '홈페이지 음악에 연결하지 못했습니다. 다시 불러오기를 눌러 주세요.'
+              : '음악 목록을 불러오지 못했습니다. 다시 시도해 주세요.';
           retry.hidden = false;
       } finally {
           loading = false;
       }
   }
-  retry.addEventListener('click', loadLibrary);
+  retry.addEventListener('click', () => {
+      if (window.BAMusicNativeAudio?.desktop && window.BAMusicNativeAudio.error) location.reload();
+      else loadLibrary();
+  });
   loadLibrary();

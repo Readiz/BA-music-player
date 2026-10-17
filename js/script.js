@@ -384,11 +384,10 @@ function BAPlayer() {
     root.dispatchEvent(new CustomEvent('simp-track-change'));
   });
 
-  function clearTrack() {
-    pause();
+  function clearTrack(fromNative = false) {
+    if (!fromNative) pause();
     index = -1;
-    audio.removeAttribute('src');
-    audio.load();
+    if (!fromNative) { audio.removeAttribute('src'); audio.load(); }
     rows.forEach(row => row.classList.remove('simp-active'));
     player.querySelector('.simp-title').textContent = selectedAlbums.size ? '들을 곡을 선택해 주세요' : '앨범을 선택해 주세요';
     player.querySelector('.simp-artist').textContent = '';
@@ -404,16 +403,20 @@ function BAPlayer() {
     syncPlayback();
   }
 
-  function changeAlbums(values) {
-    cancelTrackSelection(false);
-    const wasPlaying = !audio.paused && !audio.ended;
-    filterAlbums(values);
+  function saveAlbums() {
     try {
       // Remember "all" as a mode so newly added albums are included next time.
       const saved = selectedAlbums.size === folderCounts.size
         ? { all: true } : { folders: [...selectedAlbums] };
       localStorage.setItem(albumStorageKey, JSON.stringify(saved));
     } catch { /* Storage is optional, including in an iframe. */ }
+  }
+
+  function changeAlbums(values) {
+    cancelTrackSelection(false);
+    const wasPlaying = !audio.paused && !audio.ended;
+    filterAlbums(values);
+    saveAlbums();
     if (!queue.length) clearTrack();
     else if (queue.includes(index)) { scrollToCurrent(); syncNativeQueue(wasPlaying); }
     else selectTrack(startingTrack(), wasPlaying);
@@ -539,7 +542,7 @@ function BAPlayer() {
   audio.addEventListener('error', () => {
     if (!queue.length) return;
     syncPlayback();
-    showStatus('음악을 불러오지 못했습니다. 연결을 확인하고 다시 재생하거나 다음 곡을 선택해 주세요.');
+    showStatus(native?.desktop && native.state.status || '음악을 불러오지 못했습니다. 연결을 확인하고 다시 재생하거나 다음 곡을 선택해 주세요.');
   });
 
   if (session?.setActionHandler) {
@@ -562,9 +565,26 @@ function BAPlayer() {
     if (!document.hidden) { syncPlayback(); renderWaveform(); }
   });
   if (native) {
+    if (native.desktop) {
+      native.addEventListener('queuechange', () => {
+        const incoming = native.state.queue.map(id => tracks.findIndex(track => track.src === id)).filter(i => i >= 0);
+        if (incoming.join('|') === queue.join('|')) return;
+        cancelTrackSelection(false);
+        random = native.state.random;
+        const folders = [...new Set(incoming.map(i => tracks[i].folder))];
+        selection.replace(folders, native.state.queue);
+        filterAlbums(folders);
+        queue = incoming;
+        saveTrackSelection(); saveAlbums();
+        const next = tracks.findIndex(track => track.src === native.state.id);
+        if (next >= 0) selectTrack(next, false, true);
+        else clearTrack(true);
+      });
+      native.addEventListener('timeupdate', () => showStatus(native.state.status || ''));
+    }
     native.addEventListener('trackchange', () => {
       const next = tracks.findIndex(track => track.src === native.state.id);
-      if (next >= 0) selectTrack(next, false, true);
+      if (next >= 0 && next !== index) selectTrack(next, false, true);
     });
     native.addEventListener('optionschange', () => {
       autoNext = native.state.autoNext;
@@ -574,7 +594,8 @@ function BAPlayer() {
       toggleOption('.simp-random', random);
     });
   }
-  const restored = native?.state.queue.length && tracks.some(track => track.src === native.state.id);
+  const restored = native?.desktop && native.state.active && !native.state.queue.length
+    || native?.state.queue.length && tracks.some(track => track.src === native.state.id);
   const restoredAlbums = restored ? [...new Set(tracks.filter(track => native.state.queue.includes(track.src)).map(track => track.folder))] : null;
   if (restored) { selection.replace(restoredAlbums, native.state.queue); saveTrackSelection(); }
   filterAlbums(restored ? restoredAlbums : readSavedAlbums());
@@ -585,7 +606,8 @@ function BAPlayer() {
     toggleOption('.simp-repeat', native.loop);
     toggleOption('.simp-plext', autoNext);
     toggleOption('.simp-random', random);
-    selectTrack(tracks.findIndex(track => track.src === native.state.id), false, true);
+    if (queue.length) selectTrack(tracks.findIndex(track => track.src === native.state.id), false, true);
+    else clearTrack(true);
   } else if (queue.length) {
     selectTrack(startingTrack(), false);
     showStatus(window.BAMusicTV ? '재생 버튼이나 곡에서 확인 키를 눌러 시작하세요.' : '재생 버튼이나 곡을 눌러 시작하세요. Space 키로도 재생할 수 있습니다.');

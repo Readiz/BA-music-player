@@ -1,4 +1,5 @@
-/* Android alone uses Media3. Browser/Tizen retain their existing audio element. */
+/* Android uses Media3; the named homepage iframe controls its parent audio.
+ * Standalone browser/Tizen retain their existing audio element. */
 (function () {
   const port = window.ReadizMusicNative;
   if (!port || typeof port.postMessage !== 'function') return;
@@ -9,6 +10,7 @@
   class NativeAudio extends EventTarget {
     constructor() {
       super();
+      this.desktop = port.desktop === true;
       this.state = { id: '', queue: [], paused: true, position: 0, duration: 0, repeat: false, autoNext: true, random: true };
       this.playbackRate = 1;
       this.sampleAt = performance.now();
@@ -31,7 +33,7 @@
           this.pendingSeek = null;
           this.correction = 0;
           this.updateAnimation();
-          this.rejectReady(new Error('Android 재생 서비스에 연결하지 못했습니다. 앱을 다시 열어 주세요.'));
+          this.rejectReady(new Error(this.desktop ? '홈페이지 음악에 연결하지 못했습니다. 다시 불러오기를 눌러 주세요.' : 'Android 재생 서비스에 연결하지 못했습니다. 앱을 다시 열어 주세요.'));
           this.dispatchEvent(new Event('error'));
           return;
         }
@@ -57,8 +59,9 @@
         this.correction = continuing && this.advancing && !hadPendingSeek && Math.abs(difference) <= 0.25 ? difference : 0;
         this.updateAnimation();
         this.resolveReady();
+        if (this.desktop && state.queue) this.dispatchEvent(new Event('queuechange'));
         if (previous.id !== state.id) this.dispatchEvent(new Event('trackchange'));
-        if (state.queue) this.dispatchEvent(new Event('queuechange'));
+        if (!this.desktop && state.queue) this.dispatchEvent(new Event('queuechange'));
         this.dispatchEvent(new Event('optionschange'));
         this.dispatchEvent(new Event('timeupdate'));
         this.dispatchEvent(new Event(state.error ? 'error' : state.buffering ? 'waiting' : state.paused ? 'pause' : 'playing'));

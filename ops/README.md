@@ -1,5 +1,23 @@
 # Readiz Music 운영
 
+## 홈페이지 음악 위젯 동기화 (1.5.12)
+
+- 홈페이지에서 연 Music 창은 상단 음악 위젯의 오디오 하나를 함께 조작합니다. 먼저
+  사용한 쪽의 곡·위치·큐를 이어받으며 재생/일시정지·탐색·이전/다음·선택한 곡 목록·
+  반복·자동 이어듣기 상태를 공유합니다. 창 닫기·최소화·다시 열기로 재생을 끊지 않습니다.
+- 홈페이지가 지정한 이름의 iframe에서만 `desktop-player.js`를 활성화합니다. 양쪽 모두
+  정확한 부모/자식 창과 origin을 확인하고 연결별 nonce와 명령 순서로 오래된 응답을
+  거릅니다. 홈페이지는 자체 공개 카탈로그에 존재하는 ID만 받아 음원을 엽니다.
+  늦게 도착한 초기 큐는 사용자가 이미 위젯을 조작했다면 적용하지 않습니다.
+- 연결에 실패하면 다시 불러오기를 안내하며 iframe에 별도 오디오를 만들지 않습니다.
+  독립 탭·Android·TV 재생은 기존 경로를 사용하며 이 동기화 범위에 포함하지 않습니다.
+- `npm test`와 홈페이지 저장소의 `scripts/verify-music-sync.js`로 양방향 시작·선택 큐·
+  창 수명·중복 음원 요청 방지·모바일 화면을 검증합니다. 독립 플레이어 회귀는 기존
+  `scripts/verify-track-selection.js`를 실행합니다. 물리 기기 검증은 별도입니다.
+- 배포 순서는 Music 정적 릴리스 → 홈페이지 릴리스입니다. 이전 홈페이지의 이름 없는
+  iframe은 독립 재생을 유지하므로 홈페이지를 새로 열어 연결합니다. API와 NAS 게시본은
+  변경하지 않으며 Music만 원복할 때는 홈페이지도 이전 릴리스로 함께 되돌립니다.
+
 ## 앨범 안에서 곡 선택 (1.5.11)
 
 - 재생 목록의 `곡 선택`에서 선택한 앨범의 모든 곡을 체크할 수 있습니다. `전체`·`해제`로
@@ -130,7 +148,7 @@ Mac이 잠겨 승인 창을 처리할 수 없으면 파일 열기가 대기하�
 - 코드 배포는 의도한 변경을 커밋한 뒤 `npm test`, `npm run deploy:local` 순서로 수행하며 음원과 공개 목록을 재게시하지 않습니다. 새 맥은 먼저 NAS를 연결해 `npm run library:restore`로 라이브러리를 복구합니다. 최초 전환에는 `ops/music.Caddyfile`과 홈페이지 Caddy CSP를 validate/reload합니다. 공개 카탈로그·음원은 Caddy가 직접 제공하며 HTTP Range·CORS를 지원합니다. `/api/*` 인증은 기존대로 유지합니다.
 - `music/`는 Git 추적에서 제거하고 `.gitignore`로 제외합니다. 소스 빌드와 Pages CI는 목록·파형·경로 메타데이터를 검사하며 음원 파일을 요구하지 않습니다. 음원 전체 해시는 맥/NAS 게시와 `library:verify`에서 검사합니다. 최신 전체 라이브러리는 NAS에서 복원합니다. 과거 커밋의 음원 이력은 남아 있으며, 새 소스 체크아웃은 `git clone --depth 1 https://github.com/Readiz/BA-music-player.git`로 받을 수 있습니다.
 
-원본 저장소 `Readiz/BA-music-player`를 음악 서비스와 후속 앱의 독립 프로젝트로 유지한다. 운영 체크아웃은 `/Users/readiz/workspace/openclaw/BA-music-player`다. new-home은 바로가기와 기존 주소의 리다이렉트만 관리한다.
+원본 저장소 `Readiz/BA-music-player`를 음악 서비스와 후속 앱의 독립 프로젝트로 유지한다. 운영 체크아웃은 `/Users/readiz/workspace/openclaw/BA-music-player`다. new-home은 바로가기·기존 주소의 리다이렉트와 홈페이지 위젯/iframe 재생 연결을 관리한다.
 
 ## 도메인과 배포
 
