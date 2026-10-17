@@ -16,6 +16,6 @@ const server=createApiServer({origin:auth.origin,handler:(request,ip)=>{
 }});
 let caddy=readFileSync(root+'/ops/music.Caddyfile','utf8');
 caddy=caddy.slice(caddy.indexOf('\t@audio path')).replaceAll('127.0.0.1:4525','127.0.0.1:4526');
-writeFileSync('/private/tmp/music-access-fixture.Caddyfile','{\n admin off\n persist_config off\n auto_https off\n}\nhttp://127.0.0.1:4527 {\n root * '+root+'/dist\n'+caddy);
+writeFileSync('/private/tmp/music-access-fixture.Caddyfile','{\n admin off\n persist_config off\n auto_https off\n}\nhttp://127.0.0.1:4527 {\n bind 127.0.0.1\n root * '+root+'/dist\n'+caddy);
 server.listen(4526,'127.0.0.1',()=>console.log('isolated fixture API 4526'));
 process.on('SIGTERM',()=>server.close());
