@@ -22,6 +22,7 @@
     if (element.closest('.tv-exit-dialog')) return 'dialog';
     if (element.closest('.simp-albums')) return 'album';
     if (element.closest('#ulist')) return 'queue';
+    if (element.closest('.track-actions')) return 'selection';
     if (element.closest('.simp-main')) return 'controls';
     return 'header';
   }
@@ -67,7 +68,17 @@
     const target = usable(memory.controls) ? memory.controls : initial();
     return group(target) === 'controls' && focus(target);
   }
+  function selectionActions() { return all(document.querySelector('.track-actions')); }
+  function focusSelection() {
+    return focus(usable(memory.selection) ? memory.selection : selectionActions()[0]);
+  }
+  function focusQueue() {
+    return focus(usable(memory.queue) ? memory.queue :
+      document.querySelector('#ulist li.simp-active:not([hidden])') || document.querySelector('#ulist li:not([hidden])'));
+  }
   function syncTrackFocus() {
+    // Browsing checkboxes must survive automatic or media-key track changes.
+    if (document.querySelector('#simp').classList.contains('selecting-tracks')) return;
     const row = document.querySelector('#ulist li.simp-active:not([hidden])');
     if (!usable(row)) return;
     memory.queue = row;
@@ -79,11 +90,15 @@
     else reveal(row);
   }
   document.querySelector('#simp').addEventListener('simp-track-change', syncTrackFocus);
+  document.querySelector('#simp').addEventListener('simp-selection-change', () => setEditing(false));
   function enterRemote() { remote = true; root.classList.add('remote-mode'); remember(document.activeElement); }
   function setEditing(value) {
     editing = value;
     root.classList.toggle('remote-seeking', value);
-    hint.textContent = value ? '탐색 중 · ◀ ▶ 5초 이동 · 확인 / 뒤로 완료' : '방향키 이동 · 확인 선택 · 뒤로 종료';
+    hint.textContent = value ? '탐색 중 · ◀ ▶ 5초 이동 · 확인 / 뒤로 완료'
+      : document.querySelector('#simp').classList.contains('selecting-tracks')
+        ? '방향키 이동 · 확인 체크 · ▶ 선택 재생 · 뒤로 취소'
+        : '방향키 이동 · 확인 선택 · 뒤로 종료';
   }
   function openAlbums() {
     if (panel.hidden) {
@@ -112,6 +127,7 @@
     enterRemote();
     if (!dialog.hidden) { closeDialog(); return; }
     if (editing) { setEditing(false); return; }
+    if (window.BAMusicPlayback?.cancelTrackSelection()) return;
     if (window.BAMusicTV) { showExit(); return; }
     const zone = group(document.activeElement);
     if (zone === 'queue' || zone === 'controls') { openAlbums(); return; }
@@ -143,10 +159,15 @@
       const index = rows.indexOf(from);
       if (direction === 'ArrowLeft') { openAlbums(); return; }
       if (direction === 'ArrowRight') {
+        if (document.querySelector('#simp').classList.contains('selecting-tracks')) {
+          const apply = document.querySelector('.tracks-apply');
+          focus(usable(apply) ? apply : document.querySelector('.tracks-all'));
+          return;
+        }
         if (!window.BAMusicTV) focusControls();
         return;
       }
-      if (direction === 'ArrowUp' && index === 0) { focusControls(); return; }
+      if (direction === 'ArrowUp' && index === 0) { if (!focusSelection()) focusControls(); return; }
       focus(rows[index + (direction === 'ArrowDown' ? 1 : -1)]);
       return;
     }
@@ -182,10 +203,19 @@
       if (direction === 'ArrowUp') focus(toggle);
       return;
     }
+    if (zone === 'selection') {
+      if (direction === 'ArrowUp') { focusControls(); return; }
+      if (direction === 'ArrowDown') { focusQueue(); return; }
+      const buttons = selectionActions();
+      const next = buttons[buttons.indexOf(from) + (direction === 'ArrowRight' ? 1 : -1)];
+      if (next) focus(next);
+      else if (direction === 'ArrowLeft') openAlbums();
+      return;
+    }
     if (zone === 'controls') {
       if (direction === 'ArrowDown') {
-        focus(usable(memory.queue) ? memory.queue :
-          document.querySelector('#ulist li.simp-active:not([hidden])') || document.querySelector('#ulist li:not([hidden])')); return;
+        if (!focusSelection()) focusQueue();
+        return;
       }
       // These controls form one visual row. Repeated Up stops at its top boundary.
       if (direction === 'ArrowUp') { if (!window.BAMusicTV) focus(toggle); return; }

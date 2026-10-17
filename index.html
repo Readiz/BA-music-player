@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="./assets/vendor/font-awesome/font-awesome.min.css">
     
     <!-- Style CSS -->
-    <link rel="stylesheet" href="css/style.css?v=20261004-mobile">
+    <link rel="stylesheet" href="css/style.css?v=1.5.11">
 	<!-- Demo CSS (No need to include it into your project) -->
 	<link rel="stylesheet" href="css/demo.css">
     <link rel="stylesheet" href="./css/tv.css">
@@ -47,7 +47,16 @@
       <p role="status">음악 목록을 불러오는 중…</p>
       <button type="button" class="library-retry" hidden>다시 불러오기</button>
     </div>
-    <div class="simp-queue-heading"><h2>재생 목록</h2><span class="queue-count"></span></div>
+    <div class="simp-queue-heading">
+      <h2 id="queue-heading">재생 목록</h2><span class="queue-count" role="status"></span>
+      <div class="track-actions" role="group" aria-label="곡 선택">
+        <button type="button" class="tracks-edit" aria-expanded="false" aria-controls="ulist" disabled>곡 선택</button>
+        <button type="button" class="tracks-all" aria-label="곡 전체 선택" hidden>전체</button>
+        <button type="button" class="tracks-clear" aria-label="곡 전체 해제" hidden>해제</button>
+        <button type="button" class="tracks-apply" hidden>선택 재생</button>
+      </div>
+    </div>
+    <p class="track-selection-hint" id="track-selection-hint" hidden>곡을 체크한 뒤 선택 재생을 누르세요. 취소하면 기존 목록을 유지합니다.</p>
     <div class="simp-playlist">
       <p class="simp-empty" hidden>들을 앨범을 선택해 주세요.</p>
       <ul id="ulist" aria-label="선택한 앨범의 곡"></ul>
@@ -87,10 +96,11 @@
 <!-- Audio Player JS -->
 <script src="./js/music-source.js"></script>
 <script src="./js/native-player.js?v=1.4.1"></script>
-<script src="./js/script.js?v=1.5.5"></script>
+<script src="./js/track-selection.js"></script>
+<script src="./js/script.js?v=1.5.11"></script>
 <script defer src="./js/library.js"></script>
 <script defer src="./js/remote-core.js"></script>
-<script defer src="./js/remote.js?v=20261005-startup-focus"></script>
+<script defer src="./js/remote.js?v=1.5.11"></script>
 <script defer src="./js/app.js"></script>
 <script defer src="./js/import.js"></script>
   </body>

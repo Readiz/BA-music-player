@@ -6,6 +6,11 @@ async (sourcePage) => {
     const check = (condition, message) => { if (!condition) throw new Error(message); };
     const active = selector => page.evaluate(selector => document.activeElement.matches(selector), selector);
     const currentQueueFocused = () => page.evaluate(() => document.activeElement === document.querySelector('#ulist li.simp-active:not([hidden])'));
+    const enterQueue = async () => {
+      await page.keyboard.press('ArrowDown');
+      check(await active('.tracks-edit'), 'Controls Down skipped song selection');
+      await page.keyboard.press('ArrowDown');
+    };
     const currentQueueVisible = () => page.evaluate(() => {
       const row = document.querySelector('#ulist li.simp-active:not([hidden])').getBoundingClientRect();
       const list = document.querySelector('#ulist').getBoundingClientRect();
@@ -55,7 +60,7 @@ async (sourcePage) => {
       check((await state()).seeking && (await state()).current>=before+4.8 && (await state()).paused, 'Seek changed paused state');
       await page.keyboard.press('Escape');
       check(!(await state()).seeking && await active('.simp-progress') && await page.locator('.tv-exit-dialog').isHidden(), 'Seek Back did not finish editing');
-      await page.keyboard.press('ArrowDown');
+      await enterQueue();
       check(await currentQueueFocused() && await currentQueueVisible(), 'First queue entry missed the initial random track');
       for(let i=0;i<12;i++) await page.keyboard.press('ArrowUp');
       const remembered=(await state()).text;
@@ -71,12 +76,12 @@ async (sourcePage) => {
       check((await state()).folder==='Blue Archive', 'Album Up skipped previous card');
       await page.keyboard.press('ArrowRight');
       check(await active('.simp-progress'), 'Album Right did not return to the last playback controller');
-      await page.keyboard.press('ArrowDown');
+      await enterQueue();
       check((await state()).text===remembered, 'Returning through controls lost the browsed queue position');
       await page.locator('#ulist li:not([hidden])').nth(12).focus();
       for(let i=0;i<20;i++) await page.keyboard.press('ArrowUp');
       check(await active('.simp-progress'), 'Repeated queue Up did not stop at last controller');
-      await page.keyboard.press('ArrowDown');
+      await enterQueue();
       await page.keyboard.press('Enter');
       await page.waitForFunction(() => !document.querySelector('audio').paused);
       check((await state()).selected===(await state()).text, 'Queue OK selected another row');
@@ -98,7 +103,7 @@ async (sourcePage) => {
       check((await state()).folder===albumBeforeChange && await active('.album-card input'), 'Track change stole album focus');
       await page.keyboard.press('ArrowRight');
       check(await active('.simp-controls button, .simp-progress'), 'Album Right returned to the playlist after a track change');
-      await page.keyboard.press('ArrowDown');
+      await enterQueue();
       check(await currentQueueFocused() && await currentQueueVisible(), 'Controls Down returned to a stale track');
       const beforeAutoNext=(await state()).selected;
       await page.waitForFunction(() => !document.querySelector('audio').paused && document.querySelector('audio').duration > 0);
@@ -110,7 +115,7 @@ async (sourcePage) => {
       await page.locator('.simp-next').focus();
       await page.keyboard.press('Enter');
       check(await active('.simp-next'), 'Next-button track change stole controller focus');
-      await page.keyboard.press('ArrowDown');
+      await enterQueue();
       check(await currentQueueFocused() && await currentQueueVisible(), 'Next button left a stale queue destination');
       await page.evaluate(() => document.dispatchEvent(new KeyboardEvent('keydown',{key:'Unidentified',keyCode:19,bubbles:true,cancelable:true})));
       check((await state()).paused, 'Samsung pause failed');
@@ -149,7 +154,7 @@ async (sourcePage) => {
     await page.waitForFunction(()=>window.BAMusicPlayback && document.activeElement.matches('.simp-plause'));
     check((await state()).paused, 'Retry autoplayed');
     check(await currentQueueVisible(), 'Retry left the initial random track outside the queue viewport');
-    await page.keyboard.press('ArrowDown');
+    await enterQueue();
     check(await currentQueueFocused(), 'Retry queue entry missed the initial random track');
     check(errors.length===0, 'Page errors: '+errors.join('; '));
     return {passed:true,checks:'720p/1080p initial random track visibility and queue focus, album return to controls, media/button/natural-ended queue correction, preserved album/controller/dialog focus, top boundary, real playback, seek, clear/retry and mobile toggle',errors};

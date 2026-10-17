@@ -48,7 +48,7 @@ a,a:hover,a:visited{color:#ddd;text-decoration:none;}
 #simp .simp-hide{max-height:0;}
 /* playlist */
 #simp ul{margin:5px 0 0;padding:0;list-style:none;max-height:calc(100vh - 255px);}
-#simp ul li{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;margin:0;padding:8px 20px;cursor:pointer;}
+#simp ul li{white-space:normal;overflow-wrap:anywhere;line-height:1.45;display:block;margin:0;padding:8px 20px;cursor:pointer;}
 #simp ul li[hidden]{display:none;}
 #simp ul li:last-child{padding-bottom:13px;}
 #simp ul li:nth-child(odd){background:#0e1621;}
@@ -89,9 +89,19 @@ a,a:hover,a:visited{color:#ddd;text-decoration:none;}
 #simp .library-load-state[hidden] {display:none;}
 #simp .library-retry {margin-top:12px;}
 #simp button:focus-visible,#simp li:focus-visible,#simp input:focus-visible {outline:2px solid #8ccaff;outline-offset:-2px;}
-#simp .simp-queue-heading {display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;border-top:1px solid #293949;border-bottom:1px solid #293949;}
+#simp .simp-queue-heading {display:flex;align-items:center;flex-wrap:wrap;flex-shrink:0;gap:6px 10px;padding:8px 20px;border-top:1px solid #293949;border-bottom:1px solid #293949;}
 #simp .simp-queue-heading h2 {font-size:14px;font-weight:600;}
 #simp .queue-count {color:#9cb0c2;font-size:12px;}
+#simp .track-actions {display:flex;align-items:center;gap:6px;margin-left:auto;}
+#simp .track-actions button {height:28px;padding:0 8px;border:1px solid #3a5165;border-radius:5px;background:#1b2b3a;color:#e2edf6;font-family:inherit;font-size:12px;line-height:1.2;white-space:nowrap;cursor:pointer;}
+#simp .track-actions button[hidden],#simp .track-selection-hint[hidden] {display:none;}
+#simp .track-actions button:disabled {opacity:.4;cursor:default;}
+#simp .track-actions button:not(:disabled):hover {background:#29445a;}
+#simp .track-actions .tracks-apply {background:#28699b;border-color:#5a9bcc;color:#fff;}
+#simp .track-selection-hint {flex-shrink:0;margin:0;padding:8px 20px;font-size:12px;line-height:1.5;color:#aabfce;}
+#simp.selecting-tracks ul li {position:relative;padding-left:46px;}
+#simp.selecting-tracks ul li:before {content:'';position:absolute;left:20px;top:50%;transform:translateY(-50%);width:16px;height:16px;border:1px solid #89a2b6;border-radius:3px;background:#142332;}
+#simp.selecting-tracks ul li[aria-checked="true"]:before {content:'✓';background:#b3deff;border-color:#b3deff;color:#0c2b43;font:bold 13px/14px system-ui;text-align:center;}
 #simp .simp-empty {padding:36px 20px;color:#aabac8;text-align:center;line-height:1.6;}
 #simp .simp-albums {grid-column:1;grid-row:2;display:flex;flex-direction:column;min-height:0;padding:0 16px 16px;background:#101a24;border-right:1px solid #293949;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#42566a transparent;}
 #simp .simp-albums[hidden] {display:none;}
