@@ -22,7 +22,13 @@ music.readiz.com {
 				Access-Control-Allow-Methods "GET, HEAD, OPTIONS"
 				Access-Control-Allow-Headers "Range, If-Range"
 				Access-Control-Expose-Headers "Accept-Ranges, Content-Length, Content-Range, ETag"
-				Cache-Control "no-cache"
+				Cache-Control "private, no-store"
+				Vary "Cookie, Origin"
+			}
+			@audio_origin header_regexp music_origin Origin ^https://(www|music|newblog[.]dev)[.]readiz[.]com$
+			header @audio_origin {
+				Access-Control-Allow-Origin "{http.request.header.Origin}"
+				Access-Control-Allow-Credentials "true"
 			}
 			@audio_preflight method OPTIONS
 			respond @audio_preflight "" 204
@@ -43,20 +49,19 @@ music.readiz.com {
 	}
 	@library path /musicList.json /waveforms.json /imported-tracks.json /blue-archive-ost.json /lastUpdated.txt /library-info.json
 	handle @library {
-		root * /Users/readiz/.local/share/readiz-music/library/current
-		header {
-			Access-Control-Allow-Origin "*"
-			Access-Control-Allow-Methods "GET, HEAD, OPTIONS"
-			Access-Control-Allow-Headers "Range, If-Range"
-			Access-Control-Expose-Headers "Accept-Ranges, Content-Length, Content-Range, ETag"
-			Cache-Control "no-cache"
-		}
-		@preflight method OPTIONS
-		respond @preflight "" 204
-		file_server
+		reverse_proxy 127.0.0.1:4525
 	}
 	@covers path /assets/albums/*
-	header @covers Access-Control-Allow-Origin "*"
+	handle @covers {
+		route {
+			header Cache-Control "private, no-store"
+			header Access-Control-Allow-Origin "*"
+			forward_auth 127.0.0.1:4525 {
+				uri /_internal/music-access
+			}
+			file_server
+		}
+	}
 	@music_api path /api/*
 	handle @music_api {
 		# Preserve the API's private/no-store authentication headers.

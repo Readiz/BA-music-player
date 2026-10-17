@@ -8,6 +8,7 @@ import { createAuth } from '../server/auth.mjs';
 import { createImports } from '../server/imports.mjs';
 import { createHandler } from '../server/app.mjs';
 import { createApiServer } from '../server/http.mjs';
+import { catalogView, publicTrack } from '../server/catalog-access.mjs';
 import { createWaveform } from '../server/waveforms.mjs';
 mkdirSync('output/playwright/music-upload', { recursive: true });
 execFileSync('/opt/homebrew/bin/ffmpeg', ['-v', 'error', '-f', 'lavfi', '-i', 'sine=frequency=440:duration=12', '-y', 'output/playwright/music-upload/sample.wav']);
@@ -27,12 +28,13 @@ const api=createHandler({auth,imports});
 const server=createApiServer({origin,handler:async request=>{
  const url=new URL(request.url);
  if(url.pathname==='/__login'){const b=auth.begin();const state=new URL(b.location).searchParams.get('state');const login=await auth.complete(new Request(origin+'/api/auth/discord/callback?code=fake&state='+state,{headers:{cookie:b.cookie.split(';')[0]}}));return new Response(null,{status:302,headers:{'Set-Cookie':login.cookie,Location:'/#add-music'}});}
+ if(url.pathname==='/api/catalog' || url.pathname==='/__pages/api/catalog'){const view=catalogView({'musicList.json':catalog,'imported-tracks.json':manifest,'waveforms.json':waves},!!auth.user(request));return Response.json({authenticated:!!auth.user(request),list:view.list,imported:view.imported,ost:view.ost});}
  if(url.pathname.startsWith('/api/'))return api(request);
  if(url.pathname.startsWith('/__pages/')){
   const file='./'+decodeURIComponent(url.pathname.slice('/__pages/'.length));
   const json={'./blue-archive-ost.json':{titles:{}},'./musicList.json':catalog,'./imported-tracks.json':manifest,'./waveforms.json':waves};
   if(json[file])return Response.json(json[file]);
-  if(file.startsWith('./music/')){const audio=media.get(file);return audio?new Response(audio,{headers:{'Content-Type':'audio/mpeg'}}):new Response('',{status:404});}
+  if(file.startsWith('./music/')){if(!publicTrack(file)&&!auth.user(request))return new Response('',{status:401});const audio=media.get(file);return audio?new Response(audio,{headers:{'Content-Type':'audio/mpeg'}}):new Response('',{status:404});}
  }
  const pathname=url.pathname.startsWith('/__pages/')?url.pathname.slice('/__pages'.length):url.pathname;
  const path=resolve('dist','.'+decodeURIComponent(pathname==='/'?'/index.html':pathname));

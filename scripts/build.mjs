@@ -1,3 +1,4 @@
+import { catalogView } from '../server/catalog-access.mjs';
 import { transformSync } from 'esbuild';
 import { readAndroidRelease } from './android-release.mjs';
 import { MUSIC_LIBRARY } from '../server/catalog.mjs';
@@ -10,13 +11,18 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 process.chdir(root);
 // Audio integrity belongs to Mac/NAS publication; code builds validate metadata only.
 const metadata = await readMetadata(root);
-const tracks = metadata['musicList.json'];
+const publicCatalog = catalogView(metadata, false);
+const tracks = publicCatalog.list;
 // Explicit publication list: never serve the repository, dependencies or native build output.
 rmSync('dist', { recursive: true, force: true });
 mkdirSync('dist');
 const pages = process.env.MUSIC_BUILD_TARGET === 'pages';
 for (const path of ['index.html', 'app-start.html', 'offline.html', 'manifest.webmanifest', 'sw.js', 'css', 'js', 'assets', 'musicList.json', 'imported-tracks.json', 'blue-archive-ost.json', 'waveforms.json', 'lastUpdated.txt']) {
   cpSync(path, `dist/${path}`, { recursive: true });
+}
+// Static fallback/Pages artifacts never contain restricted catalog entries.
+for (const [name, value] of Object.entries({ 'musicList.json': publicCatalog.list, 'imported-tracks.json': publicCatalog.imported, 'waveforms.json': publicCatalog.waves })) {
+  writeFileSync('dist/' + name, JSON.stringify(value));
 }
 // Tizen 5.0 uses Chromium 63. Keep native audio usable without modern syntax.
 for (const file of readdirSync('dist/js')) {

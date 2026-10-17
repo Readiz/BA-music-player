@@ -6,9 +6,10 @@ import { promisify } from 'node:util';
 import { setTimeout as delay } from 'node:timers/promises';
 import { MUSIC_LIBRARY } from './catalog.mjs';
 import { ImportError } from './imports.mjs';
-import { hashFile, librarySettings, updateLibrary } from './library.mjs';
+import { hashFile, librarySettings, updateLibrary, readMetadata } from './library.mjs';
 import { mediaIdentity } from './media-identity.mjs';
 import { createWaveform } from './waveforms.mjs';
+import { createStaticResolver } from './nas-static.mjs';
 import { createHash } from 'node:crypto';
 
 const execute = promisify(execFile);
@@ -48,7 +49,20 @@ export async function verifyPublishedTrack({ track, waveform, signal, fetcher = 
   }
 }
 
-export function createLocalSync({ settings = librarySettings(), ffmpeg = process.env.MUSIC_FFMPEG || '/opt/homebrew/bin', prepareWaveform = createWaveform, verify = verifyPublishedTrack } = {}) {
+export async function verifyStoredTrack({ settings, track, waveform, signal }) {
+  const metadata = await readMetadata(join(settings.root, 'current'));
+  const visible = metadata['imported-tracks.json'].tracks.find(item => item.src === track.src);
+  if (visible?.sha256 !== track.sha256 || visible?.title !== track.title
+    || !metadata['musicList.json'].includes(track.src)
+    || JSON.stringify(metadata['waveforms.json'][track.src]) !== JSON.stringify(waveform)) throw Error('Published catalog mismatch');
+  const response = await createStaticResolver({ root: settings.root, settings: settings.static })(new Request('http://localhost/_internal/music-static', { headers: { 'X-Forwarded-Uri': '/' + track.src.slice(2) } }));
+  if (!response.ok) throw Error('Music publication is not ready');
+  const path = join(settings.static.serveRoot || settings.static.serveMount, 'objects', response.headers.get('X-Readiz-Music-Object'));
+  if ((await stat(path)).size !== track.bytes || await hashFile(path, signal) !== track.sha256) throw Error('Published audio checksum mismatch');
+  return visible;
+}
+
+export function createLocalSync({ settings = librarySettings(), ffmpeg = process.env.MUSIC_FFMPEG || '/opt/homebrew/bin', prepareWaveform = createWaveform, verify = args => verifyStoredTrack({ ...args, settings }) } = {}) {
   return async ({ video, result, signal, saveCheckpoint = () => {}, onProgress = () => {} }) => {
     const identity = mediaIdentity(video.id);
     const title = String(result.title).normalize('NFC').replace(/[\x00-\x1f\x7f]/g, '').replace(/\s+/g, ' ').trim().slice(0, 200);

@@ -1,6 +1,10 @@
-# Readiz Music Android 0.4.2
+# Readiz Music Android 0.4.3
 
 휴대전화와 Android TV에서 같은 `com.readiz.music` APK를 사용한다. 웹 화면은 `https://music.readiz.com/`에서 받고, Android 재생은 Media3 `PlaybackService`가 담당한다.
+
+## 로그인에 따른 재생 (0.4.3)
+
+비로그인은 Blue Archive·th original만 표시한다. 기존 Discord/Readiz 로그인 후 나머지 앨범을 재생할 수 있으며 Media3 음원·표지 및 홈 화면 위젯 표지 요청에 WebView의 Music 세션을 반영한다. 다른 호스트·설치 파일에는 인증 쿠키를 전달하지 않는다.
 
 ## 설치와 업데이트
 

@@ -86,8 +86,8 @@ function BAPlayer() {
     albumGrid.append(card);
     albumInputs.set(folder, input);
   }
-  const albumStorageKey = 'ba-player-albums';
-  const trackStorageKey = 'ba-player-tracks';
+  const albumStorageKey = window.BAMusicAccess?.storageKey('ba-player-albums') || 'ba-player-albums';
+  const trackStorageKey = window.BAMusicAccess?.storageKey('ba-player-tracks') || 'ba-player-tracks';
   let savedTracks;
   try { savedTracks = JSON.parse(localStorage.getItem(trackStorageKey)); } catch { /* Optional storage. */ }
   const selection = window.BAMusicTrackSelection(tracks, savedTracks);
@@ -450,7 +450,7 @@ function BAPlayer() {
           return available.length || !saved.folders.length ? available : defaults;
         }
       } else {
-        const legacy = localStorage.getItem('ba-player-folder');
+        const legacy = localStorage.getItem(window.BAMusicAccess?.storageKey('ba-player-folder') || 'ba-player-folder');
         if (folderCounts.has(legacy)) return [legacy];
       }
     } catch { /* Invalid or unavailable storage falls back to the default. */ }
@@ -656,7 +656,7 @@ function BAPlayer() {
   if (typeof ResizeObserver !== 'function') return;
   function refreshWaveforms() {
     if (!waveformRequest) {
-      waveformRequest = fetch(window.BAMusicSource.catalog('waveforms.json'), { cache: 'no-cache' }).then(response => {
+      waveformRequest = fetch(window.BAMusicSource.catalog('waveforms.json'), { cache: 'no-store', credentials: 'include' }).then(response => {
         if (!response.ok) throw new Error('Waveform data unavailable');
         return response.json();
       }).then(data => {

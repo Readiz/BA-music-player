@@ -1,16 +1,6 @@
 BAAlbumPanel();
   async function getMusics() {
-      const [arr, catalog, added] = await Promise.all([
-          fetch(window.BAMusicSource.catalog('musicList.json'), { cache: 'no-cache' }).then(res => {
-              if (!res.ok) throw new Error('음악 목록을 불러오지 못했습니다.');
-              return res.json();
-          }),
-          // Keep the filename-based playlist usable if metadata is unavailable.
-          fetch(window.BAMusicSource.catalog('blue-archive-ost.json'), { cache: 'no-cache' })
-              .then(res => res.ok ? res.json() : { titles: {} })
-              .catch(() => ({ titles: {} })),
-          fetch(window.BAMusicSource.catalog('imported-tracks.json'), { cache: 'no-cache' }).then(res => res.ok ? res.json() : { tracks: [] }).catch(() => ({ tracks: [] })),
-      ]);
+      const { list: arr, ost: catalog, imported: added } = await window.BAMusicAccess.catalog();
       const addedTracks = new Map((added.tracks || []).map(track => [track.src, track]));
       const list = document.createDocumentFragment();
       for (const [index, item] of arr.entries()) {

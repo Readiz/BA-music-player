@@ -1,19 +1,35 @@
-import { MUSIC_LIBRARY } from './catalog.mjs';
+import { createCatalogReader, catalogFiles, catalogHeaders, publicResource } from './catalog-access.mjs';
 import { handleAuth, authJson } from './auth-handler.mjs';
 import { ImportError } from './imports.mjs';
 
-export function createHandler({ auth, imports, staticRoot, resolveStatic, revision = 'development' }) {
+export function createHandler({ auth, imports, staticRoot, resolveStatic, catalogRoot = staticRoot, revision = 'development' }) {
+  const catalog = catalogRoot ? createCatalogReader(catalogRoot) : null;
   return async (request, ip = 'local') => {
     const path = new URL(request.url).pathname.replace(/\/$/, '');
-    if (path === '/_internal/music-static') {
+    if (path === '/_internal/music-static' || path === '/_internal/music-access') {
       if (!['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(ip)) return authJson({ error: 'not-found' }, 404);
+      if (!publicResource(request.headers.get('x-forwarded-uri') || '') && !auth?.user(request)) return authJson({ error: 'login-required' }, 401);
+      if (path === '/_internal/music-access') return new Response(null, { status: 200, headers: { 'Cache-Control': 'private, no-store' } });
       return resolveStatic ? resolveStatic(request) : authJson({ error: 'static-unavailable' }, 503);
     }
     if (path.startsWith('/api/auth/')) return handleAuth(request, auth, ip);
     if (path === '/api/health' && request.method === 'GET') return authJson({ service: 'readiz-music', revision, auth: !!auth });
-    if (['/waveforms.json', '/musicList.json', '/api/library'].includes(path) && request.method === 'GET') {
-      const file = path === '/api/library' ? 'imported-tracks.json' : path.slice(1);
-      return new Response(null, { status: 307, headers: { Location: new URL(file, MUSIC_LIBRARY).href, 'Cache-Control': 'no-cache' } });
+    if (path === '/api/catalog' || path === '/api/library' || catalogFiles.has(path.slice(1))) {
+      const headers = catalogHeaders(request);
+      if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers });
+      if (!['GET', 'HEAD'].includes(request.method)) return new Response(null, { status: 405, headers });
+      try {
+        const authenticated = Boolean(auth?.user(request));
+        const view = await catalog(authenticated);
+        const content = path === '/api/catalog' ? { authenticated, list: view.list, imported: view.imported, ost: view.ost }
+          : path === '/musicList.json' ? view.list
+          : path === '/api/library' || path === '/imported-tracks.json' ? view.imported
+          : path === '/waveforms.json' ? view.waves
+          : path === '/blue-archive-ost.json' ? view.ost
+          : path === '/library-info.json' ? view.info : view.updated;
+        headers['Content-Type'] = path === '/lastUpdated.txt' ? 'text/plain; charset=utf-8' : 'application/json';
+        return new Response(request.method === 'HEAD' ? null : typeof content === 'string' ? content : JSON.stringify(content), { headers });
+      } catch { return new Response(JSON.stringify({ error: 'catalog-unavailable' }), { status: 503, headers }); }
     }
     if (path === '/api/uploads') {
       const user = auth?.user(request);

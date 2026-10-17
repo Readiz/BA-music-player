@@ -94,7 +94,7 @@ test('legacy ready local audio is migrated and hidden until synchronization fini
   assert.equal(upgraded.list('1')[0].track, undefined);
   await until(upgraded, 'syncing'); release(); await until(upgraded, 'ready'); await upgraded.close();
 });
-test('public APIs redirect to Pages and retain import authentication boundaries', async t => {
+test('catalog APIs filter anonymous results and retain import authentication boundaries', async t => {
   const root = temp(t);
   writeFileSync(join(root,'musicList.json'), JSON.stringify(['./music/ETC/original.mp3']));
   writeFileSync(join(root,'waveforms.json'), JSON.stringify({ original: { peaks: [0.1] } }));
@@ -115,9 +115,9 @@ test('public APIs redirect to Pages and retain import authentication boundaries'
   await until(imports, 'syncing');
   for (const [path, target] of [['/musicList.json','musicList.json'],['/waveforms.json','waveforms.json'],['/api/library','imported-tracks.json']]) {
     const response = await handler(request(path));
-    assert.equal(response.status, 307);
-    assert.equal(response.headers.get('location'), 'https://music.readiz.com/'+target);
-    assert.equal(response.headers.get('cache-control'), 'no-cache');
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('location'), null);
+    assert.equal(response.headers.get('cache-control'), 'private, no-store');
   }
   assert.equal(imports.list('1')[0].track, undefined);
   release(); await until(imports, 'ready');

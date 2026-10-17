@@ -123,13 +123,13 @@ test('failed static publication preserves the existing current catalog; new impo
 test('the internal resolver is unavailable to non-loopback clients', async () => {
   const handler = createHandler({ resolveStatic: () => new Response(null, { status: 200 }) });
   assert.equal((await handler(request('/' + path), '192.168.0.99')).status, 404);
-  assert.equal((await handler(request('/' + path), '127.0.0.1')).status, 200);
+  assert.equal((await handler(request('/music/Blue%20Archive/test.ogg'), '127.0.0.1')).status, 200);
 });
 
 test('real Caddy keeps audio Range, HEAD, CORS and conditional requests while denying writes and outage reads', { skip: !existsSync('/opt/homebrew/bin/caddy') }, async t => {
   const f = await fixture(t);
   await publishNasStatic(f);
-  const api = createApiServer({ handler: createHandler({ resolveStatic: createStaticResolver(f) }), origin: 'http://localhost' });
+  const api = createApiServer({ handler: createHandler({ auth: { user: r => r.headers.get('cookie') === 'music=test' ? { id: 'owner' } : null }, resolveStatic: createStaticResolver(f) }), origin: 'http://localhost' });
   await new Promise(resolve => api.listen(0, '127.0.0.1', resolve));
   t.after(() => { api.closeAllConnections(); api.close(); });
   const probe = createServer();
@@ -143,31 +143,33 @@ test('real Caddy keeps audio Range, HEAD, CORS and conditional requests while de
   const config = join(f.base, 'Caddyfile');
   await writeFile(config, `{\n admin off\n auto_https off\n}\nhttp://127.0.0.1:${port} {\n${audio}\n respond 404\n}\n`);
   const caddy = spawn('/opt/homebrew/bin/caddy', ['run', '--config', config], { stdio: 'ignore' });
-  t.after(async () => { caddy.kill(); await new Promise(resolve => caddy.once('exit', resolve)); });
+  t.after(async () => { if (caddy.exitCode === null && caddy.signalCode === null) { caddy.kill(); await new Promise(resolve => caddy.once('exit', resolve)); } });
   const url = `http://127.0.0.1:${port}/${path}`;
+  const authorized = (url, options = {}) => fetch(url, { ...options, headers: { cookie: 'music=test', ...options.headers } });
   let response;
   for (let i = 0; i < 60; i++) {
-    try { response = await fetch(url); break; } catch { await new Promise(resolve => setTimeout(resolve, 50)); }
+    try { response = await authorized(url); break; } catch { await new Promise(resolve => setTimeout(resolve, 50)); }
   }
+  assert.equal((await fetch(url)).status, 401);
   assert.equal(response?.status, 200);
   assert.deepEqual(Buffer.from(await response.arrayBuffer()), bytes);
   assert.equal(response.headers.get('content-type'), 'audio/mpeg');
   const etag = response.headers.get('etag');
   assert.ok(etag);
-  const range = await fetch(url, { headers: { Range: 'bytes=3-7', Origin: 'https://readiz.com' } });
+  const range = await authorized(url, { headers: { Range: 'bytes=3-7', Origin: 'https://readiz.com' } });
   assert.equal(range.status, 206);
   assert.equal(range.headers.get('content-range'), `bytes 3-7/${bytes.length}`);
   assert.equal(range.headers.get('access-control-allow-origin'), '*');
   assert.deepEqual(Buffer.from(await range.arrayBuffer()), bytes.subarray(3, 8));
-  const head = await fetch(url, { method: 'HEAD' });
+  const head = await authorized(url, { method: 'HEAD' });
   assert.equal(head.status, 200);
   assert.equal(Number(head.headers.get('content-length')), bytes.length);
-  assert.equal((await fetch(url, { headers: { 'If-None-Match': etag } })).status, 304);
-  assert.equal((await fetch(url, { method: 'OPTIONS' })).status, 204);
-  assert.equal((await fetch(url, { method: 'POST', body: 'overwrite' })).status, 405);
-  assert.equal((await fetch(url.replace('yt-aaaaaaaaaaa', 'unknown'), { headers: { 'X-Readiz-Music-Object': staticObject(file) } })).status, 404);
+  assert.equal((await authorized(url, { headers: { 'If-None-Match': etag } })).status, 304);
+  assert.equal((await authorized(url, { method: 'OPTIONS' })).status, 204);
+  assert.equal((await authorized(url, { method: 'POST', body: 'overwrite' })).status, 405);
+  assert.equal((await authorized(url.replace('yt-aaaaaaaaaaa', 'unknown'), { headers: { 'X-Readiz-Music-Object': staticObject(file) } })).status, 404);
   await rename(f.settings.serveMount, f.settings.serveMount + '.offline');
-  const unavailable = await fetch(url);
+  const unavailable = await authorized(url);
   assert.equal(unavailable.status, 503);
   assert.match(unavailable.headers.get('cache-control'), /(?:^|,\s*)no-store(?:,|$)/);
 });

@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { audioPath, assertNasMounted, publishLibrary, readMetadata, restoreLibrary, updateLibrary, verifyLibrary } from '../server/library.mjs';
-import { createLocalSync, verifyPublishedTrack } from '../server/local-sync.mjs';
+import { createLocalSync, verifyPublishedTrack, verifyStoredTrack } from '../server/local-sync.mjs';
 
 const src = './music/ETC/yt-jNQXAC9IVRw.mp3';
 const bytes = Buffer.from('verified source audio');
@@ -159,4 +159,17 @@ test('the real local importer prepares tags and waveform, verifies the backup an
   await assert.rejects(unavailable({ ...args, video: { id: 'ccccccccccc' } }), /백업이나 공개/);
   assert.equal(await realpath(join(options.root, 'current')), before);
   assert.equal(existsSync(input), true);
+});
+
+
+test('private imports verify their NAS serving object without anonymous HTTP access', async t => {
+  const { options, track, base } = await fixture(t);
+  const mount = join(await realpath(base), 'static');
+  await mkdir(mount);
+  options.static = { publishMount: mount, serveMount: mount, serveRoot: join(mount, 'music'), requireMount: false };
+  await publishLibrary(options);
+  assert.equal((await verifyStoredTrack({ settings: options, track, waveform: peaks })).title, track.title);
+  const object = join(mount, 'music/objects', track.sha256.slice(0, 2), track.sha256 + '.mp3');
+  await writeFile(object, Buffer.alloc(track.bytes));
+  await assert.rejects(verifyStoredTrack({ settings: options, track, waveform: peaks }), /checksum mismatch/);
 });

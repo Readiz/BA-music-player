@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="https://music.readiz.com/tizen" version="0.1.0" viewmodes="maximized">
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="https://music.readiz.com/tizen" version="0.1.1" viewmodes="maximized">
   <tizen:application id="ReadizMU01.ReadizMusic" package="ReadizMU01" required_version="5.0"/>
   <content src="index.html"/>
   <name>Readiz Music</name>
@@ -9,7 +9,9 @@
   <tizen:privilege name="http://tizen.org/privilege/internet"/>
   <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"/>
   <access origin="https://music.readiz.com" subdomains="false"/>
-  <tizen:allow-navigation>https://music.readiz.com</tizen:allow-navigation>
+  <access origin="https://auth.readiz.com" subdomains="false"/>
+  <access origin="https://discord.com" subdomains="false"/>
+  <tizen:allow-navigation>https://music.readiz.com https://auth.readiz.com https://discord.com</tizen:allow-navigation>
   <tizen:setting screen-orientation="landscape" context-menu="disable" background-support="disable" encryption="disable" install-location="auto" hwkey-event="enable" pointing-device-support="enable"/>
   <tizen:metadata key="http://samsung.com/tv/metadata/use.network" value="true"/>
 </widget>

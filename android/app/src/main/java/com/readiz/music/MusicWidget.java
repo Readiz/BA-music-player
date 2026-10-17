@@ -197,6 +197,8 @@ public class MusicWidget extends AppWidgetProvider {
         HttpURLConnection connection = null;
         try {
             connection = (HttpURLConnection) new URL(value).openConnection();
+            for (var header : MusicCookies.headers(uri, java.util.Collections.emptyMap()).entrySet())
+                connection.setRequestProperty(header.getKey(), header.getValue());
             connection.setConnectTimeout(4000);
             connection.setReadTimeout(4000);
             connection.setInstanceFollowRedirects(false);

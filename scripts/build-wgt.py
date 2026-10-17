@@ -36,7 +36,7 @@ with zipfile.ZipFile(artifact, 'w', compression=zipfile.ZIP_DEFLATED) as archive
         if name == 'app-url.js':
             data = ('window.READIZ_APP_URL = ' + json.dumps(args.url) + ';\n').encode()
         elif name == 'config.xml':
-            data = (SOURCE / name).read_text().replace('https://music.readiz.com</tizen:allow-navigation>', escape(url.scheme + '://' + url.netloc) + '</tizen:allow-navigation>').replace('origin="https://music.readiz.com"', 'origin="' + escape(url.scheme + '://' + url.netloc, {'"': '&quot;'}) + '"').encode()
+            data = (SOURCE / name).read_text().replace('<tizen:allow-navigation>https://music.readiz.com ', '<tizen:allow-navigation>' + escape(url.scheme + '://' + url.netloc) + ' ').replace('origin="https://music.readiz.com"', 'origin="' + escape(url.scheme + '://' + url.netloc, {'"': '&quot;'}) + '"').encode()
         else:
             data = (SOURCE / name).read_bytes()
         archive.writestr(entry, data)

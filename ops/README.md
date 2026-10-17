@@ -1,3 +1,35 @@
+## 접근 제한과 설정 복원 (웹 1.5.13 / Android 0.4.3)
+
+- 로그인 전에는 정확히 `Blue Archive`, `th original`만 제공합니다. 기존 Readiz SSO의
+  허용 계정 정책을 사용하며 신규 계정 등록이나 별도 인증 체계를 만들지 않습니다.
+- `/api/catalog`와 기존 목록·파형·추가곡 메타데이터는 Music 세션에 맞춰 필터링합니다.
+  Caddy 음원 확인 단계와 표지에도 같은 권한 검사를 적용하므로 주소 직접 요청도 제한됩니다.
+  목록과 음원은 `private, no-store`, `Vary: Cookie, Origin`으로 응답합니다.
+  신뢰하는 홈페이지 origin에만 credential CORS를 허용합니다.
+- 앨범 패널의 로그인 버튼은 기존 Discord/Readiz 로그인으로 연결합니다. 홈페이지
+  iframe에서는 새 탭을 열고 복귀·포커스·30초 점검 때 접근 범위를 갱신합니다.
+  로그아웃/세션 만료를 확인하면 현재 재생을 멈추고 공개 목록으로 전환합니다.
+- Music 앨범·선택 곡 저장은 계정용 기존 키를 유지하고 비로그인 키에 `-public`을 붙입니다.
+  홈페이지는 큐 순서·현재 곡·위치·반복·자동 넘김·무작위를 접근 범위별로 저장합니다.
+  다시 방문하면 일시정지로 복원하며 로그인 선택을 비로그인 초기값으로 덮어쓰지 않습니다.
+- Android 0.4.3은 Media3가 음원을 열 때 WebView의 Music 서비스 세션 쿠키를 반영합니다.
+  MediaSession과 홈 화면 위젯의 앨범 표지도 같은 인증을 사용합니다. 음원·표지 외 경로나 다른 호스트에는 쿠키를 보내지 않습니다. 기존 서명과 패키지를 유지합니다.
+- Tizen WGT 0.1.1은 Music 외에 실제 로그인 호스트인 `auth.readiz.com`, `discord.com`만
+  탐색 대상으로 허용합니다. [Tizen 설정 규격](https://docs.tizen.org/platform/compliance/media/tizen-3.0-wrt-core-spec.pdf)의 공백 구분 도메인 목록을 사용합니다.
+- 새 ETC 업로드는 비공개 감상 대상이므로 게시 후 검증은 인증 없는 HTTP 대신
+  현재 목록·파형과 검증된 NAS 서빙 객체의 크기/SHA-256을 대조합니다.
+- 배포: 깨끗한 커밋에서 APK/웹 빌드 → `node scripts/deploy-api.mjs` →
+  `node scripts/deploy-local.mjs` → 전체 Caddy validate/reload → 홈페이지 배포.
+  음원·NAS 스냅샷 재게시가 필요 없습니다. 이전 버전으로 원복하면 전체 공개 정책도
+  돌아가므로 접근 제한을 유지해야 할 때는 수정 릴리스로 복구합니다.
+- 브라우저 회귀: 홈페이지 dev 4478과 `node scripts/access-fixture.mjs`의 API 4526을
+  켜고 생성된 `/private/tmp/music-access-fixture.Caddyfile`을 별도 Caddy 4527로 실행합니다.
+  홈페이지 `scripts/verify-music-access.js`를 Playwright CLI run-code로 실행합니다.
+  fixture는 실제 NAS를 읽기만 하며 가상 로그인은 격리된 로컬 서버에만 적용합니다.
+- 검증은 전체 Node 테스트, Android lint/단위 테스트 및 격리된 로그인 fixture의
+  브라우저 검증으로 구분합니다. 실제 Discord 계정 로그인과 물리 TV/Android 기기
+  검증은 별도로 기록합니다.
+
 # Readiz Music 운영
 
 ## 홈페이지 음악 위젯 동기화 (1.5.12)
@@ -7,7 +39,7 @@
   반복·자동 이어듣기 상태를 공유합니다. 창 닫기·최소화·다시 열기로 재생을 끊지 않습니다.
 - 홈페이지가 지정한 이름의 iframe에서만 `desktop-player.js`를 활성화합니다. 양쪽 모두
   정확한 부모/자식 창과 origin을 확인하고 연결별 nonce와 명령 순서로 오래된 응답을
-  거릅니다. 홈페이지는 자체 공개 카탈로그에 존재하는 ID만 받아 음원을 엽니다.
+  거릅니다. 홈페이지는 접근 가능한 카탈로그에 존재하는 ID만 받아 음원을 엽니다.
   늦게 도착한 초기 큐는 사용자가 이미 위젯을 조작했다면 적용하지 않습니다.
 - 연결에 실패하면 다시 불러오기를 안내하며 iframe에 별도 오디오를 만들지 않습니다.
   독립 탭·Android·TV 재생은 기존 경로를 사용하며 이 동기화 범위에 포함하지 않습니다.
@@ -80,7 +112,7 @@ DSM·FTP·WebDAV·Web Station의 외부 진입점은 추가하지 않습니다.
 - NAS 게시·서빙 마운트의 실제 SMB 원본, 쓰기/읽기 전용 상태, 파일 크기·경로를 확인합니다.
   알려지지 않은 곡·목록 밖 경로·심볼릭 링크는 제공하지 않습니다.
   음원은 GET/HEAD, CORS 사전 요청은 OPTIONS만 허용하며 파일 목록 탐색·업로드는 제공하지 않습니다.
-- 음원 주소는 내용이 바뀔 수 있어 `no-cache`와 ETag로 재검증합니다. 인증된 업로드 API의
+- 음원은 세션 권한 재확인을 위해 `private, no-store`와 ETag를 반환합니다. 인증된 업로드 API의
   접근 제한은 유지합니다. 요청 이력·계정·인증 정보는 공개 공유에 넣지 않습니다.
 - `npm run library:stage-static`은 기존 공개 목록의 검증된 Mac 객체를 NAS 게시 공간으로
   복사합니다. `library:publish`와 새 곡 추가는 게시 객체 검증까지 마쳐야 Mac의 현재 목록을

@@ -109,13 +109,13 @@ a,a:hover,a:visited{color:#ddd;text-decoration:none;}
 #simp.albums-collapsed .album-heading-row {border-right:0;border-bottom:1px solid #293949;}
 #simp #album-heading {font-size:18px;font-weight:650;letter-spacing:-.04em;}
 #simp .album-selection-summary {font-size:11px;color:#9cb0c2;margin-left:auto;white-space:nowrap;}
-#simp .album-actions {display:flex;gap:8px;margin-bottom:20px;}
+#simp .album-actions {display:flex;gap:6px;margin-bottom:20px;}
 #simp .album-actions button,#simp .library-retry {border:1px solid #3a5165;border-radius:6px;background:#1b2b3a;color:#e2edf6;font:inherit;font-size:12px;min-height:36px;padding:8px 10px;cursor:pointer;}
 #simp .album-toggle {display:grid;place-items:center;flex-shrink:0;width:32px;height:32px;padding:0;border:0;border-radius:6px;background:transparent;color:#9cb0c2;cursor:pointer;}
 #simp .album-toggle[hidden] {display:none;}
 #simp .album-toggle svg {transform:rotate(180deg);}
 #simp .album-toggle[aria-expanded="false"] svg {transform:none;}
-#simp .album-actions button {flex:1;}
+#simp .album-actions button {flex:1;min-height:28px;padding:4px 6px;white-space:nowrap;}
 #simp .album-actions button:disabled {opacity:.4;cursor:default;}
 #simp .album-actions button:not(:disabled):hover,#simp .album-toggle:hover,#simp .library-retry:hover {background:#29445a;}
 #simp .album-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 12px;}

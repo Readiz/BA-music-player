@@ -225,7 +225,7 @@
     try {
       const response = await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
       if (!response.ok) throw new Error();
-      authRequest++; authenticated = false; duplicate = null; latestJobs = []; observed.clear(); notice.hidden = true; clearTimeout(timer); jobs.textContent = ''; guest.hidden = false; account.hidden = true; message('로그아웃했습니다. 음악은 계속 들을 수 있습니다.');
+      authRequest++; authenticated = false; duplicate = null; latestJobs = []; observed.clear(); notice.hidden = true; clearTimeout(timer); jobs.textContent = ''; guest.hidden = false; account.hidden = true; message('로그아웃했습니다. 공개 앨범만 이용할 수 있습니다.'); window.BAMusicAccess?.refresh();
     } catch { message('로그아웃하지 못했습니다. 다시 시도해 주세요.'); }
   });
   window.addEventListener('music-library-ready', refreshJobs);

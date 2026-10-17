@@ -10,6 +10,10 @@ import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.datasource.DefaultHttpDataSource;
+import androidx.media3.datasource.DataSourceBitmapLoader;
+import androidx.media3.datasource.ResolvingDataSource;
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.media3.session.MediaSession;
 import androidx.media3.session.MediaSessionService;
 import androidx.media3.session.SessionCommand;
@@ -38,7 +42,9 @@ public final class PlaybackService extends MediaSessionService {
     private MediaSession session;
     @Override public void onCreate() {
         super.onCreate();
-        player = new ExoPlayer.Builder(this).build();
+        var source = new ResolvingDataSource.Factory(new DefaultHttpDataSource.Factory(),
+                spec -> spec.withRequestHeaders(MusicCookies.headers(spec.uri, spec.httpRequestHeaders)));
+        player = new ExoPlayer.Builder(this).setMediaSourceFactory(new DefaultMediaSourceFactory(source)).build();
         player.setAudioAttributes(new AudioAttributes.Builder().setUsage(C.USAGE_MEDIA)
                 .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC).build(), true);
         player.setHandleAudioBecomingNoisy(true);
@@ -46,6 +52,7 @@ public final class PlaybackService extends MediaSessionService {
         player.setRepeatMode(Player.REPEAT_MODE_ALL);
         Intent open = new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         session = new MediaSession.Builder(this, player)
+                .setBitmapLoader(new DataSourceBitmapLoader(DataSourceBitmapLoader.DEFAULT_EXECUTOR_SERVICE.get(), source))
                 .setSessionActivity(PendingIntent.getActivity(this, 0, open, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE))
                 .setCallback(new MediaSession.Callback() {
                     @Override public MediaSession.ConnectionResult onConnect(MediaSession s, MediaSession.ControllerInfo controller) {

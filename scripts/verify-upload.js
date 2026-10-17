@@ -5,7 +5,7 @@ async page => {
   await page.route('https://music.readiz.com/**',async route=>{
     const url=new URL(route.request().url());
     const response=await page.request.get('http://127.0.0.1:4543/__pages/'+url.pathname.slice(1)+url.search);
-    await route.fulfill({response,headers:{...response.headers(),'access-control-allow-origin':'*'}});
+    await route.fulfill({response,headers:{...response.headers(),'access-control-allow-origin':'http://127.0.0.1:4543','access-control-allow-credentials':'true'}});
   });
   await page.goto('http://127.0.0.1:4543/');
   await page.setViewportSize({width:1280,height:900});
@@ -32,14 +32,12 @@ async page => {
   await page.setViewportSize({width:390,height:844});
   await page.screenshot({path:'output/playwright/music-upload/mobile.png'});
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Horizontal overflow');
-  await page.getByRole('button',{name:'로그아웃',exact:true}).click();
+  await page.locator('.music-logout').click();
   await page.getByRole('link',{name:'디스코드로 로그인'}).waitFor();
   await page.getByRole('button',{name:'음악 추가 닫기'}).click();
   await page.reload();
-  await page.getByRole('button',{name:'전체 해제',exact:true}).click();
-  await page.getByRole('checkbox',{name:'ETC',exact:true}).check();
-  await page.locator('#ulist li').filter({hasText:'업로드 검증 <script>'}).click();
-  await page.waitForFunction(()=>document.querySelector('#audio').src.includes('/upload-')&&!document.querySelector('#audio').paused&&document.querySelector('#audio').currentTime>0.2&&!document.querySelector('#audio').error);
+  await page.locator('.music-account').filter({hasText:'로그인'}).waitFor();
+  assert(await page.getByRole('checkbox',{name:'ETC',exact:true}).count()===0,'Logged-out user sees ETC');
   assert(!errors.length,'Browser errors: '+errors.join(';'));
-  return {guestBlocked:true,fileTransmittedAndConverted:true,readyPlayback:true,deduplication:true,mobileLayout:true,anonymousPlayback:true,errors};
+  return {guestBlocked:true,fileTransmittedAndConverted:true,readyPlayback:true,deduplication:true,mobileLayout:true,anonymousRestricted:true,errors};
 }
