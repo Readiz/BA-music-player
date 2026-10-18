@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdtemp, mkdir, readFile, readdir, rename, rm, symlink, writeFile } from 'node:fs/promises';
+import { realpath, mkdtemp, mkdir, readFile, readdir, rename, rm, symlink, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { createServer } from 'node:http';
@@ -18,7 +19,7 @@ const path = src.slice(2);
 const file = { src, path, bytes: bytes.length, sha256 };
 const revision = 'a'.repeat(40);
 async function fixture(t) {
-  const base = await mkdtemp('/private/tmp/nas-static-test-');
+  const base = await realpath(await mkdtemp(join(tmpdir(), 'nas-static-test-')));
   t.after(() => rm(base, { recursive: true, force: true }));
   const root = join(base, 'mac');
   const mount = join(base, 'nas-static');

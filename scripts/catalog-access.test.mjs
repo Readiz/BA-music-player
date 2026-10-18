@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, writeFile, rm } from 'node:fs/promises';
+import { realpath, mkdtemp, writeFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createHandler } from '../server/app.mjs';
 import { publicTrack } from '../server/catalog-access.mjs';
@@ -10,7 +11,7 @@ test('only the two exact public album paths bypass authentication',()=>{
   for(const id of [privateTrack,'./music/Touhou/a.mp3','./music/Blue Archive/../ETC/private.mp3','./music/Blue Archive/sub/a.mp3','./music/Blue Archive%2f..%2fETC/a.mp3','https://evil.example/music/Blue Archive/a.ogg'])assert.equal(publicTrack(id),false,id);
 });
 test('catalog, waveforms, metadata and actual audio honor current authentication without shared caching',async t=>{
-  const root=await mkdtemp('/private/tmp/music-access-test-');t.after(()=>rm(root,{recursive:true,force:true}));
+  const root=await realpath(await mkdtemp(join(tmpdir(), 'music-access-test-')));t.after(()=>rm(root,{recursive:true,force:true}));
   for(const [name,data] of Object.entries({'musicList.json':[blue,touhou,privateTrack],'imported-tracks.json':{schemaVersion:1,tracks:[{src:privateTrack,title:'private title'}]},'waveforms.json':{[blue]:{peaks:[1]},[touhou]:{peaks:[2]},[privateTrack]:{peaks:[3]}},'blue-archive-ost.json':{titles:{1:'public title'}}}))await writeFile(join(root,name),JSON.stringify(data));
   let allowed=true,resolves=0;
   const auth={user:r=>allowed&&r.headers.get('cookie')==='session=valid'?{id:'owner'}:null};

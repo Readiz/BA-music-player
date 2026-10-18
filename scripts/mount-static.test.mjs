@@ -1,11 +1,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, stat, rm, writeFile, chmod } from 'node:fs/promises';
+import { realpath, mkdtemp, mkdir, stat, rm, writeFile, chmod } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { mountStatic } from './mount-static.mjs';
 
 async function fixture(t) {
-  const root = await mkdtemp('/private/tmp/music-mount-test-');
+  const root = await realpath(await mkdtemp(join(tmpdir(), 'music-mount-test-')));
   t.after(() => rm(root, { recursive: true, force: true }));
   const settings = { publishMount: join(root, 'publish'), serveMount: join(root, 'serve'), source: '//readiz@192.168.0.5/readiz_static', serveSource: '//readiz@192.168.0.5/readiz_static/music' };
   const helper = '/test/keychain-helper';
