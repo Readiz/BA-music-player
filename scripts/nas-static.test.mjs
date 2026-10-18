@@ -102,7 +102,9 @@ test('failed static publication preserves the existing current catalog; new impo
     current['waveforms.json'][second] = current['waveforms.json'][src];
     current['imported-tracks.json'].tracks.push({ ...current['imported-tracks.json'].tracks[0], src: second });
     return { audio: new Map([[second, source]]) };
-  }), /not mounted/);
+  }), error => /not mounted/.test(error.message)
+    // Linux may lack the macOS mount binary; publication must still fail closed.
+    || (error.code === 'ENOENT' && error.path === '/sbin/mount'));
   assert.equal(JSON.parse(await readFile(join(root, 'current/snapshot.json'))).revision, first.revision);
   const secondBytes = Buffer.from('a newly imported public song');
   const secondHash = createHash('sha256').update(secondBytes).digest('hex');
