@@ -20,15 +20,16 @@ function BAAlbumPanel() {
   });
 }
 function BAPlayer() {
+  var _a, _b;
   const root = document.querySelector("#simp");
   const rows = [...root.querySelectorAll(".simp-playlist li")];
   if (!rows.length) throw new Error("재생할 음악이 없습니다.");
   const tracks = rows.map((row) => {
-    var _a;
+    var _a2;
     return {
       src: row.querySelector(".simp-source").dataset.src,
       title: row.querySelector(".simp-source").textContent,
-      artist: ((_a = row.querySelector(".simp-desc")) == null ? void 0 : _a.textContent) || "",
+      artist: ((_a2 = row.querySelector(".simp-desc")) == null ? void 0 : _a2.textContent) || "",
       folder: row.dataset.folder
     };
   });
@@ -88,9 +89,21 @@ function BAPlayer() {
     albumGrid.append(card);
     albumInputs.set(folder, input);
   }
-  const albumStorageKey = "ba-player-albums";
+  const albumStorageKey = ((_a = window.BAMusicAccess) == null ? void 0 : _a.storageKey("ba-player-albums")) || "ba-player-albums";
+  const trackStorageKey = ((_b = window.BAMusicAccess) == null ? void 0 : _b.storageKey("ba-player-tracks")) || "ba-player-tracks";
+  let savedTracks;
+  try {
+    savedTracks = JSON.parse(localStorage.getItem(trackStorageKey));
+  } catch (e) {
+  }
+  const selection = window.BAMusicTrackSelection(tracks, savedTracks);
   let selectedAlbums = /* @__PURE__ */ new Set();
   let queue = [];
+  let draftSelection = null;
+  const editTracks = root.querySelector(".tracks-edit");
+  const allTracks = root.querySelector(".tracks-all");
+  const clearTracks = root.querySelector(".tracks-clear");
+  const applyTracks = root.querySelector(".tracks-apply");
   const player = document.createElement("div");
   player.className = "simp-player";
   player.innerHTML = `
@@ -166,7 +179,7 @@ function BAPlayer() {
     syncPosition();
   }
   function play() {
-    var _a;
+    var _a2;
     if (!queue.length) return;
     const attempt = ++playAttempt;
     showStatus();
@@ -177,7 +190,7 @@ function BAPlayer() {
       showStatus(error.name === "NotAllowedError" ? "재생 버튼을 다시 누르거나 Space 키를 눌러 음악을 시작해 주세요." : "음악을 재생하지 못했습니다. 다시 재생하거나 다음 곡을 선택해 주세요.");
     }
     try {
-      (_a = audio.play()) == null ? void 0 : _a.catch(handlePlayError);
+      (_a2 = audio.play()) == null ? void 0 : _a2.catch(handlePlayError);
     } catch (error) {
       handlePlayError(error);
     }
@@ -230,19 +243,19 @@ function BAPlayer() {
   function syncNativeQueue(autoplay = !audio.paused, preserve = true) {
     if (!native) return;
     native.configure(queue.map((i) => {
-      var _a;
+      var _a2;
       return {
         ...tracks[i],
         id: tracks[i].src,
         src: new URL(tracks[i].src, location.href).href,
         folder: albumName(tracks[i].folder),
         title: tracks[i].title.replace(/^theme_\d+-/, ""),
-        artwork: ((_a = albumArtwork.get(tracks[i].folder)) == null ? void 0 : _a.src) || ""
+        artwork: ((_a2 = albumArtwork.get(tracks[i].folder)) == null ? void 0 : _a2.src) || ""
       };
     }), Math.max(0, queue.indexOf(index)), autoplay, preserve);
   }
   function selectTrack(nextIndex, autoplay = true, fromNative = false) {
-    var _a;
+    var _a2;
     if (!queue.includes(nextIndex)) return;
     ++playAttempt;
     index = nextIndex;
@@ -272,7 +285,7 @@ function BAPlayer() {
         });
       }
       try {
-        (_a = session.setPositionState) == null ? void 0 : _a.call(session);
+        (_a2 = session.setPositionState) == null ? void 0 : _a2.call(session);
       } catch (e) {
       }
     }
@@ -282,7 +295,7 @@ function BAPlayer() {
     if (autoplay && !native) play();
   }
   function scrollToCurrent() {
-    if (index < 0 || window.BAMusicTV) return;
+    if (index < 0 || window.BAMusicTV || draftSelection) return;
     const focused = document.activeElement;
     if (document.documentElement.classList.contains("remote-mode") && focused && focused.closest("#ulist") && focused !== rows[index]) return;
     const list = rows[index].parentElement;
@@ -290,11 +303,7 @@ function BAPlayer() {
   }
   function filterAlbums(values) {
     selectedAlbums = new Set(values.filter((folder) => folderCounts.has(folder)));
-    queue = [];
-    rows.forEach((row, i) => {
-      row.hidden = !selectedAlbums.has(tracks[i].folder);
-      if (!row.hidden) queue.push(i);
-    });
+    queue = selection.indices(selectedAlbums);
     orderQueue();
     for (const [folder, input] of albumInputs) {
       input.checked = selectedAlbums.has(folder);
@@ -302,23 +311,104 @@ function BAPlayer() {
     }
     const summary = `${selectedAlbums.size}개 앨범 · ${queue.length}곡`;
     root.querySelector(".album-selection-summary").textContent = summary;
-    root.querySelector(".queue-count").textContent = `${queue.length}곡`;
-    root.querySelector(".simp-empty").hidden = queue.length > 0;
-    root.querySelector("#ulist").hidden = !queue.length;
+    renderTrackSelection();
     selectAll.disabled = selectedAlbums.size === folderCounts.size;
     clearAll.disabled = !selectedAlbums.size;
     player.querySelectorAll("button").forEach((button) => {
       button.disabled = !queue.length;
     });
   }
-  function clearTrack() {
-    var _a;
-    pause();
+  function saveTrackSelection() {
+    try {
+      localStorage.setItem(trackStorageKey, JSON.stringify(selection.serialize()));
+    } catch (e) {
+    }
+  }
+  function renderTrackSelection() {
+    const editing = draftSelection !== null;
+    const included = new Set(queue);
+    let available = 0, checked = 0, visible = 0;
+    rows.forEach((row, i) => {
+      const inAlbum = selectedAlbums.has(tracks[i].folder);
+      if (inAlbum) available++;
+      const selected = editing ? draftSelection.has(tracks[i].src) : included.has(i);
+      if (inAlbum && selected) checked++;
+      row.hidden = !inAlbum || !editing && !selected;
+      if (!row.hidden) visible++;
+      row.setAttribute("role", editing ? "checkbox" : "button");
+      if (editing) row.setAttribute("aria-checked", String(selected));
+      else row.removeAttribute("aria-checked");
+    });
+    root.classList.toggle("selecting-tracks", editing);
+    editTracks.textContent = editing ? "취소" : "곡 선택";
+    editTracks.setAttribute("aria-expanded", String(editing));
+    editTracks.disabled = !available;
+    for (const button of [allTracks, clearTracks, applyTracks]) button.hidden = !editing;
+    allTracks.disabled = checked === available;
+    clearTracks.disabled = !checked;
+    applyTracks.disabled = !checked;
+    root.querySelector(".track-selection-hint").hidden = !editing;
+    root.querySelector("#queue-heading").textContent = editing ? "곡 선택" : "재생 목록";
+    root.querySelector(".queue-count").textContent = editing ? `${checked} / ${available}곡 선택` : `${queue.length}곡`;
+    const list = root.querySelector("#ulist");
+    list.setAttribute("aria-label", editing ? "재생할 곡 선택" : "선택한 곡의 재생 목록");
+    if (editing) list.setAttribute("aria-describedby", "track-selection-hint");
+    else list.removeAttribute("aria-describedby");
+    list.hidden = !visible;
+    const empty = root.querySelector(".simp-empty");
+    empty.hidden = visible > 0;
+    empty.textContent = selectedAlbums.size ? "선택한 곡이 없습니다. 곡 선택에서 들을 곡을 골라 주세요." : "들을 앨범을 선택해 주세요.";
+  }
+  function cancelTrackSelection(restoreFocus = true) {
+    if (!draftSelection) return false;
+    draftSelection = null;
+    renderTrackSelection();
+    if (restoreFocus) editTracks.focus();
+    root.dispatchEvent(new CustomEvent("simp-selection-change"));
+    return true;
+  }
+  editTracks.addEventListener("click", () => {
+    if (cancelTrackSelection()) return;
+    draftSelection = new Set(queue.map((i) => tracks[i].src));
+    renderTrackSelection();
+    root.dispatchEvent(new CustomEvent("simp-selection-change"));
+  });
+  allTracks.addEventListener("click", () => {
+    tracks.forEach((track) => {
+      if (selectedAlbums.has(track.folder)) draftSelection.add(track.src);
+    });
+    renderTrackSelection();
+    if (allTracks.disabled) clearTracks.focus();
+  });
+  clearTracks.addEventListener("click", () => {
+    draftSelection.clear();
+    renderTrackSelection();
+    allTracks.focus();
+  });
+  applyTracks.addEventListener("click", () => {
+    if (!draftSelection || applyTracks.disabled) return;
+    selection.replace(selectedAlbums, draftSelection);
+    saveTrackSelection();
+    draftSelection = null;
+    filterAlbums([...selectedAlbums]);
+    if (queue.includes(index)) {
+      syncNativeQueue(true);
+      play();
+    } else selectTrack(startingTrack());
+    playButton.focus();
+    root.dispatchEvent(new CustomEvent("simp-selection-change"));
+    root.dispatchEvent(new CustomEvent("simp-track-change"));
+  });
+  function clearTrack(fromNative = false) {
+    var _a2;
+    if (!fromNative) pause();
     index = -1;
-    audio.removeAttribute("src");
-    audio.load();
+    if (!fromNative) {
+      audio.removeAttribute("src");
+      audio.load();
+    }
     rows.forEach((row) => row.classList.remove("simp-active"));
-    player.querySelector(".simp-title").textContent = "앨범을 선택해 주세요";
+    player.querySelector(".simp-title").textContent = selectedAlbums.size ? "들을 곡을 선택해 주세요" : "앨범을 선택해 주세요";
     player.querySelector(".simp-artist").textContent = "";
     waveform == null ? void 0 : waveform.destroy();
     waveform = void 0;
@@ -327,21 +417,25 @@ function BAPlayer() {
     if (session) {
       session.metadata = null;
       try {
-        (_a = session.setPositionState) == null ? void 0 : _a.call(session);
+        (_a2 = session.setPositionState) == null ? void 0 : _a2.call(session);
       } catch (e) {
       }
     }
     showStatus();
     syncPlayback();
   }
-  function changeAlbums(values) {
-    const wasPlaying = !audio.paused && !audio.ended;
-    filterAlbums(values);
+  function saveAlbums() {
     try {
       const saved = selectedAlbums.size === folderCounts.size ? { all: true } : { folders: [...selectedAlbums] };
       localStorage.setItem(albumStorageKey, JSON.stringify(saved));
     } catch (e) {
     }
+  }
+  function changeAlbums(values) {
+    cancelTrackSelection(false);
+    const wasPlaying = !audio.paused && !audio.ended;
+    filterAlbums(values);
+    saveAlbums();
     if (!queue.length) clearTrack();
     else if (queue.includes(index)) {
       scrollToCurrent();
@@ -360,6 +454,7 @@ function BAPlayer() {
     }
   }
   function readSavedAlbums() {
+    var _a2;
     const all = [...folderCounts.keys()];
     const defaults = folderCounts.has("Blue Archive") ? ["Blue Archive"] : all;
     try {
@@ -372,7 +467,7 @@ function BAPlayer() {
           return available.length || !saved.folders.length ? available : defaults;
         }
       } else {
-        const legacy = localStorage.getItem("ba-player-folder");
+        const legacy = localStorage.getItem(((_a2 = window.BAMusicAccess) == null ? void 0 : _a2.storageKey("ba-player-folder")) || "ba-player-folder");
         if (folderCounts.has(legacy)) return [legacy];
       }
     } catch (e) {
@@ -412,7 +507,7 @@ function BAPlayer() {
   ));
   document.addEventListener("keydown", (event) => {
     if (event.code !== "Space" || event.repeat || event.isComposing || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
-    if (event.target instanceof Element && event.target.closest('button, input, select, textarea, a, [role="button"], [contenteditable]')) return;
+    if (event.target instanceof Element && event.target.closest('button, input, select, textarea, a, [role="button"], [role="checkbox"], [contenteditable]')) return;
     event.preventDefault();
     audio.paused ? play() : pause();
   });
@@ -438,11 +533,21 @@ function BAPlayer() {
   function bindRow(row, i) {
     row.tabIndex = 0;
     row.setAttribute("role", "button");
-    row.addEventListener("click", () => selectTrack(i));
+    function activate() {
+      if (!draftSelection) {
+        selectTrack(i);
+        return;
+      }
+      const id = tracks[i].src;
+      if (draftSelection.has(id)) draftSelection.delete(id);
+      else draftSelection.add(id);
+      renderTrackSelection();
+    }
+    row.addEventListener("click", activate);
     row.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        selectTrack(i);
+        activate();
       }
     });
   }
@@ -458,7 +563,7 @@ function BAPlayer() {
   audio.addEventListener("error", () => {
     if (!queue.length) return;
     syncPlayback();
-    showStatus("음악을 불러오지 못했습니다. 연결을 확인하고 다시 재생하거나 다음 곡을 선택해 주세요.");
+    showStatus((native == null ? void 0 : native.desktop) && native.state.status || "음악을 불러오지 못했습니다. 연결을 확인하고 다시 재생하거나 다음 곡을 선택해 주세요.");
   });
   if (session == null ? void 0 : session.setActionHandler) {
     const actions = {
@@ -471,12 +576,12 @@ function BAPlayer() {
       previoustrack: previousTrack,
       nexttrack: nextTrack,
       seekbackward: (details) => {
-        var _a;
-        return seek(audio.currentTime - ((_a = details.seekOffset) != null ? _a : 10));
+        var _a2;
+        return seek(audio.currentTime - ((_a2 = details.seekOffset) != null ? _a2 : 10));
       },
       seekforward: (details) => {
-        var _a;
-        return seek(audio.currentTime + ((_a = details.seekOffset) != null ? _a : 10));
+        var _a2;
+        return seek(audio.currentTime + ((_a2 = details.seekOffset) != null ? _a2 : 10));
       },
       seekto: (details) => seek(details.seekTime)
     };
@@ -494,9 +599,27 @@ function BAPlayer() {
     }
   });
   if (native) {
+    if (native.desktop) {
+      native.addEventListener("queuechange", () => {
+        const incoming = native.state.queue.map((id) => tracks.findIndex((track) => track.src === id)).filter((i) => i >= 0);
+        if (incoming.join("|") === queue.join("|")) return;
+        cancelTrackSelection(false);
+        random = native.state.random;
+        const folders = [...new Set(incoming.map((i) => tracks[i].folder))];
+        selection.replace(folders, native.state.queue);
+        filterAlbums(folders);
+        queue = incoming;
+        saveTrackSelection();
+        saveAlbums();
+        const next = tracks.findIndex((track) => track.src === native.state.id);
+        if (next >= 0) selectTrack(next, false, true);
+        else clearTrack(true);
+      });
+      native.addEventListener("timeupdate", () => showStatus(native.state.status || ""));
+    }
     native.addEventListener("trackchange", () => {
       const next = tracks.findIndex((track) => track.src === native.state.id);
-      if (next >= 0) selectTrack(next, false, true);
+      if (next >= 0 && next !== index) selectTrack(next, false, true);
     });
     native.addEventListener("optionschange", () => {
       autoNext = native.state.autoNext;
@@ -506,8 +629,13 @@ function BAPlayer() {
       toggleOption(".simp-random", random);
     });
   }
-  const restored = (native == null ? void 0 : native.state.queue.length) && tracks.some((track) => track.src === native.state.id);
-  filterAlbums(restored ? [...new Set(tracks.filter((track) => native.state.queue.includes(track.src)).map((track) => track.folder))] : readSavedAlbums());
+  const restored = (native == null ? void 0 : native.desktop) && native.state.active && !native.state.queue.length || (native == null ? void 0 : native.state.queue.length) && tracks.some((track) => track.src === native.state.id);
+  const restoredAlbums = restored ? [...new Set(tracks.filter((track) => native.state.queue.includes(track.src)).map((track) => track.folder))] : null;
+  if (restored) {
+    selection.replace(restoredAlbums, native.state.queue);
+    saveTrackSelection();
+  }
+  filterAlbums(restored ? restoredAlbums : readSavedAlbums());
   if (restored) {
     queue = native.state.queue.map((id) => tracks.findIndex((track) => track.src === id)).filter((i) => i >= 0);
     random = native.state.random;
@@ -515,7 +643,8 @@ function BAPlayer() {
     toggleOption(".simp-repeat", native.loop);
     toggleOption(".simp-plext", autoNext);
     toggleOption(".simp-random", random);
-    selectTrack(tracks.findIndex((track) => track.src === native.state.id), false, true);
+    if (queue.length) selectTrack(tracks.findIndex((track) => track.src === native.state.id), false, true);
+    else clearTrack(true);
   } else if (queue.length) {
     selectTrack(startingTrack(), false);
     showStatus(window.BAMusicTV ? "재생 버튼이나 곡에서 확인 키를 눌러 시작하세요." : "재생 버튼이나 곡을 눌러 시작하세요. Space 키로도 재생할 수 있습니다.");
@@ -530,11 +659,12 @@ function BAPlayer() {
     },
     next: nextTrack,
     previous: previousTrack,
-    seekBy: (seconds) => seek(audio.currentTime + seconds)
+    seekBy: (seconds) => seek(audio.currentTime + seconds),
+    cancelTrackSelection
   };
   window.BAMusicLibrary = {
     add(track) {
-      var _a;
+      var _a2;
       if (!track || !/^\.\/music\/ETC\/(?:yt-[\w-]{11}|upload-[a-f0-9]{64})\.mp3$/.test(track.src)) return;
       if (!(waveforms == null ? void 0 : waveforms[track.src])) {
         Promise.resolve(waveformRequest).catch(() => {
@@ -561,7 +691,7 @@ function BAPlayer() {
       rows.push(row);
       bindRow(row, i);
       folderCounts.set("ETC", (folderCounts.get("ETC") || 0) + 1);
-      const count = (_a = albumInputs.get("ETC")) == null ? void 0 : _a.closest(".album-card").querySelector(".album-count");
+      const count = (_a2 = albumInputs.get("ETC")) == null ? void 0 : _a2.closest(".album-card").querySelector(".album-count");
       if (count) count.textContent = `${folderCounts.get("ETC")}곡`;
       filterAlbums([...selectedAlbums]);
       if (queue.includes(index)) syncNativeQueue();
@@ -570,6 +700,8 @@ function BAPlayer() {
     listen(track) {
       const i = this.add(track);
       if (i === void 0) return;
+      selection.include(i);
+      saveTrackSelection();
       changeAlbums([.../* @__PURE__ */ new Set([...selectedAlbums, "ETC"])]);
       selectTrack(i);
     }
@@ -577,7 +709,7 @@ function BAPlayer() {
   if (typeof ResizeObserver !== "function") return;
   function refreshWaveforms() {
     if (!waveformRequest) {
-      waveformRequest = fetch(window.BAMusicSource.catalog("waveforms.json"), { cache: "no-cache" }).then((response) => {
+      waveformRequest = fetch(window.BAMusicSource.catalog("waveforms.json"), { cache: "no-store", credentials: "include" }).then((response) => {
         if (!response.ok) throw new Error("Waveform data unavailable");
         return response.json();
       }).then((data) => {

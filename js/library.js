@@ -1,15 +1,7 @@
 BAAlbumPanel();
 async function getMusics() {
   var _a;
-  const [arr, catalog, added] = await Promise.all([
-    fetch(window.BAMusicSource.catalog("musicList.json"), { cache: "no-cache" }).then((res) => {
-      if (!res.ok) throw new Error("음악 목록을 불러오지 못했습니다.");
-      return res.json();
-    }),
-    // Keep the filename-based playlist usable if metadata is unavailable.
-    fetch(window.BAMusicSource.catalog("blue-archive-ost.json"), { cache: "no-cache" }).then((res) => res.ok ? res.json() : { titles: {} }).catch(() => ({ titles: {} })),
-    fetch(window.BAMusicSource.catalog("imported-tracks.json"), { cache: "no-cache" }).then((res) => res.ok ? res.json() : { tracks: [] }).catch(() => ({ tracks: [] }))
-  ]);
+  const { list: arr, ost: catalog, imported: added } = await window.BAMusicAccess.catalog();
   const addedTracks = new Map((added.tracks || []).map((track) => [track.src, track]));
   const list = document.createDocumentFragment();
   for (const [index, item] of arr.entries()) {
@@ -43,6 +35,7 @@ const loadState = document.querySelector(".library-load-state");
 const retry = document.querySelector(".library-retry");
 let loading = false;
 async function loadLibrary() {
+  var _a;
   if (loading) return;
   loading = true;
   retry.hidden = true;
@@ -55,11 +48,15 @@ async function loadLibrary() {
     loadState.hidden = true;
   } catch (error) {
     console.error(error);
-    loadState.querySelector("p").textContent = "음악 목록을 불러오지 못했습니다. 다시 시도해 주세요.";
+    loadState.querySelector("p").textContent = ((_a = window.BAMusicNativeAudio) == null ? void 0 : _a.desktop) && window.BAMusicNativeAudio.error ? "홈페이지 음악에 연결하지 못했습니다. 다시 불러오기를 눌러 주세요." : "음악 목록을 불러오지 못했습니다. 다시 시도해 주세요.";
     retry.hidden = false;
   } finally {
     loading = false;
   }
 }
-retry.addEventListener("click", loadLibrary);
+retry.addEventListener("click", () => {
+  var _a;
+  if (((_a = window.BAMusicNativeAudio) == null ? void 0 : _a.desktop) && window.BAMusicNativeAudio.error) location.reload();
+  else loadLibrary();
+});
 loadLibrary();

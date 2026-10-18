@@ -23,9 +23,10 @@
   let latestJobs = [], acknowledged = null;
   const observed = /* @__PURE__ */ new Set();
   const logout = modal.querySelector(".music-logout");
+  let authRequest = 0;
   let authenticated = false, timer, priorFocus, refreshing = false, refreshAgain = false, pollError = "", duplicate;
   const labels = { queued: "대기 중", checking: "음악 확인 중", downloading: "다운로드 중", converting: "음악 준비 중", syncing: "동기화 중 · 완료 후 ETC에 추가됩니다", ready: "동기화 완료 · ETC에 추가됨", failed: "추가 실패" };
-  const syncLabels = { uploading: "음원 전송 중", waiting: "공개 작업 대기 중", preparing: "공개 준비 중", waveform: "파형 생성 중", testing: "음원 검사 중", "backing-up": "백업 확인 중", publishing: "목록에 반영 중", verifying: "공개된 음원 확인 중" };
+  const syncLabels = { uploading: "음원 전송 중", waiting: "공개 작업 대기 중", preparing: "공개 준비 중", waveform: "파형 생성 중", testing: "음원 검사 중", "backing-up": "백업 확인 중", publishing: "목록에 반영 중", "publishing-static": "음원 게시 준비 중", verifying: "공개된 음원 확인 중" };
   const active = (job) => !["ready", "failed"].includes(job.status);
   const label = (job) => job.status === "syncing" ? syncLabels[job.syncStage] || "음원 공개 처리 중" : labels[job.status];
   const elapsed = (job) => {
@@ -52,6 +53,7 @@
     const body = await response.json();
     if (!response.ok) {
       if (response.status === 401) {
+        authRequest++;
         authenticated = false;
         latestJobs = [];
         notice.hidden = true;
@@ -136,30 +138,40 @@
       }
     }
   }
-  async function show() {
-    priorFocus = document.activeElement;
-    modal.hidden = false;
-    close.focus();
-    message("로그인 상태를 확인하는 중…");
+  async function refreshAuth({ focusInput = false, reportErrors = false } = {}) {
+    const request = ++authRequest;
     try {
       const result = await api("/api/auth/me");
+      if (request !== authRequest) return;
+      const changed = authenticated !== result.authenticated;
       authenticated = result.authenticated;
       if (!authenticated) {
         latestJobs = [];
+        duplicate = null;
+        jobs.textContent = "";
         notice.hidden = true;
         clearTimeout(timer);
       }
       guest.hidden = authenticated;
       account.hidden = !authenticated;
       guest.querySelector("a").hidden = !result.enabled;
-      if (!uploading) message(result.enabled ? "" : "음악 추가 서비스를 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.");
+      if (!uploading && (reportErrors || changed || status.textContent === "로그인 상태를 확인하는 중…")) message(result.enabled ? "" : "음악 추가 서비스를 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.");
       if (authenticated) {
-        (form.hidden ? fileInput : input).focus();
+        if (focusInput && !modal.hidden && !uploading) (form.hidden ? fileInput : input).focus();
         await refreshJobs();
       }
     } catch (e) {
-      message("음악 추가 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      if (request === authRequest && !uploading && (reportErrors || status.textContent === "로그인 상태를 확인하는 중…")) message("음악 추가 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.");
     }
+  }
+  async function show() {
+    if (modal.hidden) {
+      priorFocus = document.activeElement;
+      modal.hidden = false;
+      close.focus();
+    }
+    if (!uploading) message("로그인 상태를 확인하는 중…");
+    await refreshAuth({ focusInput: true, reportErrors: true });
   }
   function hide() {
     modal.hidden = true;
@@ -243,6 +255,7 @@
         if (xhr.status >= 200 && xhr.status < 300) resolve(body);
         else {
           if (xhr.status === 401) {
+            authRequest++;
             authenticated = false;
             guest.hidden = false;
             account.hidden = true;
@@ -290,9 +303,12 @@
     }
   });
   logout.addEventListener("click", async () => {
+    var _a;
+    authRequest++;
     try {
       const response = await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
       if (!response.ok) throw new Error();
+      authRequest++;
       authenticated = false;
       duplicate = null;
       latestJobs = [];
@@ -302,29 +318,33 @@
       jobs.textContent = "";
       guest.hidden = false;
       account.hidden = true;
-      message("로그아웃했습니다. 음악은 계속 들을 수 있습니다.");
+      message("로그아웃했습니다. 공개 앨범만 이용할 수 있습니다.");
+      (_a = window.BAMusicAccess) == null ? void 0 : _a.refresh();
     } catch (e) {
       message("로그아웃하지 못했습니다. 다시 시도해 주세요.");
     }
   });
   window.addEventListener("music-library-ready", refreshJobs);
-  document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) refreshJobs();
+  const refreshOnReturn = () => {
+    if (!document.hidden) refreshAuth();
+  };
+  document.addEventListener("visibilitychange", refreshOnReturn);
+  window.addEventListener("focus", refreshOnReturn);
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) refreshOnReturn();
   });
-  const authError = new URL(location.href).searchParams.get("authError");
-  if (authError || location.hash === "#add-music") {
-    const clean = new URL(location.href);
-    clean.searchParams.delete("authError");
-    clean.hash = "";
-    history.replaceState(null, "", clean.pathname + clean.search);
+  function consumeLoginReturn() {
+    const url = new URL(location.href);
+    const authError = url.searchParams.get("authError");
+    if (!authError && url.hash !== "#add-music") return false;
+    url.searchParams.delete("authError");
+    url.hash = "";
+    history.replaceState(null, "", url.pathname + url.search);
     show().then(() => {
       if (authError) message(authError === "forbidden" ? "음악 추가 권한이 있는 디스코드 계정으로 로그인해 주세요." : "디스코드 로그인에 실패했습니다. 다시 시도해 주세요.");
     });
-  } else {
-    api("/api/auth/me").then((result) => {
-      authenticated = result.authenticated;
-      if (authenticated) refreshJobs();
-    }).catch(() => {
-    });
+    return true;
   }
+  window.addEventListener("hashchange", consumeLoginReturn);
+  if (!consumeLoginReturn()) refreshAuth();
 })();

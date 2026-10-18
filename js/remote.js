@@ -24,6 +24,7 @@
     if (element.closest(".tv-exit-dialog")) return "dialog";
     if (element.closest(".simp-albums")) return "album";
     if (element.closest("#ulist")) return "queue";
+    if (element.closest(".track-actions")) return "selection";
     if (element.closest(".simp-main")) return "controls";
     return "header";
   }
@@ -73,17 +74,28 @@
     const target = usable(memory.controls) ? memory.controls : initial();
     return group(target) === "controls" && focus(target);
   }
+  function selectionActions() {
+    return all(document.querySelector(".track-actions"));
+  }
+  function focusSelection() {
+    return focus(usable(memory.selection) ? memory.selection : selectionActions()[0]);
+  }
+  function focusQueue() {
+    return focus(usable(memory.queue) ? memory.queue : document.querySelector("#ulist li.simp-active:not([hidden])") || document.querySelector("#ulist li:not([hidden])"));
+  }
   function syncTrackFocus() {
+    if (document.querySelector("#simp").classList.contains("selecting-tracks")) return;
     const row = document.querySelector("#ulist li.simp-active:not([hidden])");
     if (!usable(row)) return;
     memory.queue = row;
-    if (!remote || initialPending) return;
+    if (!remote || initialPending || window.parent !== window && !document.hasFocus()) return;
     const current = document.activeElement;
     if (!dialog.hidden && group(priorFocus) === "queue") priorFocus = row;
     if (group(current) === "queue" || current === document.body && lastFocus && group(lastFocus) === "queue") focus(row);
     else reveal(row);
   }
   document.querySelector("#simp").addEventListener("simp-track-change", syncTrackFocus);
+  document.querySelector("#simp").addEventListener("simp-selection-change", () => setEditing(false));
   function enterRemote() {
     remote = true;
     root.classList.add("remote-mode");
@@ -92,7 +104,7 @@
   function setEditing(value) {
     editing = value;
     root.classList.toggle("remote-seeking", value);
-    hint.textContent = value ? "탐색 중 · ◀ ▶ 5초 이동 · 확인 / 뒤로 완료" : "방향키 이동 · 확인 선택 · 뒤로 종료";
+    hint.textContent = value ? "탐색 중 · ◀ ▶ 5초 이동 · 확인 / 뒤로 완료" : document.querySelector("#simp").classList.contains("selecting-tracks") ? "방향키 이동 · 확인 체크 · ▶ 선택 재생 · 뒤로 취소" : "방향키 이동 · 확인 선택 · 뒤로 종료";
   }
   function openAlbums() {
     if (panel.hidden) {
@@ -117,6 +129,7 @@
     focus(dialog.querySelector(".exit-cancel"));
   }
   function back() {
+    var _a;
     initialPending = false;
     enterRemote();
     if (!dialog.hidden) {
@@ -127,6 +140,7 @@
       setEditing(false);
       return;
     }
+    if ((_a = window.BAMusicPlayback) == null ? void 0 : _a.cancelTrackSelection()) return;
     if (window.BAMusicTV) {
       showExit();
       return;
@@ -183,11 +197,16 @@
         return;
       }
       if (direction === "ArrowRight") {
+        if (document.querySelector("#simp").classList.contains("selecting-tracks")) {
+          const apply = document.querySelector(".tracks-apply");
+          focus(usable(apply) ? apply : document.querySelector(".tracks-all"));
+          return;
+        }
         if (!window.BAMusicTV) focusControls();
         return;
       }
       if (direction === "ArrowUp" && index === 0) {
-        focusControls();
+        if (!focusSelection()) focusControls();
         return;
       }
       focus(rows[index + (direction === "ArrowDown" ? 1 : -1)]);
@@ -231,9 +250,24 @@
       if (direction === "ArrowUp") focus(toggle);
       return;
     }
+    if (zone === "selection") {
+      if (direction === "ArrowUp") {
+        focusControls();
+        return;
+      }
+      if (direction === "ArrowDown") {
+        focusQueue();
+        return;
+      }
+      const buttons = selectionActions();
+      const next = buttons[buttons.indexOf(from) + (direction === "ArrowRight" ? 1 : -1)];
+      if (next) focus(next);
+      else if (direction === "ArrowLeft") openAlbums();
+      return;
+    }
     if (zone === "controls") {
       if (direction === "ArrowDown") {
-        focus(usable(memory.queue) ? memory.queue : document.querySelector("#ulist li.simp-active:not([hidden])") || document.querySelector("#ulist li:not([hidden])"));
+        if (!focusSelection()) focusQueue();
         return;
       }
       if (direction === "ArrowUp") {
@@ -320,7 +354,7 @@
     move(key);
   }, true);
   new MutationObserver(() => {
-    if (pending || !remote) return;
+    if (pending || !remote || window.parent !== window && !document.hasFocus()) return;
     pending = true;
     requestAnimationFrame(() => {
       pending = false;
