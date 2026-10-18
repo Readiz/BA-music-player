@@ -13,6 +13,7 @@
 .tv-layout .app-header{padding:12px 28px;font-size:22px;flex-shrink:0;}
 .tv-layout .app-brand img{margin-right:12px;}
 .tv-layout .app-install{display:none;}
+.tv-layout .music-account:not([hidden]){display:block;min-height:44px;font-size:18px;padding:8px 12px;}
 .tv-layout #simp{height:100%;font-size:20px;border-radius:0;grid-template-columns:320px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);}
 .tv-layout #simp.albums-collapsed{grid-template-columns:minmax(0,1fr);}
 .tv-layout #simp .simp-footer,.tv-layout #simp .album-hint,.tv-layout #simp .album-toggle{display:none;}
