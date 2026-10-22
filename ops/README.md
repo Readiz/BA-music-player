@@ -180,7 +180,7 @@ Mac이 잠겨 승인 창을 처리할 수 없으면 파일 열기가 대기하�
 - 코드 배포는 의도한 변경을 커밋한 뒤 `npm test`, `npm run deploy:local` 순서로 수행하며 음원과 공개 목록을 재게시하지 않습니다. 새 맥은 먼저 NAS를 연결해 `npm run library:restore`로 라이브러리를 복구합니다. 최초 전환에는 `ops/music.Caddyfile`과 홈페이지 Caddy CSP를 validate/reload합니다. 공개 카탈로그·음원은 Caddy가 직접 제공하며 HTTP Range·CORS를 지원합니다. `/api/*` 인증은 기존대로 유지합니다.
 - `music/`는 Git 추적에서 제거하고 `.gitignore`로 제외합니다. 소스 빌드와 Pages CI는 목록·파형·경로 메타데이터를 검사하며 음원 파일을 요구하지 않습니다. 음원 전체 해시는 맥/NAS 게시와 `library:verify`에서 검사합니다. 최신 전체 라이브러리는 NAS에서 복원합니다. 과거 커밋의 음원 이력은 남아 있으며, 새 소스 체크아웃은 `git clone --depth 1 https://github.com/Readiz/BA-music-player.git`로 받을 수 있습니다.
 
-원본 저장소 `Readiz/BA-music-player`를 음악 서비스와 후속 앱의 독립 프로젝트로 유지한다. 운영 체크아웃은 `/Users/readiz/workspace/openclaw/BA-music-player`다. new-home은 바로가기·기존 주소의 리다이렉트와 홈페이지 위젯/iframe 재생 연결을 관리한다.
+원본 저장소 `Readiz/BA-music-player`를 음악 서비스와 후속 앱의 독립 프로젝트로 유지한다. 운영 체크아웃은 `/Users/readiz/workspace/readiz/BA-music-player`다. new-home은 바로가기·기존 주소의 리다이렉트와 홈페이지 위젯/iframe 재생 연결을 관리한다.
 
 ## 도메인과 배포
 
