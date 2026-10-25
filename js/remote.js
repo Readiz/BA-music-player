@@ -35,7 +35,9 @@
       if (card.left < bounds.left + 5) strip.scrollLeft -= bounds.left + 5 - card.left;
       else if (card.right > bounds.right - 5) strip.scrollLeft += card.right - bounds.right + 5;
     }
-    const scroller = element.closest('#ulist, .simp-albums');
+    const main = element.closest('.simp-main');
+    const scroller = main && getComputedStyle(main).overflowY === 'auto'
+      ? main : element.closest('#ulist, .simp-albums');
     if (!scroller) return;
     const box = rect(element), viewport = scroller.getBoundingClientRect();
     if (box.top < viewport.top + 8) scroller.scrollTop -= viewport.top + 8 - box.top;
@@ -93,7 +95,7 @@
     const current = document.activeElement;
     if (!dialog.hidden && group(priorFocus) === 'queue') priorFocus = row;
     if (group(current) === 'queue' || (current === document.body && lastFocus && group(lastFocus) === 'queue')) focus(row);
-    else reveal(row);
+    else if (getComputedStyle(row.closest('.simp-main')).overflowY !== 'auto') reveal(row);
   }
   document.querySelector('#simp').addEventListener('simp-track-change', syncTrackFocus);
   document.querySelector('#simp').addEventListener('simp-selection-change', () => setEditing(false));

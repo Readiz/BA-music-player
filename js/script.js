@@ -287,6 +287,9 @@ function BAPlayer() {
     const focused = document.activeElement;
     if (document.documentElement.classList.contains('remote-mode') && focused && focused.closest('#ulist') && focused !== rows[index]) return;
     const list = rows[index].parentElement;
+    // In short views the player shares the scroll region; keep its controls in
+    // place on startup/track changes. Explicit queue focus handles its own reveal.
+    if (getComputedStyle(list).overflowY === 'visible') return;
     list.scrollTop += rows[index].getBoundingClientRect().top - list.getBoundingClientRect().top;
   }
 

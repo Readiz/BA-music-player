@@ -179,11 +179,18 @@ async (page) => {
   report.push('Legacy selections, malformed storage, removed albums and the select-all action behave correctly');
 
   const layouts=[];
-  for (const [width,height] of [[1280,900],[700,600],[390,589],[360,740],[263,520]]) {
+  for (const [width,height] of [[1280,900],[700,600],[390,844],[390,589],[360,740],[263,520],[844,390]]) {
     await page.setViewportSize({width,height});
     await page.evaluate(()=>scrollTo(0,0));
     const layout=await page.evaluate(()=>({width:innerWidth,height:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth,footer:document.querySelector('.simp-footer').getBoundingClientRect().bottom,list:document.querySelector('.simp-playlist').getBoundingClientRect().height,sidebarRight:document.querySelector('.simp-albums').getBoundingClientRect().right,albumBottom:document.querySelector('.simp-albums').getBoundingClientRect().bottom,mainTop:document.querySelector('.simp-main').getBoundingClientRect().top,mainLeft:document.querySelector('.simp-main').getBoundingClientRect().left,mainWidth:document.querySelector('.simp-main').getBoundingClientRect().width,albumRows:new Set([...document.querySelectorAll('.album-card')].map(card=>Math.round(card.getBoundingClientRect().top))).size,albumScrollWidth:document.querySelector('.album-grid').scrollWidth,albumClientWidth:document.querySelector('.album-grid').clientWidth}));
     if (layout.overflow || layout.list<70 || (width>640 && (layout.sidebarRight>layout.mainLeft+1 || layout.footer>height+1)) || (width<=640 && layout.albumBottom>layout.mainTop+1)) throw new Error(JSON.stringify(layout));
+    const scrollLayout=await page.evaluate(()=>{
+      scrollTo(0,1000);
+      return {documentHeight:document.documentElement.scrollHeight,scrollY,footer:document.querySelector('.simp-footer').getBoundingClientRect().bottom,
+        scrollingRegions:[document.querySelector('.simp-main'),document.querySelector('#ulist')].filter(el=>['auto','scroll'].includes(getComputedStyle(el).overflowY)&&el.scrollHeight>el.clientHeight+1).length};
+    });
+    if(scrollLayout.documentHeight>height+1 || scrollLayout.scrollY || scrollLayout.footer>height+1 || scrollLayout.scrollingRegions!==1) throw new Error('Unexpected outer or nested player scroll: '+JSON.stringify({width,height,...scrollLayout}));
+    Object.assign(layout,scrollLayout);
     if (layout.albumRows!==1 || layout.albumScrollWidth<=layout.albumClientWidth) throw new Error('Albums do not form one horizontal scrolling row: '+JSON.stringify(layout));
     const before=await source();
     const checkedBefore=await page.locator('.album-card input:checked').count();
