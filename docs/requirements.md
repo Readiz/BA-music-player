@@ -28,8 +28,10 @@
 
 - 수용 조건: 비로그인 카탈로그와 직접 음원 요청에서 다른 앨범이 노출되지 않는다. 로그인 후 허용 목록이 갱신되고, 로그아웃이나 세션 만료가 확인되면 기존 재생을 멈추고 공개 목록으로 돌아간다.
 - 수용 조건: 계정용 앨범/곡 선택 키와 `-public` 키를 분리한다. 비로그인 초기값이 저장된 계정 선택을 덮어쓰지 않는다. 카탈로그와 음원 응답은 `private, no-store`와 `Vary: Cookie, Origin`을 사용한다.
+- 수용 조건: 서비스 워커는 `/_auth`, `/api/auth`와 하위 경로, 정확한 `/login`·`/login/` 문서 이동을 가로채지 않는다. iframe 여부를 포함한 브라우저 탐색 메타데이터를 SSO까지 유지하고, OAuth callback에 오프라인 화면을 대신 반환하지 않는다. 일반 페이지의 오프라인 안내와 음원·카탈로그의 네트워크 처리는 유지한다. 새 워커는 오프라인 문서 준비가 성공한 뒤 대기를 건너뛰고, 기존 캐시 정리 뒤 열린 클라이언트를 제어한다. 페이지·재생을 새로고침하지 않으며 설치가 실패하면 기존 워커를 유지한다.
 - 구현: [서버 접근 규칙](../server/catalog-access.mjs), [API 연결](../server/app.mjs), [웹 접근 갱신](../js/catalog-access.js).
-- 검증 위치: [카탈로그 접근 검사](../scripts/catalog-access.test.mjs), [인증 검사](../scripts/auth.test.mjs), [격리 fixture](../scripts/access-fixture.mjs). 실제 계정 인증 결과는 별도 기록한다.
+- 검증 위치: [카탈로그 접근 검사](../scripts/catalog-access.test.mjs), [인증 검사](../scripts/auth.test.mjs), [서비스 워커 검사](../scripts/service-worker.test.mjs), [격리 fixture](../scripts/access-fixture.mjs). 실제 계정 인증 결과는 별도 기록한다.
+- 2026-10-25 상태: 웹 1.5.15 후보에 서비스 워커의 인증 경로 제외를 구현했다. 기존 워커가 제어하는 iframe에서의 브라우저 재검증과 운영 배포는 대기 중이며 실제 Discord 로그인 완료로 표시하지 않는다.
 
 ### MUSIC-02 앨범과 곡 선택
 

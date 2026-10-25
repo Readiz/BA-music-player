@@ -15,7 +15,7 @@ install.addEventListener('click', async () => {
 });
 window.addEventListener('appinstalled', () => { install.hidden = true; });
 if (!window.BAMusicTV && 'serviceWorker' in navigator && window.isSecureContext) {
-  // Updates take effect on the next launch; never reload an actively playing page.
+  // Update the offline-only worker without reloading the page or its player.
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').catch(error => console.warn('앱 오프라인 안내를 준비하지 못했습니다.', error));
   });
