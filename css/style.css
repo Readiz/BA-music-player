@@ -121,7 +121,7 @@ a,a:hover,a:visited{color:#ddd;text-decoration:none;}
 #simp .album-actions button {flex:1;min-height:28px;padding:4px 6px;white-space:nowrap;}
 #simp .album-actions button:disabled {opacity:.4;cursor:default;}
 #simp .album-actions button:not(:disabled):hover,#simp .album-toggle:hover,#simp .library-retry:hover {background:#29445a;}
-#simp .album-grid {display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 12px)/2);gap:12px;flex-shrink:0;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scroll-padding:5px;padding:5px;margin:-5px;scrollbar-width:thin;scrollbar-color:#42566a transparent;}
+#simp .album-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;flex-shrink:0;padding:5px;margin:-5px;}
 #simp .album-card {position:relative;display:flex;flex-direction:column;min-width:0;scroll-snap-align:start;cursor:pointer;}
 #simp .album-cover {position:relative;display:grid;place-items:center;aspect-ratio:1;isolation:isolate;border:2px solid transparent;border-radius:9px;background:linear-gradient(145deg,#326e99,#173249);color:#e2f4ff;font-weight:750;font-size:22px;letter-spacing:.06em;opacity:.72;transition:opacity .15s,border-color .15s;}
 #simp .album-cover:before {content:'';position:absolute;inset:15%;border:1px solid #ffffff35;border-radius:50%;box-shadow:0 0 0 8px #ffffff08,0 0 0 16px #ffffff06;z-index:-1;}
@@ -143,7 +143,7 @@ a,a:hover,a:visited{color:#ddd;text-decoration:none;}
   #simp #album-heading {font-size:16px;}
   #simp .album-hint {display:none;}
   #simp .album-actions {margin-bottom:14px;}
-  #simp .album-grid {grid-auto-columns:minmax(88px,calc((100% - 24px)/4));gap:8px;}
+  #simp .album-grid {grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(88px,calc((100% - 24px)/4));gap:8px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scroll-padding:5px;scrollbar-width:thin;scrollbar-color:#42566a transparent;}
   #simp .album-cover {font-size:18px;}
   #simp .album-card input {width:16px;height:16px;top:5px;right:5px;}
   #simp .album-name {font-size:11px;}

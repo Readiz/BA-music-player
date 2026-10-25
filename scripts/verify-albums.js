@@ -179,10 +179,10 @@ async (page) => {
   report.push('Legacy selections, malformed storage, removed albums and the select-all action behave correctly');
 
   const layouts=[];
-  for (const [width,height] of [[1280,900],[700,600],[390,844],[390,589],[360,740],[263,520],[844,390]]) {
+  for (const [width,height] of [[1920,1080],[1440,900],[1280,900],[700,600],[641,900],[640,900],[390,844],[390,589],[360,740],[263,520],[844,390]]) {
     await page.setViewportSize({width,height});
     await page.evaluate(()=>scrollTo(0,0));
-    const layout=await page.evaluate(()=>({width:innerWidth,height:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth,footer:document.querySelector('.simp-footer').getBoundingClientRect().bottom,list:document.querySelector('.simp-playlist').getBoundingClientRect().height,sidebarRight:document.querySelector('.simp-albums').getBoundingClientRect().right,albumBottom:document.querySelector('.simp-albums').getBoundingClientRect().bottom,mainTop:document.querySelector('.simp-main').getBoundingClientRect().top,mainLeft:document.querySelector('.simp-main').getBoundingClientRect().left,mainWidth:document.querySelector('.simp-main').getBoundingClientRect().width,albumRows:new Set([...document.querySelectorAll('.album-card')].map(card=>Math.round(card.getBoundingClientRect().top))).size,albumScrollWidth:document.querySelector('.album-grid').scrollWidth,albumClientWidth:document.querySelector('.album-grid').clientWidth}));
+    const layout=await page.evaluate(()=>({width:innerWidth,height:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth,footer:document.querySelector('.simp-footer').getBoundingClientRect().bottom,list:document.querySelector('.simp-playlist').getBoundingClientRect().height,sidebarRight:document.querySelector('.simp-albums').getBoundingClientRect().right,albumBottom:document.querySelector('.simp-albums').getBoundingClientRect().bottom,mainTop:document.querySelector('.simp-main').getBoundingClientRect().top,mainLeft:document.querySelector('.simp-main').getBoundingClientRect().left,mainWidth:document.querySelector('.simp-main').getBoundingClientRect().width,albumRows:new Set([...document.querySelectorAll('.album-card')].map(card=>Math.round(card.getBoundingClientRect().top))).size,albumColumns:new Set([...document.querySelectorAll('.album-card')].map(card=>Math.round(card.getBoundingClientRect().left))).size,albumScrollWidth:document.querySelector('.album-grid').scrollWidth,albumClientWidth:document.querySelector('.album-grid').clientWidth}));
     if (layout.overflow || layout.list<70 || (width>640 && (layout.sidebarRight>layout.mainLeft+1 || layout.footer>height+1)) || (width<=640 && layout.albumBottom>layout.mainTop+1)) throw new Error(JSON.stringify(layout));
     const scrollLayout=await page.evaluate(()=>{
       scrollTo(0,1000);
@@ -191,26 +191,36 @@ async (page) => {
     });
     if(scrollLayout.documentHeight>height+1 || scrollLayout.scrollY || scrollLayout.footer>height+1 || scrollLayout.scrollingRegions!==1) throw new Error('Unexpected outer or nested player scroll: '+JSON.stringify({width,height,...scrollLayout}));
     Object.assign(layout,scrollLayout);
-    if (layout.albumRows!==1 || layout.albumScrollWidth<=layout.albumClientWidth) throw new Error('Albums do not form one horizontal scrolling row: '+JSON.stringify(layout));
+    if (width>640) {
+      if (layout.albumColumns!==2 || layout.albumRows!==Math.ceil(groups.size/2) || layout.albumScrollWidth>layout.albumClientWidth+1) throw new Error('Wide albums do not form a two-column grid without horizontal overflow: '+JSON.stringify(layout));
+    } else if (layout.albumRows!==1 || (width<=390 && layout.albumScrollWidth<=layout.albumClientWidth)) throw new Error('Narrow albums do not form one horizontal scrolling row: '+JSON.stringify(layout));
     const before=await source();
     const checkedBefore=await page.locator('.album-card input:checked').count();
+    // Enter keyboard mode before direct focus so the full card, not just its checkbox, is revealed.
+    await page.locator('.album-card input').first().focus();
+    await page.keyboard.press('ArrowLeft');
     await page.locator('.album-card input').last().focus();
-    await page.waitForFunction(()=>{
+    const lastAlbumVisible=wide=>{
       const strip=document.querySelector('.album-grid');
       const last=strip.lastElementChild.getBoundingClientRect();
-      const bounds=strip.getBoundingClientRect();
-      return strip.scrollLeft>0 && last.left>=bounds.left && last.right<=bounds.right+1;
-    });
+      const bounds=(wide ? document.querySelector('.simp-albums') : strip).getBoundingClientRect();
+      return last.left>=bounds.left && last.right<=bounds.right+1 && (wide
+        ? last.top>=bounds.top && last.bottom<=bounds.bottom+1
+        : strip.scrollWidth<=strip.clientWidth+1 || strip.scrollLeft>0);
+    };
+    await page.waitForFunction(lastAlbumVisible,width>640);
     if (await source()!==before || await page.locator('.album-card input:checked').count()!==checkedBefore) throw new Error('Scrolling albums changed selection or playback');
     await page.locator('.album-card input').first().focus();
-    for (let i=1;i<groups.size;i++) await page.keyboard.press('ArrowRight');
+    if (width>640) {
+      // Six albums use Right -> Down -> Down; retain the same column for other counts.
+      if (groups.size%2===0) await page.keyboard.press('ArrowRight');
+      for (let row=1;row<Math.ceil(groups.size/2);row++) await page.keyboard.press('ArrowDown');
+    } else {
+      for (let i=1;i<groups.size;i++) await page.keyboard.press('ArrowRight');
+    }
     if (!(await page.locator('.album-card input').last().evaluate(el=>el===document.activeElement))) throw new Error('Arrow keys did not reach the final album');
-    await page.waitForFunction(()=>{
-      const strip=document.querySelector('.album-grid');
-      const last=strip.lastElementChild.getBoundingClientRect();
-      const bounds=strip.getBoundingClientRect();
-      return strip.scrollLeft>0 && last.left>=bounds.left && last.right<=bounds.right+1;
-    });
+    await page.waitForFunction(lastAlbumVisible,width>640);
+    if (await source()!==before || await page.locator('.album-card input:checked').count()!==checkedBefore) throw new Error('Keyboard album navigation changed selection or playback');
     await page.getByRole('button',{name:'앨범 접기',exact:true}).click();
     if (await page.locator('.simp-albums').isVisible() || await source()!==before) throw new Error('Panel did not collapse or changed audio');
     if (width>640 && await page.locator('.simp-main').evaluate(el=>el.getBoundingClientRect().width)<=layout.mainWidth) throw new Error('Collapsing did not expand the player');
@@ -221,7 +231,7 @@ async (page) => {
     await page.getByRole('button',{name:'앨범 펼치기',exact:true}).click();
     layouts.push(layout);
   }
-  report.push({singleRowAlbumsAndCollapsiblePanel:layouts});
+  report.push({responsiveAlbumsAndCollapsiblePanel:layouts});
 
   const fallback=await page.context().newPage();
   try {
