@@ -16,6 +16,10 @@
   실제 음원 재생·다음 곡·방향키·접기 회귀와 1920×1080 TV 기존 배치를 확인했다.
   증거는 `output/playwright/music-height-1026.log`, `music-height-mobile-1026.png`,
   `music-height-short-1026.png`다. 물리 Android의 최종 여백 표시는 별도 확인이다.
+- 운영 반영: `df420decd5d0`을 `1792971111790-df420decd5d0` 정적 릴리스로 배포했다.
+  운영 51개 파일과 실제 HTTPS의 변경 자산 5개가 빌드와 일치하고 APK·업데이트 정보는
+  이전 Android 0.4.4와 바이트가 같다. 운영 390×844 화면에서 문서 높이 844,
+  scrollY=0, 하단 안내 끝 844, 목록 높이 183px를 확인했다. 원격 push는 하지 않았다.
 
 ## 앨범 가로 스크롤과 앱 로그인 복귀 (웹 1.5.16 / Android 0.4.4)
 
