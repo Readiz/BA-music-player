@@ -29,6 +29,12 @@
   function rect(element) { return (element.closest('.album-card') || element).getBoundingClientRect(); }
   function reveal(element) {
     // Explicit scrolling also works on older Tizen engines without scrollIntoView options.
+    const strip = element.closest('.album-grid');
+    if (strip && !window.BAMusicTV) {
+      const card = rect(element), bounds = strip.getBoundingClientRect();
+      if (card.left < bounds.left + 5) strip.scrollLeft -= bounds.left + 5 - card.left;
+      else if (card.right > bounds.right - 5) strip.scrollLeft += card.right - bounds.right + 5;
+    }
     const scroller = element.closest('#ulist, .simp-albums');
     if (!scroller) return;
     const box = rect(element), viewport = scroller.getBoundingClientRect();

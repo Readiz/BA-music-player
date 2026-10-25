@@ -161,7 +161,7 @@ async (page) => {
   await page.waitForFunction(()=>document.querySelector('#audio'));
   if (await visible.count()!==groups.get('ETC').length || !(await album('ETC').isChecked())) throw new Error('Legacy folder setting did not migrate');
   for (const name of ['theme_999-ED', 'Younha - Memories of kindness', 'Younha - Thanks to']) {
-    await page.getByText(name,{exact:true}).click();
+    await page.locator('#ulist').getByText(name,{exact:true}).click();
     await waitPlaying();
     if (!(await source()).includes('/music/ETC/') || !(await page.evaluate(() => navigator.mediaSession.metadata.artwork[0]?.src.endsWith('/assets/albums/etc.jpg')))) throw new Error('Moved track path or artwork is wrong: '+name);
     await page.getByRole('button',{name:'일시정지',exact:true}).click();
@@ -179,12 +179,31 @@ async (page) => {
   report.push('Legacy selections, malformed storage, removed albums and the select-all action behave correctly');
 
   const layouts=[];
-  for (const [width,height] of [[1280,900],[700,600],[390,589],[263,520]]) {
+  for (const [width,height] of [[1280,900],[700,600],[390,589],[360,740],[263,520]]) {
     await page.setViewportSize({width,height});
     await page.evaluate(()=>scrollTo(0,0));
-    const layout=await page.evaluate(()=>({width:innerWidth,height:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth,footer:document.querySelector('.simp-footer').getBoundingClientRect().bottom,list:document.querySelector('.simp-playlist').getBoundingClientRect().height,sidebarRight:document.querySelector('.simp-albums').getBoundingClientRect().right,albumBottom:document.querySelector('.simp-albums').getBoundingClientRect().bottom,mainTop:document.querySelector('.simp-main').getBoundingClientRect().top,mainLeft:document.querySelector('.simp-main').getBoundingClientRect().left,mainWidth:document.querySelector('.simp-main').getBoundingClientRect().width}));
+    const layout=await page.evaluate(()=>({width:innerWidth,height:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth,footer:document.querySelector('.simp-footer').getBoundingClientRect().bottom,list:document.querySelector('.simp-playlist').getBoundingClientRect().height,sidebarRight:document.querySelector('.simp-albums').getBoundingClientRect().right,albumBottom:document.querySelector('.simp-albums').getBoundingClientRect().bottom,mainTop:document.querySelector('.simp-main').getBoundingClientRect().top,mainLeft:document.querySelector('.simp-main').getBoundingClientRect().left,mainWidth:document.querySelector('.simp-main').getBoundingClientRect().width,albumRows:new Set([...document.querySelectorAll('.album-card')].map(card=>Math.round(card.getBoundingClientRect().top))).size,albumScrollWidth:document.querySelector('.album-grid').scrollWidth,albumClientWidth:document.querySelector('.album-grid').clientWidth}));
     if (layout.overflow || layout.list<70 || (width>640 && (layout.sidebarRight>layout.mainLeft+1 || layout.footer>height+1)) || (width<=640 && layout.albumBottom>layout.mainTop+1)) throw new Error(JSON.stringify(layout));
+    if (layout.albumRows!==1 || layout.albumScrollWidth<=layout.albumClientWidth) throw new Error('Albums do not form one horizontal scrolling row: '+JSON.stringify(layout));
     const before=await source();
+    const checkedBefore=await page.locator('.album-card input:checked').count();
+    await page.locator('.album-card input').last().focus();
+    await page.waitForFunction(()=>{
+      const strip=document.querySelector('.album-grid');
+      const last=strip.lastElementChild.getBoundingClientRect();
+      const bounds=strip.getBoundingClientRect();
+      return strip.scrollLeft>0 && last.left>=bounds.left && last.right<=bounds.right+1;
+    });
+    if (await source()!==before || await page.locator('.album-card input:checked').count()!==checkedBefore) throw new Error('Scrolling albums changed selection or playback');
+    await page.locator('.album-card input').first().focus();
+    for (let i=1;i<groups.size;i++) await page.keyboard.press('ArrowRight');
+    if (!(await page.locator('.album-card input').last().evaluate(el=>el===document.activeElement))) throw new Error('Arrow keys did not reach the final album');
+    await page.waitForFunction(()=>{
+      const strip=document.querySelector('.album-grid');
+      const last=strip.lastElementChild.getBoundingClientRect();
+      const bounds=strip.getBoundingClientRect();
+      return strip.scrollLeft>0 && last.left>=bounds.left && last.right<=bounds.right+1;
+    });
     await page.getByRole('button',{name:'앨범 접기',exact:true}).click();
     if (await page.locator('.simp-albums').isVisible() || await source()!==before) throw new Error('Panel did not collapse or changed audio');
     if (width>640 && await page.locator('.simp-main').evaluate(el=>el.getBoundingClientRect().width)<=layout.mainWidth) throw new Error('Collapsing did not expand the player');
@@ -195,7 +214,7 @@ async (page) => {
     await page.getByRole('button',{name:'앨범 펼치기',exact:true}).click();
     layouts.push(layout);
   }
-  report.push({collapsibleDesktopAndStackedMobile:layouts});
+  report.push({singleRowAlbumsAndCollapsiblePanel:layouts});
 
   const fallback=await page.context().newPage();
   try {

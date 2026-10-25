@@ -37,6 +37,8 @@
 
 폴더를 앨범으로 구성하고 여러 앨범을 함께 선택한다. 처음 방문했을 때 저장값이 없으면 Blue Archive를 선택한다. 앨범 전체 선택, 전체 해제, 패널 접기와 선택 복원을 제공한다. 패널을 접어도 선택과 재생 위치는 유지한다.
 
+- 수용 조건: 일반 웹과 Android 휴대전화의 앨범은 한 줄로 배치하고 좌우로 스크롤한다. 페이지 전체가 가로로 넘치지 않으며 터치·키보드로 마지막 앨범까지 접근한다. 스크롤만으로 선택·재생을 바꾸지 않는다. TV의 기존 세로 목록은 유지한다.
+
 곡 선택은 편집과 적용을 구분한다. 편집 중에는 기존 큐를 유지하고, 취소하거나 앨범을 변경하면 편집 내용을 버린다. `선택 재생`을 누르면 선택한 곡만 큐에 포함한다.
 
 - 수용 조건: 앨범 변경 후 현재 곡이 남아 있으면 위치와 재생 상태를 보존한다. 현재 곡이 빠지면 남은 큐에서 무작위 모드에 맞춰 새 곡을 준비한다. 앨범을 모두 해제하면 재생을 멈추고 재생 버튼을 비활성화한다.
@@ -86,11 +88,12 @@ Mac이 앱과 카탈로그를 제공하고 Caddy가 `readiz_static/music`의 읽
 
 ### MUSIC-07 Android 재생과 위젯
 
-Android의 Media3 서비스가 재생과 큐를 소유하고 웹은 그 상태를 표시한다. 알림, 잠금화면과 홈 화면 위젯은 같은 서비스를 제어한다. 현재 소스 설정은 `com.readiz.music`, 앱 `0.4.3`이다.
+Android의 Media3 서비스가 재생과 큐를 소유하고 웹은 그 상태를 표시한다. 알림, 잠금화면과 홈 화면 위젯은 같은 서비스를 제어한다. 현재 소스 설정은 `com.readiz.music`, 앱 `0.4.4`이다.
 
 - 수용 조건: 앱 복귀나 웹 화면 재생성 뒤에도 서비스의 곡, 위치와 큐를 복원하고 웹 오디오를 중복 재생하지 않는다. 서비스 종료 후 저장값을 복원해도 사용자 입력 전에는 자동 재생하지 않는다.
 - 수용 조건: 위젯 크기에 따라 표지와 재생 버튼을 우선 표시하고, 여러 위젯이 같은 상태를 유지한다. Music 세션 쿠키는 같은 HTTPS 호스트의 음원과 허용 표지에만 전달한다.
 - 수용 조건: 로그인은 외부 브라우저의 일회용 ticket/verifier 교환으로 복귀한다. 업데이트는 APK 크기, 해시, 패키지와 버전을 확인하고 Android 설치 확인을 거친다. 기존 정식 서명키를 유지한다.
+- 수용 조건: 일반 로그인은 플레이어로 복귀하며 음악 추가 창을 열지 않는다. 추가 창에서 시작한 로그인만 명시적인 `/#add-music` 목적지를 보존한다. 쿠키 저장 완료 후 새 문서로 카탈로그를 요청하여 한 번의 로그인으로 계정 앨범·상단 로그인 상태를 갱신한다. 앱이 종료되었다가 복귀해도 쿠키 교환 전에 비로그인 목록을 요청하지 않고, 만료·실패 시 기본 화면과 재시도 안내를 표시한다.
 - 구현: [재생 서비스](../android/app/src/main/java/com/readiz/music/PlaybackService.java), [저장 상태](../android/app/src/main/java/com/readiz/music/PlaybackSnapshot.java), [위젯](../android/app/src/main/java/com/readiz/music/MusicWidget.java), [쿠키 범위](../android/app/src/main/java/com/readiz/music/MusicCookies.java), [Android 빌드](../android/app/build.gradle).
 - 검증 위치: [Android 단위 검사](../android/app/src/test/java/com/readiz/music/), [웹/네이티브 시간 검사](../scripts/native-player.test.mjs), [APK 게시 검사](../scripts/android-release.test.mjs), [기기 검증 범위](../android/README.md).
 

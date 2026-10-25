@@ -242,8 +242,8 @@
     show().then(() => { if (authError) message(authError === 'forbidden' ? '음악 추가 권한이 있는 디스코드 계정으로 로그인해 주세요.' : '디스코드 로그인에 실패했습니다. 다시 시도해 주세요.'); });
     return true;
   }
-  // Android installs the cookie before loading /#add-music. On an already open
-  // player this is a same-document navigation: scripts do not run a second time.
+  // Only an explicit add-music return opens the dialog. Older Android clients
+  // can return by same-document navigation, where scripts do not run again.
   window.addEventListener('hashchange', consumeLoginReturn);
   if (!consumeLoginReturn()) refreshAuth();
 })();

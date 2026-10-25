@@ -94,10 +94,10 @@ public final class MainActivity extends ComponentActivity {
         try { playback = new PlaybackBridge(this, webView); }
         catch (IllegalStateException unsupported) { /* Older WebViews retain the web player. */ }
         updates = new AndroidUpdates(this, webView, () -> playback != null && playback.busy());
-        login = new AndroidLogin(this, webView);
+        login = new AndroidLogin(this, webView, startUrl);
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
-        webView.loadUrl(startUrl);
-        login.accept(getIntent());
+        // A cold browser handoff installs its cookie before requesting the catalog.
+        if (!login.accept(getIntent())) webView.loadUrl(startUrl);
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override public void handleOnBackPressed() {
                 if (tvMode && errorView == null && trusted(Uri.parse(webView.getUrl() == null ? "" : webView.getUrl()))) {
@@ -149,8 +149,8 @@ public final class MainActivity extends ComponentActivity {
             return true;
         }
         if (trusted(uri)) {
-            if ("/api/auth/discord/start".equals(uri.getPath()) || "/api/auth/discord/start/".equals(uri.getPath())) {
-                login.begin();
+            if (AndroidLogin.isLoginStart(uri)) {
+                login.begin(uri);
                 return true;
             }
             return false;

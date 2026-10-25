@@ -28,13 +28,21 @@ class AndroidLogin implements AutoCloseable {
     final Activity activity;
     final WebView webView;
     final SharedPreferences pending;
+    private final String fallbackUrl;
     private final Handler main = new Handler(Looper.getMainLooper());
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
     private boolean closed, exchanging;
+    private String completedTicket;
 
     AndroidLogin(Activity activity, WebView webView) {
+        this(activity, webView, ORIGIN + "/");
+    }
+
+    AndroidLogin(Activity activity, WebView webView, String fallbackUrl) {
         this.activity = activity;
         this.webView = webView;
+        this.fallbackUrl = ORIGIN + safeReturnTo(fallbackUrl != null && fallbackUrl.startsWith(ORIGIN + "/")
+            ? fallbackUrl.substring(ORIGIN.length()) : "/");
         pending = activity.getSharedPreferences("android-login", Activity.MODE_PRIVATE);
     }
 
@@ -43,16 +51,45 @@ class AndroidLogin implements AutoCloseable {
             .digest(verifier.getBytes(StandardCharsets.US_ASCII)), Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP);
     }
 
-    void begin() {
-        if (exchanging) return;
+    static boolean isLoginStart(Uri uri) {
+        if (uri == null || !"https".equals(uri.getScheme()) || !"music.readiz.com".equals(uri.getHost())
+                || (uri.getPort() != -1 && uri.getPort() != 443) || uri.getUserInfo() != null) return false;
+        String path = uri.getPath();
+        return "/_auth/start".equals(path) || "/_auth/start/".equals(path)
+            || "/api/auth/discord/start".equals(path) || "/api/auth/discord/start/".equals(path)
+            || "/login".equals(path) || "/login/".equals(path);
+    }
+
+    static String safeReturnTo(String target) {
+        if (target == null || target.length() > 2048) return "/";
+        Uri uri = Uri.parse(target);
+        // Only the player document is a login destination, never auth routes or another origin.
+        if (uri.getScheme() != null || uri.getEncodedAuthority() != null
+                || !("/".equals(uri.getEncodedPath()) || "/index.html".equals(uri.getEncodedPath()))) return "/";
+        return uri.getEncodedPath() + ("1".equals(uri.getQueryParameter("tv")) ? "?tv=1" : "")
+            + ("add-music".equals(uri.getFragment()) ? "#add-music" : "");
+    }
+
+    void begin() { begin(Uri.parse(ORIGIN + "/_auth/start")); }
+
+    void begin(Uri request) {
+        if (closed || exchanging || !isLoginStart(request)) return;
         try {
-            byte[] random = new byte[32];
-            new SecureRandom().nextBytes(random);
-            String verifier = Base64.encodeToString(random, Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP);
+            String verifier = pending.getString("verifier", "");
+            long elapsed = System.currentTimeMillis() - pending.getLong("started", 0);
+            if (!verifier.matches("[A-Za-z0-9_-]{43}") || elapsed < 0 || elapsed >= PENDING_TTL) {
+                byte[] random = new byte[32];
+                new SecureRandom().nextBytes(random);
+                verifier = Base64.encodeToString(random, Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP);
+            }
+            String returnTo = safeReturnTo(request.getQueryParameter("returnTo"));
             // Persist before switching apps: Android may kill our process while the browser is foreground.
-            if (!pending.edit().putString("verifier", verifier).putLong("started", System.currentTimeMillis()).commit())
+            // A repeated click reuses the proof so it cannot invalidate an already-open browser flow.
+            if (!pending.edit().putString("verifier", verifier).putString("returnTo", returnTo)
+                    .putLong("started", System.currentTimeMillis()).commit())
                 throw new IOException("pending-write");
-            Uri uri = Uri.parse(ORIGIN + "/api/auth/discord/start").buildUpon()
+            Uri uri = Uri.parse(ORIGIN + "/_auth/start").buildUpon()
+                .appendQueryParameter("returnTo", returnTo)
                 .appendQueryParameter("app_challenge", challenge(verifier)).build();
             activity.startActivity(new Intent(Intent.ACTION_VIEW, uri).addCategory(Intent.CATEGORY_BROWSABLE));
         } catch (Exception error) {
@@ -68,14 +105,16 @@ class AndroidLogin implements AutoCloseable {
             uri.getPort() != -1 || uri.getUserInfo() != null || (uri.getPath() != null && !uri.getPath().isEmpty()) ||
             uri.getFragment() != null) return false;
         String ticket = uri.getQueryParameter("ticket");
+        if (closed || exchanging || (ticket != null && ticket.equals(completedTicket))) return true;
         String verifier = pending.getString("verifier", "");
         long elapsed = System.currentTimeMillis() - pending.getLong("started", 0);
         if (ticket == null || !ticket.matches("[A-Za-z0-9_-]{43}") || !verifier.matches("[A-Za-z0-9_-]{43}") ||
             elapsed < 0 || elapsed >= PENDING_TTL) {
             message("로그인 요청이 만료됐습니다. 앱에서 다시 로그인해 주세요.");
+            ensurePlayerVisible();
             return true;
         }
-        if (exchanging) return true;
+        String returnTo = safeReturnTo(pending.getString("returnTo", "/"));
         exchanging = true;
         message("로그인을 마무리하는 중…");
         execute(() -> {
@@ -88,9 +127,13 @@ class AndroidLogin implements AutoCloseable {
                         if (closed) return;
                         if (Boolean.TRUE.equals(accepted)) {
                             CookieManager.getInstance().flush();
+                            completedTicket = ticket;
                             pending.edit().clear().apply();
-                            webView.loadUrl(ORIGIN + "/#add-music");
-                        } else message("로그인을 저장하지 못했습니다. 다시 로그인해 주세요.");
+                            loadAuthenticatedPage(returnTo);
+                        } else {
+                            ensurePlayerVisible();
+                            message("로그인을 저장하지 못했습니다. 다시 로그인해 주세요.");
+                        }
                     });
                 });
             } catch (Exception error) {
@@ -99,6 +142,7 @@ class AndroidLogin implements AutoCloseable {
                 main.post(() -> {
                     if (closed) return;
                     exchanging = false;
+                    ensurePlayerVisible();
                     message("로그인을 완료하지 못했습니다. 연결을 확인하고 다시 로그인해 주세요.");
                 });
             }
@@ -108,6 +152,23 @@ class AndroidLogin implements AutoCloseable {
 
     void execute(Runnable task) { worker.execute(task); }
     void message(String text) { Toast.makeText(activity, text, Toast.LENGTH_LONG).show(); }
+
+    private void ensurePlayerVisible() {
+        if (webView.getUrl() == null || webView.getUrl().isEmpty()) webView.loadUrl(fallbackUrl);
+    }
+
+    void loadAuthenticatedPage(String returnTo) {
+        String destination = ORIGIN + safeReturnTo(returnTo);
+        String current = webView.getUrl();
+        boolean sameDocument = current != null && Uri.parse(current).buildUpon().fragment(null).build().equals(
+            Uri.parse(destination).buildUpon().fragment(null).build());
+        // Changing only #add-music does not request a new catalog. Reload after the
+        // cookie callback so both ordinary login and import login see the new session.
+        // replaceState changes the URL synchronously, before reload starts navigation.
+        if (sameDocument) webView.evaluateJavascript("(function(){history.replaceState(history.state,'',"
+            + JSONObject.quote(destination) + ");location.reload();})()", null);
+        else webView.loadUrl(destination);
+    }
 
     String exchange(String ticket, String verifier) throws Exception {
         HttpURLConnection connection = (HttpURLConnection) new URL(ORIGIN + "/api/auth/android/redeem").openConnection();
