@@ -2,6 +2,15 @@
 
 현재 기능 계약과 수용 조건은 [핵심 요구사항](docs/requirements.md)에 정리합니다. 아래 버전별 기록과 [운영 안내](ops/README.md)는 배포, 복구와 과거 검증의 근거로 유지합니다.
 
+## 2026-10-30 보안 의존성 갱신
+
+- 개발 미리보기 서버 `serve`의 압축 응답 의존성이 취약 버전으로 고정돼 있었다. `compression`을 수정판 1.8.2 이상으로 고정하고 나머지 취약한 전이 의존성도 잠금 파일에서 갱신했다. 앱의 기존 `wavesurfer.js 7.8.1`은 유지했다.
+- Node 26.13.0에서 `npm ci --ignore-scripts`, `npm audit` 취약점 0건, `npm test` 94개, `npm run build`를 확인했다. 검증 빌드 출력은 운영 정적 릴리스 51개 파일과 다시 대조해 모두 일치시켰다. 빌드된 unsigned Tizen WGT는 설치하거나 게시하지 않았다.
+- NAS의 실제 SMB 마운트와 읽기 전용 음악 서빙 마운트가 연결돼 있음을 확인했다. 라이브러리·음원·공개 목록은 게시하지 않았다.
+- `com.readiz.music.api`와 `com.readiz.static.mounts` LaunchAgent는 실행 파일 경로만 Node 25.9.0에서 26.13.0으로 바꿨다. 이전 plist는 `~/.config/readiz-music/deploy-backups/security-dependencies-20261030/`에 보관한다. 인증 환경, 라이브러리 경로, 데이터베이스, 키체인과 NAS 설정은 유지했다.
+- 재등록 뒤 API health 200, 익명 `/api/imports` 401(`private, no-store`), 공개 사이트 200을 확인했다. 인증된 사용자 로그인, 실제 음원 재생과 Android 기기는 별도다.
+- 향후 LaunchAgent를 다시 설치할 때 Node 버전이 낮아지지 않게 `PATH=/Users/readiz/.nvm/versions/node/v26.13.0/bin:$PATH npm run deploy:local`을 사용한다.
+
 ## Git 음원 제외 (1.5.7)
 
 `music/` 음원 파일은 Git에서 제외하며 맥 라이브러리와 NAS 백업에서 관리합니다.

@@ -42,5 +42,8 @@
   "devDependencies": {
     "esbuild": "0.28.1",
     "serve": "^14.2.0"
+  },
+  "overrides": {
+    "compression": "^1.8.2"
   }
 }

@@ -363,7 +363,7 @@ curl -f https://music.readiz.com/app-config.json
 
 ## 유튜브·파일 추가와 로컬 동기화 (1.5.6)
 
-- `com.readiz.music.api` launchd → `127.0.0.1:4525`, Node 24.13.1 이상. API 릴리스는 `~/.local/share/readiz-music/api-releases/`, 실행 링크는 `api-current`입니다.
+- `com.readiz.music.api` launchd → `127.0.0.1:4525`, Node 26.13.0 이상. API 릴리스는 `~/.local/share/readiz-music/api-releases/`, 실행 링크는 `api-current`입니다. LaunchAgent를 재설치할 때는 `PATH=/Users/readiz/.nvm/versions/node/v26.13.0/bin:$PATH npm run deploy:local`처럼 보안 기준 Node를 앞에 둡니다. 설치 스크립트가 선택한 `process.execPath`를 API와 정적 마운트 LaunchAgent에 기록합니다.
 - 인증 설정은 `~/.config/readiz-music/discord-auth.json` (600)입니다. 중앙 SSO와 기존 Discord 허용 계정·Origin·업로드 제한은 유지합니다. Caddy는 임시 다운로드와 작업 DB를 공개하지 않습니다.
 - 다운로드 도구는 `~/.local/share/readiz-music/downloader/bin/yt-dlp`, 오디오 도구는 `/opt/homebrew/bin/ffmpeg`입니다. 런타임에서 GitHub 토큰·Contents·Actions 권한을 사용하지 않습니다.
 - 요청 DB는 `~/.local/share/readiz-music/data/imports.sqlite`입니다. 준비된 MP3는 `data/media/ETC/`, 변환 중 파일은 `data/staging/`에 둡니다. 실패한 동기화 파일은 재시도를 위해 보존합니다.
